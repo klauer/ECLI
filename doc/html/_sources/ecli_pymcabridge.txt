@@ -1,8 +1,0 @@
---------------------------
-ecli_pymcabridge module
---------------------------
-
-.. automodule:: ecli_pymcabridge
-   :members:
-.. autoclass:: ecli_pymcabridge.ECLIpymcaBridge
-    :members:
