@@ -69,7 +69,7 @@ class ECLIMotor(ECLIPlugin):
 
     _callbacks = []
     motor_list = traitlets.List(traitlets.Unicode,
-                                default_value=('m1', 'm2'),
+                                default_value=(),
                                 config=True)
     additional_fields = traitlets.List(traitlets.Unicode,
                                        default_value=(),

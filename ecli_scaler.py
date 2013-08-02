@@ -55,7 +55,7 @@ class ECLIScaler(ECLIPlugin):
 
     _callbacks = []
     scalers = traitlets.List(traitlets.Unicode,
-                             default_value=('s1', ),
+                             default_value=(),
                              config=True)
     default_count_time = traitlets.Float(1.0, config=True)
     show_timestamp = traitlets.Bool(True, config=True)
@@ -199,7 +199,7 @@ def ct(self, arg):
     else:
         scalers = plugin.scalers
 
-    if scalers is None:
+    if scalers is None or len(scalers) == 0:
         logging.error('Scaler list undefined (see config ECLIScaler.scalers)')
         return
 
