@@ -1,0 +1,95 @@
+field	asl	initial	promptgroup	prompt	special	pp	interest	base	size	extra	menu
+ACKS				"Alarm Ack Severity"	SPC_NOMOD		2				menuAlarmSevr
+ACKT		"YES"	GUI_ALARMS	"Alarm Ack Transient"	SPC_NOMOD		2				menuYesNo
+ADEL			GUI_DISPLAY	"Archive Deadband"			1				
+ALST				"Last Value Archived"	SPC_NOMOD		3				
+ASG			GUI_COMMON	"Access Security Group"	SPC_AS				29		
+ASP				"Access Security Pvt"	SPC_NOMOD		4			"struct asgMember *asp"	
+BKPT				"Break Point"	SPC_NOMOD		1			"char bkpt"	
+CT				"Time"	SPC_NOMOD		4			"epicsTimeStamp  ct"	
+CTP				"Previous time"	SPC_NOMOD		4			"epicsTimeStamp   ctp"	
+CVAL				"Controlled Value"	SPC_NOMOD						
+CVLP				"Prev. Controlled Value"	SPC_NOMOD						
+D				"D component"	SPC_NOMOD		2				
+DESC			GUI_COMMON	"Descriptor"					41		
+DISA				"Disable"							
+DISP				"Disable putField"							
+DISS			GUI_SCAN	"Disable Alarm Sevrty"			1				menuAlarmSevr
+DISV		"1"	GUI_SCAN	"Disable Value"							
+DP				"Prev. D component"	SPC_NOMOD		2				
+DPVT				"Device Private"	SPC_NOMOD		4			"void             *dpvt"	
+DRVH			GUI_DISPLAY	"High Drive Limit"			1				
+DRVL			GUI_DISPLAY	"Low Drive Limit"			1				
+DSET				"DSET address"	SPC_NOMOD		4			"struct dset      *dset"	
+DT				"Delta T"			2				
+DTP				"Prev. Delta T"			2				
+DTYP			GUI_LINKS	"Device Type"			1				
+EGU			GUI_DISPLAY	"Engineering Units"			1		16		
+ERR				"Error"	SPC_NOMOD		2				
+ERRP				"Prev. Error"	SPC_NOMOD		2				
+EVNT			GUI_SCAN	"Event Number"	SPC_SCAN		1				
+FBON			GUI_PID	"Feedback On/Off"			1				epidFeedbackState
+FBOP			GUI_PID	"Prev. feedback On/Off"			1				epidFeedbackState
+FLNK			GUI_LINKS	"Forward Process Link"			1				
+FMOD			GUI_PID	"Feedback Mode"			1				epidFeedbackMode
+HHSV			GUI_ALARMS	"Hihi Severity"			1				menuAlarmSevr
+HIGH			GUI_ALARMS	"High Deviation Limit"			1				
+HIHI			GUI_ALARMS	"Hihi Deviation Limit"			1				
+HOPR			GUI_DISPLAY	"High Operating Range"			1				
+HSV			GUI_ALARMS	"High Severity"			1				menuAlarmSevr
+HYST			GUI_ALARMS	"Alarm Deadband"			1				
+I				"I component"			2				
+INP			GUI_INPUTS	"Controlled Value Loc"			1				
+IP				"Prev. I component"			2				
+KD			GUI_PID	"Derivative Gain"			1				
+KI			GUI_PID	"Intergral Gain"			1				
+KP			GUI_PID	"Proportional Gain"			1				
+LALM				"Last Value Alarmed"	SPC_NOMOD		3				
+LCNT				"Lock Count"	SPC_NOMOD		2				
+LLSV			GUI_ALARMS	"Lolo Severity"			1				menuAlarmSevr
+LOLO			GUI_ALARMS	"Lolo Deviation Limit"			1				
+LOPR			GUI_DISPLAY	"Low Operating Range"			1				
+LOW			GUI_ALARMS	"Low Deviation Limit"			1				
+LSET				"Lock Set"	SPC_NOMOD		4			"struct lockRecord *lset"	
+LSV			GUI_ALARMS	"Low Severity"			1				menuAlarmSevr
+MDEL			GUI_DISPLAY	"Monitor Deadband"			1				
+MDT			GUI_PID	"Min Delta T"			1				
+MLIS				"Monitor List"	SPC_NOMOD		4			"ELLLIST          mlis"	
+MLOK				"Monitor lock"	SPC_NOMOD		4			"epicsMutexId     mlok"	
+MLST				"Last Value Monitored"	SPC_NOMOD		3				
+NAME				"Record Name"	SPC_NOMOD				61		
+NSEV				"New Alarm Severity"	SPC_NOMOD		2				menuAlarmSevr
+NSTA				"New Alarm Status"	SPC_NOMOD		2				menuAlarmStat
+ODEL			GUI_PID	"Output Deadband"			1				
+OUTL			GUI_PID	"Output Location"			1				
+OVAL				"Output value"	SPC_NOMOD						
+OVLP				"Prev output"	SPC_NOMOD		3				
+P				"P component"	SPC_NOMOD		2				
+PACT				"Record active"	SPC_NOMOD		1				
+PHAS			GUI_SCAN	"Scan Phase"	SPC_SCAN		1				
+PINI			GUI_SCAN	"Process at iocInit"			1				menuPini
+PP				"Prev. P component"	SPC_NOMOD		2				
+PPN				"addr of PUTNOTIFY"	SPC_NOMOD		4			"struct putNotify *ppn"	
+PPNR				"pputNotifyRecord"	SPC_NOMOD		4			"struct putNotifyRecord *ppnr"	
+PREC			GUI_DISPLAY	"Display Precision"			1				
+PRIO			GUI_SCAN	"Scheduling Priority"	SPC_SCAN		1				menuPriority
+PROC				"Force Processing"		TRUE	3				
+PUTF				"dbPutField process"	SPC_NOMOD		1				
+RDES				"Address of dbRecordType"	SPC_NOMOD		4			"struct dbRecordType *rdes"	
+RPRO				"Reprocess "	SPC_NOMOD		1				
+RSET				"Address of RSET"	SPC_NOMOD		4			"struct rset      *rset"	
+SCAN			GUI_SCAN	"Scan Mechanism"	SPC_SCAN		1				menuScan
+SDIS			GUI_SCAN	"Scanning Disable"			1				
+SEVR		"INVALID"		"Alarm Severity"	SPC_NOMOD						menuAlarmSevr
+SMSL			GUI_PID	"Setpoint Mode Select"			1				menuOmsl
+SPVT				"Scan Private"	SPC_NOMOD		4			"struct scan_element *spvt"	
+STAT		"UDF"		"Alarm Status"	SPC_NOMOD						menuAlarmStat
+STPL			GUI_PID	"Setpoint Location"			1				
+TIME				"Time"	SPC_NOMOD		2			"epicsTimeStamp   time"	
+TPRO				"Trace Processing"							
+TRIG			GUI_PID	"Readback Trigger"			1				
+TSE			GUI_SCAN	"Time Stamp Event"			1				
+TSEL			GUI_SCAN	"Time Stamp Link"			1				
+TVAL			GUI_PID	"Trigger Value"			1				
+UDF		"1"	GUI_COMMON	"Undefined"		TRUE	1				
+VAL	ASL0			"Setpoint"		TRUE					

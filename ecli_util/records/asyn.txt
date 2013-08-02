@@ -1,0 +1,113 @@
+field	asl	initial	promptgroup	prompt	special	pp	interest	base	size	extra	menu
+ACKS				"Alarm Ack Severity"	SPC_NOMOD		2				menuAlarmSevr
+ACKT		"YES"	GUI_ALARMS	"Alarm Ack Transient"	SPC_NOMOD		2				menuYesNo
+ACMD			GUI_OUTPUT	"Addressed command"		TRUE	2				gpibACMD
+ADDR		"0"	GUI_INPUTS	"asyn address"	SPC_MOD		1				
+AINP				"Input (response) string"	SPC_NOMOD		1		40		
+AOUT			GUI_OUTPUT	"Output (command) string"		TRUE	1		40		
+AQR				"Abort queueRequest"	SPC_MOD		4				
+ASG			GUI_COMMON	"Access Security Group"	SPC_AS				29		
+ASP				"Access Security Pvt"	SPC_NOMOD		4			"struct asgMember *asp"	
+AUCT			GUI_INPUTS	"Autoconnect"	SPC_MOD		1				asynAUTOCONNECT
+BAUD			GUI_INPUTS	"Baud rate"	SPC_MOD		2				serialBAUD
+BINP	ASL0			"Input binary data"	SPC_DBADDR						
+BKPT				"Break Point"	SPC_NOMOD		1			"char bkpt"	
+BOUT				"Output binary data"	SPC_DBADDR	TRUE	1				
+CNCT			GUI_INPUTS	"Connect/Disconnect"	SPC_MOD		1				asynCONNECT
+DBIT			GUI_INPUTS	"Data bits"	SPC_MOD		2				serialDBIT
+DESC			GUI_COMMON	"Descriptor"					41		
+DISA				"Disable"							
+DISP				"Disable putField"							
+DISS			GUI_SCAN	"Disable Alarm Sevrty"			1				menuAlarmSevr
+DISV		"1"	GUI_SCAN	"Disable Value"							
+DPVT				"Device Private"	SPC_NOMOD		4			"void             *dpvt"	
+DRVINFO		""	GUI_INPUTS	"Driver info string"	SPC_MOD		2		40		
+DSET				"DSET address"	SPC_NOMOD		4			"struct dset      *dset"	
+DTYP			GUI_LINKS	"Device Type"			1				
+ENBL			GUI_INPUTS	"Enable/Disable"	SPC_MOD		1				asynENABLE
+EOMR				"EOM reason"	SPC_NOMOD		1				asynEOMREASON
+ERRS				"Error string"	SPC_DBADDR		4			"char *errs"	
+EVNT			GUI_SCAN	"Event Number"	SPC_SCAN		1				
+F64INP				"asynFloat64 input"	SPC_NOMOD		2				
+F64IV				"asynFloat64 is valid"			2				
+F64OUT			GUI_OUTPUT	"asynFloat64 output"		TRUE	2				
+FCTL			GUI_INPUTS	"Flow control"	SPC_MOD		2				serialFCTL
+FLNK			GUI_LINKS	"Forward Process Link"			1				
+GPIBIV				"asynGPIB is valid"			2				
+I32INP				"asynInt32 input"	SPC_NOMOD		2				
+I32IV				"asynInt32 is valid"			2				
+I32OUT			GUI_OUTPUT	"asynInt32 output"		TRUE	2				
+IEOS			GUI_INPUTS	"Input Delimiter"	SPC_MOD		1		40		
+IFACE			GUI_INPUTS	"Interface"	SPC_MOD		2				asynINTERFACE
+IFMT			GUI_INPUTS	"Input format"			1				asynFMT
+IMAX		"80"	GUI_INPUTS	"Max. size of input array"	SPC_NOMOD		1				
+IPTR				"Input buffer pointer"	SPC_NOMOD		4		4	"void *iptr"	
+IXANY			GUI_INPUTS	"XON=any character"	SPC_MOD		2				serialIX
+IXOFF			GUI_INPUTS	"Input XON/XOFF"	SPC_MOD		2				serialIX
+IXON			GUI_INPUTS	"Output XON/XOFF"	SPC_MOD		2				serialIX
+LCNT				"Lock Count"	SPC_NOMOD		2				
+LSET				"Lock Set"	SPC_NOMOD		4			"struct lockRecord *lset"	
+MCTL			GUI_INPUTS	"Modem control"	SPC_MOD		2				serialMCTL
+MLIS				"Monitor List"	SPC_NOMOD		4			"ELLLIST          mlis"	
+MLOK				"Monitor lock"	SPC_NOMOD		4			"epicsMutexId     mlok"	
+NAME				"Record Name"	SPC_NOMOD				61		
+NAWT				"Number of bytes actually written"			1				
+NORD				"Number of bytes read"	SPC_NOMOD		1				
+NOWT		"80"	GUI_OUTPUT	"Number of bytes to write"			1				
+NRRD			GUI_INPUTS	"Number of bytes to read"			1				
+NSEV				"New Alarm Severity"	SPC_NOMOD		2				menuAlarmSevr
+NSTA				"New Alarm Status"	SPC_NOMOD		2				menuAlarmStat
+OCTETIV				"asynOctet is valid"			2				
+OEOS			GUI_OUTPUT	"Output delimiter"	SPC_MOD		1		40		
+OFMT			GUI_OUTPUT	"Output format"			1				asynFMT
+OMAX		"80"	GUI_OUTPUT	"Max. size of output array"	SPC_NOMOD		1				
+OPTIONIV				"asynOption is valid"			2				
+OPTR				"Output buffer pointer"	SPC_NOMOD		4			"void *optr"	
+PACT				"Record active"	SPC_NOMOD		1				
+PCNCT				"Port Connect/Disconnect"	SPC_MOD		2				asynCONNECT
+PHAS			GUI_SCAN	"Scan Phase"	SPC_SCAN		1				
+PINI			GUI_SCAN	"Process at iocInit"			1				menuPini
+PORT		""	GUI_INPUTS	"asyn port"	SPC_MOD		1		40		
+PPN				"addr of PUTNOTIFY"	SPC_NOMOD		4			"struct putNotify *ppn"	
+PPNR				"pputNotifyRecord"	SPC_NOMOD		4			"struct putNotifyRecord *ppnr"	
+PRIO			GUI_SCAN	"Scheduling Priority"	SPC_SCAN		1				menuPriority
+PROC				"Force Processing"		TRUE	3				
+PRTY			GUI_INPUTS	"Parity"	SPC_MOD		2				serialPRTY
+PUTF				"dbPutField process"	SPC_NOMOD		1				
+RDES				"Address of dbRecordType"	SPC_NOMOD		4			"struct dbRecordType *rdes"	
+REASON				"asynUser->reason"	SPC_MOD		2				
+RPRO				"Reprocess "	SPC_NOMOD		1				
+RSET				"Address of RSET"	SPC_NOMOD		4			"struct rset      *rset"	
+SBIT			GUI_INPUTS	"Stop bits"	SPC_MOD		2				serialSBIT
+SCAN			GUI_SCAN	"Scan Mechanism"	SPC_SCAN		1				menuScan
+SDIS			GUI_SCAN	"Scanning Disable"			1				
+SEVR		"INVALID"		"Alarm Severity"	SPC_NOMOD						menuAlarmSevr
+SPR				"Serial poll response"	SPC_NOMOD		2				
+SPVT				"Scan Private"	SPC_NOMOD		4			"struct scan_element *spvt"	
+STAT		"UDF"		"Alarm Status"	SPC_NOMOD						menuAlarmStat
+TB0			GUI_DISPLAY	"Trace error"	SPC_MOD		1				asynTRACE
+TB1			GUI_DISPLAY	"Trace IO device"	SPC_MOD		1				asynTRACE
+TB2			GUI_DISPLAY	"Trace IO filter"	SPC_MOD		1				asynTRACE
+TB3			GUI_DISPLAY	"Trace IO driver"	SPC_MOD		1				asynTRACE
+TB4			GUI_DISPLAY	"Trace flow"	SPC_MOD		1				asynTRACE
+TFIL			GUI_DISPLAY	"Trace IO file"	SPC_MOD		1		40		
+TIB0			GUI_DISPLAY	"Trace IO ASCII"	SPC_MOD		1				asynTRACE
+TIB1			GUI_DISPLAY	"Trace IO escape"	SPC_MOD		1				asynTRACE
+TIB2			GUI_DISPLAY	"Trace IO hex"	SPC_MOD		1				asynTRACE
+TIME				"Time"	SPC_NOMOD		2			"epicsTimeStamp   time"	
+TINP	ASL0			"Translated input string"	SPC_NOMOD		1		40		
+TIOM			GUI_DISPLAY	"Trace I/O mask"	SPC_MOD		1				
+TMOD			GUI_INPUTS	"Transaction mode"			1				asynTMOD
+TMOT		"1.0"	GUI_INPUTS	"Timeout (sec)"			1				
+TMSK			GUI_DISPLAY	"Trace mask"	SPC_MOD		1				
+TPRO				"Trace Processing"							
+TSE			GUI_SCAN	"Time Stamp Event"			1				
+TSEL			GUI_SCAN	"Time Stamp Link"			1				
+TSIZ			GUI_DISPLAY	"Trace IO truncate size"	SPC_MOD		1				
+UCMD			GUI_OUTPUT	"Universal command"		TRUE	2				gpibUCMD
+UDF		"1"	GUI_COMMON	"Undefined"		TRUE	1				
+UI32INP				"asynUInt32Digital input"	SPC_NOMOD		2				
+UI32IV				"asynUInt32Digital is valid"			2				
+UI32MASK		"0xffffffff"	GUI_OUTPUT	"asynUInt32Digital mask"	SPC_MOD		2				
+UI32OUT			GUI_OUTPUT	"asynUInt32Digital output"		TRUE	2				
+VAL	ASL0			"Value field (unused)"			4				

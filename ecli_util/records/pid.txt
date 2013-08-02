@@ -1,0 +1,40 @@
+Field	Summary	Type	DCT	Initial	Access	Modify	Rec Proc Monitor
+MDT	Minimum Delta Time	FLOAT	Yes	0	Yes	Yes	No
+CVL	Controlled Value Location (an input link)	INLINK	Yes	0	No	No	N/A
+CVAL	Value of controlled variable	FLOAT	No	0	Yes	YesNo	No
+STPL	Setpoint Location (an input link)	INLINK	Yes	0	No	No	N/A
+SMSL	Setpoint Mode select.	GBLCHOICE	Yes	0	Yes	Yes	No
+VAL	Setpoint value	FLOAT	No	0	Yes	Yes	Yes
+KP	Proportional Gain	FLOAT	Yes	0	Yes	Yes	No
+KI	Integral Gain, in repeats per minute.	FLOAT	Yes	0	Yes	Yes	No
+KD	Derivative Gain, in repeats per minute	FLOAT	Yes	0	Yes	Yes	No
+EGU	Engineering Units	STRING [16]	Yes	null	Yes	Yes	No
+HOPR	High Operating Range	FLOAT	Yes	0	Yes	Yes	No
+LOPR	Low Operating Range	FLOAT	Yes	0	Yes	Yes	No
+PREC	Display Precision	SHORT	Yes	0	Yes	Yes	No
+NAME	Record Name	STRING [29]	Yes	0	Yes	No	No
+DESC	Description	STRING [29]	Yes	Null	Yes	Yes	No
+HIHI	Hihi Alarm Limit	FLOAT	Yes	0	Yes	Yes	No
+LOLO	High Alarm Limit	FLOAT	Yes	0	Yes	Yes	No
+HIGH	Low Alarm Limit	FLOAT	Yes	0	Yes	Yes	No
+LOW	Lolo Alarm Limit	FLOAT	Yes	0	Yes	Yes	No
+HHSV	Hihi Alarm Severity	GBLCHOICE	Yes	0	Yes	Yes	No
+LLSV	High Alarm Severity	GBLCHOICE	Yes	0	Yes	Yes	No
+HSV	Low Alarm Severity	GBLCHOICE	Yes	0	Yes	Yes	No
+LSV	Lolo Alarm Severity	GBLCHOICE	Yes	0	Yes	Yes	No
+HYST	Alarm Deadband	DOUBLE	Yes	0	Yes	Yes	No
+ADEL	Archive Deadband	DOUBLE	Yes	0	Yes	Yes	No
+MDEL	Monitor, i.e. value change, Deadband	DOUBLE	Yes	0	Yes	Yes	No
+ODEL	Output deadband	FLOAT	Yes	0	Yes	Yes	No
+DM	Change in Manipulated Value	FLOAT	No	0	Yes	No	Yes
+ODM	Old DM.	FLOAT	No	0	Yes	No	Yes
+P	Proportional contribution to DM.	FLOAT	No	0	Yes	No	Yes
+I	Integral contribution to DM.	FLOAT	No	0	Yes	No	Yes
+D	Derivative contribution to DM.	FLOAT	No	0	Yes	No	Yes
+CT	Clock ticks when previous process occurred.	ULONG	No	0	Yes	No	Yes
+DT	Time difference in seconds between processing steps.	FLOAT	No	0	Yes	No	Yes
+ERR	Current error (VAL - CVAL).	FLOAT	No	0	Yes	No	Yes
+DERR	Delta Error	FLOAT	No	0	Yes	No	Yes
+LALM	Value when last monitors for alarm were triggered	FLOAT	No	0	Yes	No	No
+ALST	Value when last monitors for archiver were triggered	FLOAT	No	0	Yes	No	No
+MLST	Value when last monitors for value changes were triggered	FLOAT	No	0	Yes	No	No

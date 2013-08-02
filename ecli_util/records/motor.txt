@@ -1,0 +1,165 @@
+field	asl	initial	promptgroup	prompt	special	pp	interest	base	size	extra	menu
+ACCL		"0.2"	GUI_COMMON	"Seconds to Velocity"	SPC_MOD		1				
+ACKS				"Alarm Ack Severity"	SPC_NOMOD		2				menuAlarmSevr
+ACKT		"YES"	GUI_ALARMS	"Alarm Ack Transient"	SPC_NOMOD		2				menuYesNo
+ADEL			GUI_COMMON	"Archive Deadband"			1				
+ALST				"Last Value Archived"	SPC_NOMOD		3				
+ASG			GUI_COMMON	"Access Security Group"	SPC_AS				29		
+ASP				"Access Security Pvt"	SPC_NOMOD		4			"struct asgMember *asp"	
+ATHM				"At HOME"	SPC_NOMOD						
+BACC		"0.5"	GUI_COMMON	"BL Seconds to Velocity"	SPC_MOD		1				
+BDST	ASL0		GUI_COMMON	"BL Distance (EGU)"	SPC_MOD		1				
+BKPT				"Break Point"	SPC_NOMOD		1			"char bkpt"	
+BVEL			GUI_COMMON	"BL Velocity (EGU/s)"	SPC_MOD		1				
+CARD				"Card Number"	SPC_NOMOD		3				
+CBAK				"Callback structure"	SPC_NOMOD		4		4	"void             *cbak"	
+CDIR				"Raw cmnd direction"	SPC_NOMOD						
+CNEN	ASL0		GUI_COMMON	"Enable control"	SPC_MOD	TRUE					motorTORQ
+DCOF		"0"	GUI_COMMON	"Derivative Gain"	SPC_MOD		1				
+DESC			GUI_COMMON	"Descriptor"					41		
+DHLM			GUI_COMMON	"Dial High Limit"	SPC_MOD	TRUE					
+DIFF				"Difference dval-drbv"	SPC_NOMOD						
+DINP			GUI_COMMON	"DMOV Input Link"	SPC_MOD		1				
+DIR			GUI_COMMON	"User Direction"	SPC_MOD	TRUE	1				motorDIR
+DISA				"Disable"							
+DISP				"Disable putField"							
+DISS			GUI_SCAN	"Disable Alarm Sevrty"			1				menuAlarmSevr
+DISV		"1"	GUI_SCAN	"Disable Value"							
+DLLM			GUI_COMMON	"Dial Low Limit"	SPC_MOD	TRUE					
+DLY			GUI_COMMON	"Readback settle time (s)"	SPC_MOD		1				
+DMOV		"1"	GUI_COMMON	"Done moving to value"	SPC_NOMOD						
+DOL			GUI_COMMON	"Desired Output Loc"	SPC_MOD		1				
+DPVT				"Device Private"	SPC_NOMOD		4			"void             *dpvt"	
+DRBV				"Dial Readback Value"	SPC_NOMOD						
+DSET				"DSET address"	SPC_NOMOD		4			"struct dset      *dset"	
+DTYP			GUI_LINKS	"Device Type"			1				
+DVAL	ASL0			"Dial Desired Value (EGU"	SPC_MOD	TRUE					
+EGU			GUI_COMMON	"Engineering Units"			1		16		
+ERES			GUI_COMMON	"Encoder Step Size (EGU)"	SPC_MOD	TRUE	1				
+EVNT			GUI_SCAN	"Event Number"	SPC_SCAN		1				
+FLNK			GUI_LINKS	"Forward Process Link"			1				
+FOF	ASL0			"Freeze Offset"	SPC_MOD		1				
+FOFF	ASL0		GUI_COMMON	"Offset-Freeze Switch"	SPC_MOD		1				motorFOFF
+FRAC		"1"	GUI_COMMON	"Move Fraction"	SPC_MOD		1				
+HHSV			GUI_COMMON	"Hihi Severity"		TRUE	2				menuAlarmSevr
+HIGH			GUI_COMMON	"High Alarm Limit (EGU)"		TRUE	2				
+HIHI			GUI_COMMON	"Hihi Alarm Limit (EGU)"		TRUE	2				
+HLM				"User High Limit"	SPC_MOD	TRUE					
+HLS				"User High Limit Switch"	SPC_NOMOD						
+HLSV			GUI_COMMON	"HW Limit Violation Svr"		TRUE	2				menuAlarmSevr
+HOMF				"Home Forward"	SPC_MOD	TRUE	1				
+HOMR				"Home Reverse"	SPC_MOD	TRUE	1				
+HOPR			GUI_COMMON	"High Operating Range"			1				
+HSV			GUI_COMMON	"High Severity"		TRUE	2				menuAlarmSevr
+HVEL			GUI_COMMON	"Home Velocity (EGU/s)"	SPC_MOD		1				
+ICOF		"0"	GUI_COMMON	"Integral Gain"	SPC_MOD		1				
+INIT			GUI_COMMON	"Startup commands"			1		40		
+JAR			GUI_COMMON	"Jog Accel. (EGU/s^2)"	SPC_MOD		1				
+JOGF	ASL0			"Jog motor Forward"	SPC_MOD	TRUE	1				
+JOGR	ASL0			"Jog motor Reverse"	SPC_MOD	TRUE	1				
+JVEL			GUI_COMMON	"Jog Velocity (EGU/s)"	SPC_MOD		1				
+LCNT				"Lock Count"	SPC_NOMOD		2				
+LDVL				"Last Dial Des Val (EGU)"	SPC_NOMOD		1				
+LLM				"User Low Limit"	SPC_MOD	TRUE					
+LLS				"User Low Limit Switch"	SPC_NOMOD						
+LLSV			GUI_COMMON	"Lolo Severity"		TRUE	2				menuAlarmSevr
+LOCK		"NO"	GUI_COMMON	"Soft Channel Position Lock"			1				menuYesNo
+LOLO			GUI_COMMON	"Lolo Alarm Limit (EGU)"		TRUE	2				
+LOPR			GUI_COMMON	"Low Operating Range"			1				
+LOW			GUI_COMMON	"Low Alarm Limit (EGU)"		TRUE	2				
+LRLV				"Last Rel Value (EGU)"	SPC_NOMOD		1				
+LRVL				"Last Raw Des Val (steps"	SPC_NOMOD		1				
+LSET				"Lock Set"	SPC_NOMOD		4			"struct lockRecord *lset"	
+LSPG		"3"		"Last SPMG"	SPC_NOMOD		1				motorSPMG
+LSV			GUI_COMMON	"Low Severity"		TRUE	2				menuAlarmSevr
+LVAL				"Last User Des Val (EGU)"	SPC_NOMOD		1				
+LVIO		"1"		"Limit violation"	SPC_NOMOD						
+MDEL			GUI_COMMON	"Monitor Deadband"			1				
+MIP				"Motion In Progress"	SPC_NOMOD		3				
+MISS				"Ran out of retries"	SPC_NOMOD		2				
+MLIS				"Monitor List"	SPC_NOMOD		4			"ELLLIST          mlis"	
+MLOK				"Monitor lock"	SPC_NOMOD		4			"epicsMutexId     mlok"	
+MLST				"Last Val Monitored"	SPC_NOMOD		3				
+MMAP				"Monitor Mask"	SPC_NOMOD		3				
+MOVN				"Motor is moving"	SPC_NOMOD						
+MRES			GUI_COMMON	"Motor Step Size (EGU)"	SPC_MOD	TRUE	1				
+MSTA				"Motor Status"	SPC_NOMOD		3				
+NAME				"Record Name"	SPC_NOMOD				61		
+NMAP				"Monitor Mask (more)"	SPC_NOMOD		3				
+NSEV				"New Alarm Severity"	SPC_NOMOD		2				menuAlarmSevr
+NSTA				"New Alarm Status"	SPC_NOMOD		2				menuAlarmStat
+NTM		"YES"	GUI_COMMON	"New Target Monitor"			1				menuYesNo
+NTMF		"2"	GUI_COMMON	"NTM Deadband Factor"	SPC_MOD		1				
+OFF	ASL0			"User Offset (EGU)"	SPC_MOD	TRUE					
+OMSL			GUI_COMMON	"Output Mode Select"			1				menuOmsl
+OUT			GUI_COMMON	"Output Specification"	SPC_MOD		1				
+PACT				"Record active"	SPC_NOMOD		1				
+PCOF		"0"	GUI_COMMON	"Proportional Gain"	SPC_MOD		1				
+PHAS			GUI_SCAN	"Scan Phase"	SPC_SCAN		1				
+PINI			GUI_SCAN	"Process at iocInit"			1				menuPini
+POST			GUI_COMMON	"Post-move commands"			1		40		
+PP		"0"		"Post process command"	SPC_NOMOD		2				
+PPN				"addr of PUTNOTIFY"	SPC_NOMOD		4			"struct putNotify *ppn"	
+PPNR				"pputNotifyRecord"	SPC_NOMOD		4			"struct putNotifyRecord *ppnr"	
+PREC			GUI_COMMON	"Display Precision"			1				
+PREM			GUI_COMMON	"Pre-move commands"			1		40		
+PRIO			GUI_SCAN	"Scheduling Priority"	SPC_SCAN		1				menuPriority
+PROC				"Force Processing"		TRUE	3				
+PUTF				"dbPutField process"	SPC_NOMOD		1				
+RBV				"User Readback Value"	SPC_NOMOD						
+RCNT				"Retry count"	SPC_NOMOD		2				
+RDBD			GUI_COMMON	"Retry Deadband (EGU)"	SPC_MOD		1				
+RDBL			GUI_COMMON	"Readback Location"	SPC_MOD		1				
+RDES				"Address of dbRecordType"	SPC_NOMOD		4			"struct dbRecordType *rdes"	
+RDIF				"Difference rval-rrbv"	SPC_NOMOD						
+REP				"Raw Encoder Position"	SPC_NOMOD						
+RHLS				"Raw High Limit Switch"	SPC_NOMOD						
+RINP			GUI_COMMON	"RMP Input Link"	SPC_MOD		1				
+RLLS				"Raw Low Limit Switch"	SPC_NOMOD						
+RLNK			GUI_COMMON	"Readback OutLink"	SPC_MOD		1				
+RLV	ASL0			"Relative Value (EGU)"	SPC_MOD	TRUE					
+RMOD		"Default"	GUI_COMMON	"Retry Mode"			1				motorRMOD
+RMP				"Raw Motor Position"	SPC_NOMOD						
+RPRO				"Reprocess "	SPC_NOMOD		1				
+RRBV				"Raw Readback Value"	SPC_NOMOD						
+RRES			GUI_COMMON	"Readback Step Size (EGU"			1				
+RSET				"Address of RSET"	SPC_NOMOD		4			"struct rset      *rset"	
+RTRY		"10"	GUI_COMMON	"Max retry count"			1				
+RVAL	ASL0			"Raw Desired Value (step"	SPC_MOD	TRUE					
+RVEL			GUI_COMMON	"Raw Velocity"	SPC_NOMOD		1				
+S			GUI_COMMON	"Speed (revolutions/sec)"	SPC_MOD		1				
+SBAK			GUI_COMMON	"BL Speed (RPS)"	SPC_MOD		1				
+SBAS			GUI_COMMON	"Base Speed (RPS)"	SPC_MOD		1				
+SCAN			GUI_SCAN	"Scan Mechanism"	SPC_SCAN		1				menuScan
+SDIS			GUI_SCAN	"Scanning Disable"			1				
+SET	ASL0			"Set/Use Switch"			1				motorSET
+SEVR		"INVALID"		"Alarm Severity"	SPC_NOMOD						menuAlarmSevr
+SMAX			GUI_COMMON	"Max. Speed (RPS)"	SPC_MOD		1				
+SPMG	ASL0	"3"		"Stop/Pause/Move/Go"		TRUE	1				motorSPMG
+SPVT				"Scan Private"	SPC_NOMOD		4			"struct scan_element *spvt"	
+SREV		"200"	GUI_COMMON	"Steps per Revolution"	SPC_MOD	TRUE	1				
+SSET	ASL0			"Set SET Mode"	SPC_MOD		1				
+STAT		"UDF"		"Alarm Status"	SPC_NOMOD						menuAlarmStat
+STOO			GUI_COMMON	"STOP OutLink"	SPC_MOD		1				
+STOP	ASL0			"Stop"		TRUE	1				
+STUP	ASL0	"OFF"	GUI_COMMON	"Status Update"	SPC_MOD	TRUE	3				motorSTUP
+SUSE	ASL0			"Set USE Mode"	SPC_MOD		1				
+SYNC				"Sync position"		TRUE	1				
+TDIR				"Direction of Travel"	SPC_NOMOD						
+TIME				"Time"	SPC_NOMOD		2			"epicsTimeStamp   time"	
+TPRO				"Trace Processing"							
+TSE			GUI_SCAN	"Time Stamp Event"			1				
+TSEL			GUI_SCAN	"Time Stamp Link"			1				
+TWF	ASL0			"Tweak motor Forward"		TRUE	1				
+TWR	ASL0			"Tweak motor Reverse"		TRUE	1				
+TWV	ASL0		GUI_COMMON	"Tweak Step Size (EGU)"			1				
+UDF		"1"	GUI_COMMON	"Undefined"		TRUE	1				
+UEIP			GUI_COMMON	"Use Encoder If Present"	SPC_MOD	TRUE	1				motorUEIP
+UREV			GUI_COMMON	"EGU's per Revolution"	SPC_MOD	TRUE	1				
+URIP			GUI_COMMON	"Use RDBL Link If Presen"		TRUE	1				motorUEIP
+VAL	ASL0			"User Desired Value (EGU"	SPC_MOD	TRUE					
+VBAS			GUI_COMMON	"Base Velocity (EGU/s)"	SPC_MOD		1				
+VELO			GUI_COMMON	"Velocity (EGU/s)"	SPC_MOD		1				
+VERS		"1"		"Code Version"	SPC_NOMOD						
+VMAX			GUI_COMMON	"Max. Velocity (EGU/s)"	SPC_MOD		1				
+VOF	ASL0			"Variable Offset"	SPC_MOD		1				

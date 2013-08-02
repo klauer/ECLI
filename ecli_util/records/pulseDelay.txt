@@ -1,0 +1,24 @@
+Field	Summary	Type	DCT	Initial	Access	Modify	Rec Proc Monitor
+TTYP	Trigger Type (hardware/Software)	RECCHOICE	Yes	0	Yes	Yes	No
+HTS	Hardware Trigger	ENUM	Yes	0	Yes	Yes	No
+STL	Soft Trigger Location (input link)	INLINK	Yes	0	No	No	N/A
+STV	Soft Trigger Value	RECCHOICE	Yes	0	Yes	Yes	No
+GATE	Gate for enable/disable of Pulse Generation	RECCHOICE	Yes	1	Yes	Yes	No
+GLNK	Gate Location	INLINK	Yes	0	Yes	No	N/A
+CTYP	Clock Type	RECCHOICE	Yes	0	Yes	Yes	No
+CEDG	Clock Signal Edge	RECCHOICE	Yes	0	Yes	Yes	No
+ECS	External Clock Source	SHORT	Yes	0	Yes	Yes	No
+ECR	External Clock Rate, in Hz	DOUBLE	Yes	0	Yes	Yes	No
+UNIT	Time units	RECCHOICE	Yes	0	Yes	Yes	No
+DLY	Pulse Delay, in UNITS of time	DOUBLE	Yes	0	Yes	Yes	Yes
+WIDE	Pulse Width, in UNITS of time	DOUBLE	Yes	0	Yes	Yes	Yes
+HOPR	High Operating Range	FLOAT	Yes	0	Yes	Yes	No
+LOPR	Low Operating Range	FLOAT	Yes	0	Yes	Yes	No
+PREC	Display Precision	SHORT	Yes	0	Yes	Yes	No
+NAME	Record Name	STRING [29]	Yes	0	Yes	No	No
+DESC	Description	STRING [29]	Yes	Null	Yes	Yes	No
+ODLY	Old Delay	DOUBLE	No	0	Yes	No	No
+OWID	Old Width	DOUBLE	No	0	Yes	No	No
+PFLD	Processing Field	USHORT	No	0	Yes	No	No
+VAL	Value	RECCHOICE	No	0	Yes	Yes	Yes
+LLOW	Low Logic Level	RECCHOICE	Yes	0	Yes	Yes	No

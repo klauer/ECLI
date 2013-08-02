@@ -1,0 +1,156 @@
+field	asl	initial	promptgroup	prompt	special	pp	interest	base	size	extra	menu
+ACCI				"Acc Current"	SPC_NOMOD						
+ACCW				"Acc Power"	SPC_NOMOD						
+ACKS				"Alarm Ack Severity"	SPC_NOMOD		2				menuAlarmSevr
+ACKT		"YES"	GUI_ALARMS	"Alarm Ack Transient"	SPC_NOMOD		2				menuYesNo
+ASG			GUI_COMMON	"Access Security Group"	SPC_AS				29		
+ASP				"Access Security Pvt"	SPC_NOMOD		4			"struct asgMember *asp"	
+BAKR				"Bake Readback"	SPC_NOMOD						digitelBAKS
+BAKS			GUI_BITS2	"Bake"	SPC_MOD	TRUE					digitelBAKS
+BKIN				"Bake Installed"	SPC_NOMOD						digitelBKIN
+BKPT				"Break Point"	SPC_NOMOD		1			"char bkpt"	
+CMOR				"Cooldown Mode"	SPC_NOMOD						digitelCMOR
+COOL				"Cooldown Time"	SPC_NOMOD						
+CRNT				"Current"	SPC_NOMOD						
+CYCL				"Cycle count"	SPC_NOMOD						
+DESC			GUI_COMMON	"Descriptor"					41		
+DISA				"Disable"							
+DISP				"Disable putField"							
+DISS			GUI_SCAN	"Disable Alarm Sevrty"			1				menuAlarmSevr
+DISV		"1"	GUI_SCAN	"Disable Value"							
+DPVT				"Device Private"	SPC_NOMOD		4			"void             *dpvt"	
+DSET				"DSET address"	SPC_NOMOD		4			"struct dset      *dset"	
+DSPL		"2"	GUI_ALARMS	"Display Mode"	SPC_MOD	TRUE					digitelDSPL
+DTYP			GUI_LINKS	"Device Type"			1				
+ERR				"Error Count"	SPC_NOMOD						
+EVNT			GUI_SCAN	"Event Number"	SPC_SCAN		1				
+FLGS				"Mod Flags"	SPC_NOMOD						
+FLNK			GUI_LINKS	"Forward Process Link"			1				
+HCTR		"0.5"	GUI_SUB	"Current Display Hi"			1				
+HHSV			GUI_ALARMS	"Pressure Hihi Severity"		TRUE	1				menuAlarmSevr
+HIGH		"1e-07"	GUI_ALARMS	"Pressure High Alarm"		TRUE	1				
+HIHI		"1e-06"	GUI_ALARMS	"Pressure Hihi Alarm"		TRUE	1				
+HLPR		"-4"	GUI_DISPLAY	"Log Pres Display Hi"			1				
+HOPR		"0.0001"	GUI_SEQ2	"Pressure Display Hi"			1				
+HSV			GUI_ALARMS	"Pressure High Severity"		TRUE	1				menuAlarmSevr
+HVTR		"7000"	GUI_WAVE	"Voltage Display Hi"			1				
+HYST			GUI_ALARMS	"Alarm Deadband"			1				
+IACI				"init Acc current"	SPC_NOMOD						
+IACW				"init Acc power"	SPC_NOMOD						
+IB3				"init sp3 bake time md"	SPC_NOMOD						digitelS3BS
+IBAK				"init bake"	SPC_NOMOD						digitelBAKS
+IBKN				"init Bake Installed"	SPC_NOMOD						digitelBKIN
+ICOL				"init cooldown time"	SPC_NOMOD						
+ICRN				"init current"	SPC_NOMOD						
+IERR				"init Error Count"	SPC_NOMOD						
+IH1				"init sp1 HY"	SPC_NOMOD						
+IH2				"init sp2 HY"	SPC_NOMOD						
+IH3				"init sp3 HY"	SPC_NOMOD						
+II1				"init sp1 HVI"	SPC_NOMOD						digitelS1VS
+II2				"init sp2 HVI"	SPC_NOMOD						digitelS1VS
+II3				"init sp3 HVI"	SPC_NOMOD						digitelS1VS
+ILVA				"init pressure (log10)"	SPC_NOMOD						
+IM1				"init sp1 mode"	SPC_NOMOD						digitelS1MS
+IM2				"init sp2 mode"	SPC_NOMOD						digitelS1MS
+IM3				"init sp3 mode"	SPC_NOMOD						digitelS1MS
+IMOD				"init mode"	SPC_NOMOD						digitelMODS
+INP			GUI_COMMON	"Device Specification"	SPC_NOMOD		1				
+IPTY				"init pump type"	SPC_NOMOD						digitelPTYP
+IS1				"init sp1"	SPC_NOMOD						
+IS2				"init sp2"	SPC_NOMOD						
+IS3				"init sp3"	SPC_NOMOD						
+ISP1				"init set1"	SPC_NOMOD						digitelSET1
+ISP2				"init set2"	SPC_NOMOD						digitelSET1
+ISP3				"init set3"	SPC_NOMOD						digitelSET1
+IT3				"init sp3 bake time"	SPC_NOMOD						
+ITON				"init tonl"	SPC_NOMOD						
+IVAL				"init pressure"	SPC_NOMOD						
+IVOL				"init voltage"	SPC_NOMOD						
+KLCK			GUI_BITS1	"Keyboard Lock"	SPC_MOD	TRUE					digitelKLCK
+LALM				"Last Value Alarmed"	SPC_NOMOD		3				
+LCNT				"Lock Count"	SPC_NOMOD		2				
+LCTR		"1e-09"	GUI_TIMER	"Current Display Lo"			1				
+LLPR		"-11"	GUI_DISPLAY	"Log Pres Display Lo"			1				
+LLSV			GUI_ALARMS	"Pressure Lolo Severity"		TRUE	1				menuAlarmSevr
+LOLO		"1e-12"	GUI_ALARMS	"Pressure Lolo Alarm"		TRUE	1				
+LOPR		"1e-11"	GUI_SEQ3	"Pressure Display Lo"			1				
+LOW		"2e-12"	GUI_ALARMS	"Pressure Low Alarm"		TRUE	1				
+LSET				"Lock Set"	SPC_NOMOD		4			"struct lockRecord *lset"	
+LSV			GUI_ALARMS	"Pressure Low Severity"		TRUE	1				menuAlarmSevr
+LVAL	ASL0			"Pressure (log10 form)"	SPC_NOMOD						
+LVTR			GUI_SCAN	"Voltage Display Lo"			1				
+MLIS				"Monitor List"	SPC_NOMOD		4			"ELLLIST          mlis"	
+MLOK				"Monitor lock"	SPC_NOMOD		4			"epicsMutexId     mlok"	
+MODR				"Mode Readback"	SPC_NOMOD						digitelMODR
+MODS			GUI_BITS2	"Mode"	SPC_MOD	TRUE					digitelMODS
+NAME				"Record Name"	SPC_NOMOD				61		
+NSEV				"New Alarm Severity"	SPC_NOMOD		2				menuAlarmSevr
+NSTA				"New Alarm Status"	SPC_NOMOD		2				menuAlarmStat
+PACT				"Record active"	SPC_NOMOD		1				
+PHAS			GUI_SCAN	"Scan Phase"	SPC_SCAN		1				
+PINI			GUI_SCAN	"Process at iocInit"			1				menuPini
+PPN				"addr of PUTNOTIFY"	SPC_NOMOD		4			"struct putNotify *ppn"	
+PPNR				"pputNotifyRecord"	SPC_NOMOD		4			"struct putNotifyRecord *ppnr"	
+PRIO			GUI_SCAN	"Scheduling Priority"	SPC_SCAN		1				menuPriority
+PROC				"Force Processing"		TRUE	3				
+PTYP				"Pump Type"	SPC_NOMOD						digitelPTYP
+PUTF				"dbPutField process"	SPC_NOMOD		1				
+RDES				"Address of dbRecordType"	SPC_NOMOD		4			"struct dbRecordType *rdes"	
+RPRO				"Reprocess "	SPC_NOMOD		1				
+RSET				"Address of RSET"	SPC_NOMOD		4			"struct rset      *rset"	
+S1HR				"SP1 HY Readback"	SPC_NOMOD						
+S1HS				"SP1 Hysteresis"	SPC_MOD	TRUE					
+S1MR				"SP1 Mode Readback"	SPC_NOMOD						digitelS1MS
+S1MS			GUI_HIST	"SP1 Mode"	SPC_MOD	TRUE					digitelS1MS
+S1VR				"SP1 HVI Readback"	SPC_NOMOD						digitelS1VS
+S1VS			GUI_INPUTS	"SP1 HV Interlock"	SPC_MOD	TRUE					digitelS1VS
+S2HR				"SP2 HY Readback"	SPC_NOMOD						
+S2HS				"SP2 Hysteresis"	SPC_MOD	TRUE					
+S2MR				"SP2 Mode Readback"	SPC_NOMOD						digitelS1MS
+S2MS			GUI_LINKS	"SP2 Mode"	SPC_MOD	TRUE					digitelS1MS
+S2VR				"SP2 HVI Readback"	SPC_NOMOD						digitelS1VS
+S2VS			GUI_MBB	"SP2 HV Interlock"	SPC_MOD	TRUE					digitelS1VS
+S3BR				"Bake Time Mode Read"	SPC_NOMOD						digitelS3BS
+S3BS			GUI_MOTOR	"Bake Time Mode Set"	SPC_MOD	TRUE					digitelS3BS
+S3HR				"SP3 HY Readback"	SPC_NOMOD						
+S3HS				"SP3 Hysteresis"	SPC_MOD	TRUE					
+S3MR				"SP3 Mode Readback"	SPC_NOMOD						digitelS1MS
+S3MS			GUI_LINKS	"SP3 Mode"	SPC_MOD	TRUE					digitelS1MS
+S3TR				"Bake Time Read"	SPC_NOMOD						
+S3TS				"Bake Time Set"	SPC_MOD	TRUE					
+S3VR				"SP3 HVI Readback"	SPC_NOMOD						digitelS1VS
+S3VS			GUI_MBB	"SP3 HV Interlock"	SPC_MOD	TRUE					digitelS1VS
+SCAN			GUI_SCAN	"Scan Mechanism"	SPC_SCAN		1				menuScan
+SDIS			GUI_SCAN	"Scanning Disable"			1				
+SET1				"Setpoint 1"	SPC_NOMOD						digitelSET1
+SET2				"Setpoint 2"	SPC_NOMOD						digitelSET1
+SET3				"Setpoint 3"	SPC_NOMOD						digitelSET1
+SEVR		"INVALID"		"Alarm Severity"	SPC_NOMOD						menuAlarmSevr
+SIML			GUI_DISPLAY	"Sim Mode Location"	SPC_NOMOD		1				
+SIMM				"Sim Mode Value"			1				menuYesNo
+SLCR			GUI_DISPLAY	"Sim Location Current"	SPC_NOMOD		1				
+SLMO			GUI_DISPLAY	"Sim Location Mode"	SPC_NOMOD		1				
+SLS1			GUI_DISPLAY	"Sim Location SP1"	SPC_NOMOD		1				
+SLS2			GUI_DISPLAY	"Sim Location SP2"	SPC_NOMOD		1				
+SP1R				"SP1 SP Readback"	SPC_NOMOD						
+SP1S				"SP1 Setpoint"	SPC_MOD	TRUE					
+SP2R				"SP2 SP Readback"	SPC_NOMOD						
+SP2S				"SP2 Setpoint"	SPC_MOD	TRUE					
+SP3R				"SP3 SP Readback"	SPC_NOMOD						
+SP3S				"SP3 Setpoint"	SPC_MOD	TRUE					
+SPFG				"Setpoint Flags"	SPC_NOMOD						
+SPVT				"Scan Private"	SPC_NOMOD		4			"struct scan_element *spvt"	
+STAT		"UDF"		"Alarm Status"	SPC_NOMOD						menuAlarmStat
+SVCR				"Sim Value Current"							
+SVMO				"Sim Value Mode"							digitelMODS
+SVS1				"Sim Value SP1"							digitelSET1
+SVS2				"Sim Value SP2"							digitelSET1
+TIME				"Time"	SPC_NOMOD		2			"epicsTimeStamp   time"	
+TONL				"Time Online"	SPC_NOMOD						
+TPRO				"Trace Processing"							
+TSE			GUI_SCAN	"Time Stamp Event"			1				
+TSEL			GUI_SCAN	"Time Stamp Link"			1				
+TYPE			GUI_BITS2	"Controller Type"	SPC_MOD	TRUE					digitelTYPE
+UDF		"1"	GUI_COMMON	"Undefined"		TRUE	1				
+VAL	ASL0			"Pressure"	SPC_NOMOD						
+VOLT				"Voltage"	SPC_NOMOD						

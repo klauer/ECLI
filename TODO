@@ -1,0 +1,22 @@
+*TODO*
+
+* configuration persistence? <-- biggest issue right now
+
+config_gui started -- need to actually save it, also
+
+pseudomotor stuff
+
+report stepscan bugs:
+    detector.py line 454 
+        rtyp == caget("%s.RTYP", prefix)
+    to:
+        rtyp = caget("%s.RTYP" % prefix)
+
+callbacks for when aliases/core traits are updated
+
+clear up 'get-records-from-devices' and make opposite function
+simple 'get-device' function (expected rtyp, ...)
+
+%autocall 2 <-- hmmm
+
+extension/plugin used interchangeably (this matter?)

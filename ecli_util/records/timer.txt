@@ -1,0 +1,47 @@
+Field	Summary	Type	DCT	Initial	Access	Modify	Rec Proc Monitor
+VAL	Value Field	SHORT	No	0	Yes	Yes	Yes
+TSRC	Clock Source	RECCHOICE	Yes	0	Yes	Yes	No
+PTST	Pre-Trigger State	RECCHOICE	Yes	0	Yes	Yes	No
+TORG	Trigger Delay Origin (input link)	INLINK	Yes	0	No	No	N/A
+TRDL	Trigger Delay	FLOAT	No	0	Yes	Yes	No
+TIMU	Timer Units	RECCHOICE	Yes	0	Yes	Yes	No
+DTYP	Device Type	DEVCHOICE	Yes	0	Yes	No	No
+OUT	Output Link	OUTLINK	Yes	0	No	No	N/A
+DUT1	Delay Width for trigger 1	FLOAT	Yes	0	Yes	Yes	No
+OPW1	Pulse width for Trigger 1	FLOAT	Yes	0	Yes	Yes	No
+DUT2	Delay Width for Trigger 2	FLOAT	Yes	0	Yes	Yes	No
+OPW2	Pulse Width for Trigger 2	FLOAT	Yes	0	Yes	Yes	No
+DUT3	Delay Width for Trigger 3	FLOAT	Yes	0	Yes	Yes	No
+OPW3	Pulse Width for Trigger 3	FLOAT	Yes	0	Yes	Yes	No
+DUT4	Delay Width for Trigger 4	FLOAT	Yes	0	Yes	Yes	No
+OPW4	Pulse Width for Trigger 4	FLOAT	Yes	0	Yes	Yes	No
+DUT5	Delay Width for Trigger 5	FLOAT	Yes	0	Yes	Yes	No
+OPW5	Pulse Width for Trigger 5	FLOAT	Yes	0	Yes	Yes	No
+PDLY	Delay Source to Input	FLOAT	Yes	0	Yes	Yes	No
+NAME	Record Name	STRING [29]	Yes	0	Yes	No	No
+DESC	Description	STRING [29]	Yes	Null	Yes	Yes	No
+TEVT	Event Number To Be Posted On Trigger.	SHORT	Yes	0	Yes	Yes	No
+T1DL	Delay Width for Trigger 1	DOUBLE	No	0	Yes	Yes	No
+T1WD	Pulse Width for Trigger 1	DOUBLE	No	0	Yes	Yes	Yes
+T2DL	Delay Width for Trigger 2	DOUBLE	No	0	Yes	Yes	No
+T2WD	Pulse Width for Trigger 2	DOUBLE	No	0	Yes	Yes	No
+T3DL	Delay Width for Trigger 3	DOUBLE	No	0	Yes	Yes	No
+T3WD	Pulse Width for Trigger 3	DOUBLE	No	0	Yes	Yes	No
+T4DL	Delay Width or Trigger 4	DOUBLE	No	0	Yes	Yes	No
+T4WD	Pulse Width for Trigger 4	DOUBLE	No	0	Yes	Yes	No
+T5DL	Delay width for Trigger 5	DOUBLE	No	0	Yes	Yes	No
+T5WD	Pulse Width for Trigger 5	DOUBLE	No	0	Yes	Yes	No
+T1TD	Trigger 1 Trailing Delay	FLOAT	No	0	Yes	Yes	Yes
+T1LD	Trigger 1 Leading Delay	FLOAT	No	0	Yes	Yes	Yes
+T2TD	Trigger 2 Trailing Delay	FLOAT	No	0	Yes	Yes	No
+T2LD	Trigger 2 Leading Delay	FLOAT	No	0	Yes	Yes	No
+T3TD	Trigger 3 Trailing Delay	FLOAT	No	0	Yes	Yes	No
+T3LD	Trigger 3 Leading Delay	FLOAT	No	0	Yes	Yes	No
+T4TD	Trigger 4 Trailing Delay	FLOAT	No	0	Yes	Yes	No
+T4LD	Trigger 4 Leading Delay	FLOAT	No	0	Yes	Yes	No
+T5TD	Trigger 5 Trailing Delay	FLOAT	No	0	Yes	Yes	No
+T5LD	Trigger 5 Leading Delay	FLOAT	No	0	Yes	Yes	No
+TDIS	Timing Pulse Disable	SHORT	No	0	Yes	Yes	No
+MAIN	Maintain on Reboot	GBLCHOICE	Yes	1	Yes	Yes	No
+RDT1	Reboot Delay of 1	FLOAT	No	0	Yes	Yes	No
+RDW1	Reboot Width of 1	FLOAT	No	0	Yes	Yes	No

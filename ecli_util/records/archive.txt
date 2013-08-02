@@ -1,0 +1,32 @@
+Field	Summary	Type	DCT	Initial	Access	Modify	Rec Proc Monitor
+RVAL	Raw Value	DOUBLE	No	0	Yes	Yes	No
+INP	Input Link	INLINK	Yes	Null	Yes	No	N/A
+STIM	Save Time in Secnds	ULONG	Yes	900	Yes	No	No
+PCAB	Percent or Absolute	RECCHOICE	Yes	0	Yes	Yes	No
+AVAR	Absolute Difference	FLOAT	Yes	0	Yes	Yes	No
+RVAR	Percent Difference	FLOAT	Yes	0	Yes	Yes	No
+CVAL	Current Value	DOUBLE	No	0	Yes	Yes	No
+NVAL	Number of Values	ULONG	Yes	100	Yes	No	No
+FTIM	Flush Time in Sec	ULONG	Yes	900	Yes	No	No
+MASK	Bit Mask	USHORT	Yes	0	Yes	No	No
+NAME	Record Name	STRING [29]	Yes	Null	Yes	No	No
+DESC	Description	STRING [29]	Yes	Null	Yes	Yes	No
+HOPR	High Operating Range	FLOAT	Yes	0	Yes	Yes	No
+LOPR	Low Operating Range	FLOAT	Yes	0	Yes	Yes	No
+PREC	Precision	SHORT	Yes	0	Yes	Yes	No
+EGU	Engineering Units	STRING[16]	Yes	Null	Yes	Yes	No
+ARCH	Archive Array	NOACCESS	No	NA	No	No	No
+VALS	Values Array	NOACCESS	No	NA	No	No	Yes
+TIMS	Times Array Seconds	NOACCESS	No	NA	No	No	Yes
+NSCS	Times Array Nanoseconds	NOACCESS	No	NA	No	No	Yes
+VAL	Array Value	NOACCESS	No	NA	Yes	No	No
+TIM	Array Times Seconds	NOACCESS	No	NA	Yes	No	No
+NSC	Array Times Nanoseconds	NOACCESS	No	NA	No	No	No
+FLSH	Flush Flag	ULONG	No	0	Yes	No	No
+RES	Reset	SHORT	No	0	Yes	Yes	No
+LVAL	Last Value Stored	DOUBLE	No	0	Yes	No	No
+LTIM	Last Time Monitored	ULONG	No	0	Yes	No	No
+CCNT	Current Buffer Counter	ULONG	No	0	Yes	No	No
+NUSE	Number Used	ULONG	No	0	Yes	No	No
+NUSB	Number Used in Buffer	ULONG	No	0	Yes	No	No
+FTOF	Flush Time Offset	ULONG	No	0	Yes	No	No

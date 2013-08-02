@@ -1,0 +1,93 @@
+Installation
+------------
+
+------
+Ubuntu
+------
+
+Required packages::
+
+    % sudo apt-get install ipython python-h5py git python-pip
+
+Optional package for Qt console (with inline plots)::
+
+    % sudo apt-get install ipython-qtconsole
+
+Install pyepics (the -E will allow your proxy settings to be used with pip, if necessary)::
+
+    % sudo -E pip install pyepics
+
+To have scan support, install pyEpics' StepScan::
+
+  % git clone https://github.com/pyepics/stepscan.git stepscan_install
+  % mkdir stepscan
+  % cp -R stepscan_install/lib stepscan
+  % rm -rf stepscan_install
+
+.. note:: StepScan requires sqlalchemy, although its functionality can be safely removed from StepScan (TODO need to add request to remove this dependency, or at least make it optional)
+
+Create an ECLI profile::
+
+    % ipython profile create ecli
+
+Edit profile to have::
+
+    c.InteractiveShellApp.extensions = ['ecli_core', 'ecli_motor', 'ecli_stepscan', 'ecli_scanprinter', 'ecli_scanwriter_spec', 'ecli_scanwriter_hdf5', 'ecli_pymcabridge', ]
+.. note:: Add or remove extensions based on your needs, but ecli_core has to be loaded before the others.
+
+Add ecli to PYTHONPATH::
+
+    % echo export PYTHONPATH=/full/path/to/ECLI:$$PYTHONPATH >> ~/.profile
+    % source ~/.profile
+
+Run ipython with the proper profile::
+
+  % ipython --profile=ecli
+
+or, to run with the Qt console::
+
+  % ipython qtconsole --profile=ecli --pylab=inline
+
+..................
+PyMca installation
+..................
+
+.. note:: The paths in the examples are for Ubuntu with Python 2.7. You may have to modify these paths for your distribution/Python version.
+
+Required packages::
+
+    % sudo apt-get install python-h5py python-numpy python-qt4 python-qwt5-qt4 python-matplotlib
+
+Although PyMca is available on the Ubuntu software repository, it may not be the latest version. Install PyMca from source::
+    
+    % sudo apt-get install subversion
+    % svn checkout svn://svn.code.sf.net/p/pymca/code/ pymca-code
+    % cd pymca-code
+    % python setup.py build
+    % sudo python setup.py install
+
+Patch spswrap.py with ECLI's version::
+
+    % sudo cp ecli/pymca/xmlrpc/spswrap.py ecli/pymca/xmlrpc/spswrap_orig.py /lib/python2.7/site-packages/PyMca/
+
+Or you could install it locally with virtualenv::
+
+    % virtualenv ~/my_virtualenv
+    % source ~/my_virtualenv/bin/activate
+
+    % python setup.py build
+    % python setup.py install
+
+    % cp ecli/pymca/xmlrpc/spswrap.py ecli/pymca/xmlrpc/spswrap_orig.py ~/my_virtualenv/lib/python2.7/site-packages/PyMca/
+
+And run it::
+    
+    % pymca
+
+-------
+Windows
+-------
+
+TODO installation notes -- but it does work -- can also potentially distribute packaged, portable executable
+
+

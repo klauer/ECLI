@@ -1,0 +1,83 @@
+field	asl	initial	promptgroup	prompt	special	pp	interest	base	size	extra	menu
+ACKS				"Alarm Ack Severity"	SPC_NOMOD		2				menuAlarmSevr
+ACKT		"YES"	GUI_ALARMS	"Alarm Ack Transient"	SPC_NOMOD		2				menuYesNo
+ACT				"ScanActive"	SPC_NOMOD		1				
+AFT			GUI_COMMON	"After"			1				sscanPASM
+AQT			GUI_DISPLAY	"Acquire time"		TRUE	1				
+AR			GUI_COMMON	"absRel"			1				sscanP1AR
+ASG			GUI_COMMON	"Access Security Group"	SPC_AS				29		
+ASP				"Access Security Pvt"	SPC_NOMOD		4			"struct asgMember *asp"	
+BKPT				"Break Point"	SPC_NOMOD		1			"char bkpt"	
+DESC			GUI_COMMON	"Descriptor"					41		
+DISA				"Disable"							
+DISP				"Disable putField"							
+DISS			GUI_SCAN	"Disable Alarm Sevrty"			1				menuAlarmSevr
+DISV		"1"	GUI_SCAN	"Disable Value"							
+DPV			GUI_COMMON	"DetPVName"			1		40		
+DPVT				"Device Private"	SPC_NOMOD		4			"void             *dpvt"	
+DSET				"DSET address"	SPC_NOMOD		4			"struct dset      *dset"	
+DTYP			GUI_LINKS	"Device Type"			1				
+EP			GUI_DISPLAY	"EndPos"		TRUE	1				
+EVNT			GUI_SCAN	"Event Number"	SPC_SCAN		1				
+FLNK			GUI_LINKS	"Forward Process Link"			1				
+GO			GUI_DISPLAY	"Go"		TRUE	1				
+IACT			GUI_COMMON	"InLink"	SPC_NOMOD		1				
+IMP			GUI_COMMON	"MP InLink"	SPC_NOMOD		1				
+LCNT				"Lock Count"	SPC_NOMOD		2				
+LOAD			GUI_DISPLAY	"Load"		TRUE	1				
+LSET				"Lock Set"	SPC_NOMOD		4			"struct lockRecord *lset"	
+LSTP				"Last stepSize"	SPC_NOMOD		1				
+MLIS				"Monitor List"	SPC_NOMOD		4			"ELLLIST          mlis"	
+MLOK				"Monitor lock"	SPC_NOMOD		4			"epicsMutexId     mlok"	
+MP				"MaxPts"	SPC_NOMOD		1				
+NAME				"Record Name"	SPC_NOMOD				61		
+NP			GUI_DISPLAY	"nPts"		TRUE	1				
+NSEV				"New Alarm Severity"	SPC_NOMOD		2				menuAlarmSevr
+NSTA				"New Alarm Status"	SPC_NOMOD		2				menuAlarmStat
+OAFT			GUI_COMMON	"AFT OutLink"	SPC_NOMOD		1				
+OAQT			GUI_COMMON	"AQT OutLink"	SPC_NOMOD		1				
+OAR			GUI_COMMON	"AR OutLink"	SPC_NOMOD		1				
+ODPV			GUI_COMMON	"D1PV OutLink"	SPC_NOMOD		1				
+OEP			GUI_COMMON	"EP OutLink"	SPC_NOMOD		1				
+OGO			GUI_COMMON	"GO OutLink"	SPC_NOMOD		1				
+OLOAD			GUI_COMMON	"LOAD OutLink"	SPC_NOMOD		1				
+ONP			GUI_COMMON	"NP OutLink"	SPC_NOMOD		1				
+OPPV			GUI_COMMON	"P1PV OutLink"	SPC_NOMOD		1				
+OPRE			GUI_COMMON	"PRE-write OutLink"	SPC_NOMOD		1				
+ORPV			GUI_COMMON	"R1PV OutLink"	SPC_NOMOD		1				
+OSC			GUI_COMMON	"SC OutLink"	SPC_NOMOD		1				
+OSM			GUI_COMMON	"SM OutLink"	SPC_NOMOD		1				
+OSP			GUI_COMMON	"SP OutLink"	SPC_NOMOD		1				
+OTPV			GUI_COMMON	"T1PV OutLink"	SPC_NOMOD		1				
+PACT				"Record active"	SPC_NOMOD		1				
+PHAS			GUI_SCAN	"Scan Phase"	SPC_SCAN		1				
+PINI			GUI_SCAN	"Process at iocInit"			1				menuPini
+PPN				"addr of PUTNOTIFY"	SPC_NOMOD		4			"struct putNotify *ppn"	
+PPNR				"pputNotifyRecord"	SPC_NOMOD		4			"struct putNotifyRecord *ppnr"	
+PPV			GUI_COMMON	"PositionerPVName"			1		40		
+PRE			GUI_DISPLAY	"PRE-write command"		TRUE	1				
+PREC			GUI_DISPLAY	"Display Precision"			1				
+PRIO			GUI_SCAN	"Scheduling Priority"	SPC_SCAN		1				menuPriority
+PROC				"Force Processing"		TRUE	3				
+PUTF				"dbPutField process"	SPC_NOMOD		1				
+RDES				"Address of dbRecordType"	SPC_NOMOD		4			"struct dbRecordType *rdes"	
+RPRO				"Reprocess "	SPC_NOMOD		1				
+RPV			GUI_COMMON	"ReadbackPVName"			1		40		
+RSET				"Address of RSET"	SPC_NOMOD		4			"struct rset      *rset"	
+SC			GUI_DISPLAY	"StartCmd"			1				
+SCAN			GUI_SCAN	"Scan Mechanism"	SPC_SCAN		1				menuScan
+SDIS			GUI_SCAN	"Scanning Disable"			1				
+SEVR		"INVALID"		"Alarm Severity"	SPC_NOMOD						menuAlarmSevr
+SM			GUI_COMMON	"StepMode"			1				sscanP1SM
+SP			GUI_DISPLAY	"StartPos"		TRUE	1				
+SPVT				"Scan Private"	SPC_NOMOD		4			"struct scan_element *spvt"	
+STAT		"UDF"		"Alarm Status"	SPC_NOMOD						menuAlarmStat
+STEP				"StepSize"	SPC_NOMOD		1				
+TIME				"Time"	SPC_NOMOD		2			"epicsTimeStamp   time"	
+TPRO				"Trace Processing"							
+TPV			GUI_COMMON	"TrigPVName"			1		40		
+TSE			GUI_SCAN	"Time Stamp Event"			1				
+TSEL			GUI_SCAN	"Time Stamp Link"			1				
+UDF		"1"	GUI_COMMON	"Undefined"		TRUE	1				
+VAL				"Result"							
+VERS		"1"		"Code Version"	SPC_NOMOD						

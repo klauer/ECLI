@@ -1,0 +1,386 @@
+field	asl	initial	promptgroup	prompt	special	pp	interest	base	size	extra	menu
+ACKS				"Alarm Ack Severity"	SPC_NOMOD		2				menuAlarmSevr
+ACKT		"YES"	GUI_ALARMS	"Alarm Ack Transient"	SPC_NOMOD		2				menuYesNo
+ASG			GUI_COMMON	"Access Security Group"	SPC_AS				29		
+ASP				"Access Security Pvt"	SPC_NOMOD		4			"struct asgMember *asp"	
+BKPT				"Break Point"	SPC_NOMOD		1			"char bkpt"	
+CNT				"Count"	SPC_MOD	TRUE	1				scalerCNT
+CONT				"OneShot/AutoCount"	SPC_MOD	TRUE	1				scalerCONT
+COUT			GUI_COMMON	"CNT Output"	SPC_MOD		1				
+COUTP			GUI_COMMON	"CNT Output Prompt"	SPC_MOD		1				
+D1		"1"	GUI_COMMON	"Count Direction 1"			1				scalerD1
+D10			GUI_COMMON	"Count Direction 10"			1				scalerD1
+D11			GUI_COMMON	"Count Direction 11"			1				scalerD1
+D12			GUI_COMMON	"Count Direction 12"			1				scalerD1
+D13			GUI_COMMON	"Count Direction 13"			1				scalerD1
+D14			GUI_COMMON	"Count Direction 14"			1				scalerD1
+D15			GUI_COMMON	"Count Direction 15"			1				scalerD1
+D16			GUI_COMMON	"Count Direction 16"			1				scalerD1
+D17			GUI_COMMON	"Count Direction 17"			1				scalerD1
+D18			GUI_COMMON	"Count Direction 18"			1				scalerD1
+D19			GUI_COMMON	"Count Direction 19"			1				scalerD1
+D2			GUI_COMMON	"Count Direction 2"			1				scalerD1
+D20			GUI_COMMON	"Count Direction 20"			1				scalerD1
+D21			GUI_COMMON	"Count Direction 21"			1				scalerD1
+D22			GUI_COMMON	"Count Direction 22"			1				scalerD1
+D23			GUI_COMMON	"Count Direction 23"			1				scalerD1
+D24			GUI_COMMON	"Count Direction 24"			1				scalerD1
+D25			GUI_COMMON	"Count Direction 25"			1				scalerD1
+D26			GUI_COMMON	"Count Direction 26"			1				scalerD1
+D27			GUI_COMMON	"Count Direction 27"			1				scalerD1
+D28			GUI_COMMON	"Count Direction 28"			1				scalerD1
+D29			GUI_COMMON	"Count Direction 29"			1				scalerD1
+D3			GUI_COMMON	"Count Direction 3"			1				scalerD1
+D30			GUI_COMMON	"Count Direction 30"			1				scalerD1
+D31			GUI_COMMON	"Count Direction 31"			1				scalerD1
+D32			GUI_COMMON	"Count Direction 32"			1				scalerD1
+D33			GUI_COMMON	"Count Direction 33"			1				scalerD1
+D34			GUI_COMMON	"Count Direction 34"			1				scalerD1
+D35			GUI_COMMON	"Count Direction 35"			1				scalerD1
+D36			GUI_COMMON	"Count Direction 36"			1				scalerD1
+D37			GUI_COMMON	"Count Direction 37"			1				scalerD1
+D38			GUI_COMMON	"Count Direction 38"			1				scalerD1
+D39			GUI_COMMON	"Count Direction 39"			1				scalerD1
+D4			GUI_COMMON	"Count Direction 4"			1				scalerD1
+D40			GUI_COMMON	"Count Direction 40"			1				scalerD1
+D41			GUI_COMMON	"Count Direction 41"			1				scalerD1
+D42			GUI_COMMON	"Count Direction 42"			1				scalerD1
+D43			GUI_COMMON	"Count Direction 43"			1				scalerD1
+D44			GUI_COMMON	"Count Direction 44"			1				scalerD1
+D45			GUI_COMMON	"Count Direction 45"			1				scalerD1
+D46			GUI_COMMON	"Count Direction 46"			1				scalerD1
+D47			GUI_COMMON	"Count Direction 47"			1				scalerD1
+D48			GUI_COMMON	"Count Direction 48"			1				scalerD1
+D49			GUI_COMMON	"Count Direction 49"			1				scalerD1
+D5			GUI_COMMON	"Count Direction 5"			1				scalerD1
+D50			GUI_COMMON	"Count Direction 50"			1				scalerD1
+D51			GUI_COMMON	"Count Direction 51"			1				scalerD1
+D52			GUI_COMMON	"Count Direction 52"			1				scalerD1
+D53			GUI_COMMON	"Count Direction 53"			1				scalerD1
+D54			GUI_COMMON	"Count Direction 54"			1				scalerD1
+D55			GUI_COMMON	"Count Direction 55"			1				scalerD1
+D56			GUI_COMMON	"Count Direction 56"			1				scalerD1
+D57			GUI_COMMON	"Count Direction 57"			1				scalerD1
+D58			GUI_COMMON	"Count Direction 58"			1				scalerD1
+D59			GUI_COMMON	"Count Direction 59"			1				scalerD1
+D6			GUI_COMMON	"Count Direction 6"			1				scalerD1
+D60			GUI_COMMON	"Count Direction 60"			1				scalerD1
+D61			GUI_COMMON	"Count Direction 61"			1				scalerD1
+D62			GUI_COMMON	"Count Direction 62"			1				scalerD1
+D63			GUI_COMMON	"Count Direction 63"			1				scalerD1
+D64			GUI_COMMON	"Count Direction 64"			1				scalerD1
+D7			GUI_COMMON	"Count Direction 7"			1				scalerD1
+D8			GUI_COMMON	"Count Direction 8"			1				scalerD1
+D9			GUI_COMMON	"Count Direction 9"			1				scalerD1
+DESC			GUI_COMMON	"Descriptor"					41		
+DISA				"Disable"							
+DISP				"Disable putField"							
+DISS			GUI_SCAN	"Disable Alarm Sevrty"			1				menuAlarmSevr
+DISV		"1"	GUI_SCAN	"Disable Value"							
+DLY			GUI_COMMON	"Delay"							
+DLY1			GUI_COMMON	"Auto-mode Delay"							
+DPVT				"Device Private"	SPC_NOMOD		4			"void             *dpvt"	
+DSET				"DSET address"	SPC_NOMOD		4			"struct dset      *dset"	
+DTYP			GUI_LINKS	"Device Type"			1				
+EGU			GUI_COMMON	"Units Name"			1		16		
+EVNT			GUI_SCAN	"Event Number"	SPC_SCAN		1				
+FLNK			GUI_LINKS	"Forward Process Link"			1				
+FREQ			GUI_COMMON	"Time base freq"			1				
+G1		"1"	GUI_COMMON	"Gate Control 1"	SPC_MOD		1				scalerG1
+G10			GUI_COMMON	"Gate Control 10"	SPC_MOD		1				scalerG1
+G11			GUI_COMMON	"Gate Control 11"	SPC_MOD		1				scalerG1
+G12			GUI_COMMON	"Gate Control 12"	SPC_MOD		1				scalerG1
+G13			GUI_COMMON	"Gate Control 13"	SPC_MOD		1				scalerG1
+G14			GUI_COMMON	"Gate Control 14"	SPC_MOD		1				scalerG1
+G15			GUI_COMMON	"Gate Control 15"	SPC_MOD		1				scalerG1
+G16			GUI_COMMON	"Gate Control 16"	SPC_MOD		1				scalerG1
+G17			GUI_COMMON	"Gate Control 17"	SPC_MOD		1				scalerG1
+G18			GUI_COMMON	"Gate Control 18"	SPC_MOD		1				scalerG1
+G19			GUI_COMMON	"Gate Control 19"	SPC_MOD		1				scalerG1
+G2			GUI_COMMON	"Gate Control 2"	SPC_MOD		1				scalerG1
+G20			GUI_COMMON	"Gate Control 20"	SPC_MOD		1				scalerG1
+G21			GUI_COMMON	"Gate Control 21"	SPC_MOD		1				scalerG1
+G22			GUI_COMMON	"Gate Control 22"	SPC_MOD		1				scalerG1
+G23			GUI_COMMON	"Gate Control 23"	SPC_MOD		1				scalerG1
+G24			GUI_COMMON	"Gate Control 24"	SPC_MOD		1				scalerG1
+G25			GUI_COMMON	"Gate Control 25"	SPC_MOD		1				scalerG1
+G26			GUI_COMMON	"Gate Control 26"	SPC_MOD		1				scalerG1
+G27			GUI_COMMON	"Gate Control 27"	SPC_MOD		1				scalerG1
+G28			GUI_COMMON	"Gate Control 28"	SPC_MOD		1				scalerG1
+G29			GUI_COMMON	"Gate Control 29"	SPC_MOD		1				scalerG1
+G3			GUI_COMMON	"Gate Control 3"	SPC_MOD		1				scalerG1
+G30			GUI_COMMON	"Gate Control 30"	SPC_MOD		1				scalerG1
+G31			GUI_COMMON	"Gate Control 31"	SPC_MOD		1				scalerG1
+G32			GUI_COMMON	"Gate Control 32"	SPC_MOD		1				scalerG1
+G33			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G34			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G35			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G36			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G37			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G38			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G39			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G4			GUI_COMMON	"Gate Control 4"	SPC_MOD		1				scalerG1
+G40			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G41			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G42			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G43			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G44			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G45			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G46			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G47			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G48			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G49			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G5			GUI_COMMON	"Gate Control 5"	SPC_MOD		1				scalerG1
+G50			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G51			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G52			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G53			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G54			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G55			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G56			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G57			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G58			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G59			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G6			GUI_COMMON	"Gate Control 6"	SPC_MOD		1				scalerG1
+G60			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G61			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G62			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G63			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G64			GUI_COMMON	"Gate Control"	SPC_MOD		1				scalerG1
+G7			GUI_COMMON	"Gate Control 7"	SPC_MOD		1				scalerG1
+G8			GUI_COMMON	"Gate Control 8"	SPC_MOD		1				scalerG1
+G9			GUI_COMMON	"Gate Control 9"	SPC_MOD		1				scalerG1
+LCNT				"Lock Count"	SPC_NOMOD		2				
+LSET				"Lock Set"	SPC_NOMOD		4			"struct lockRecord *lset"	
+MLIS				"Monitor List"	SPC_NOMOD		4			"ELLLIST          mlis"	
+MLOK				"Monitor lock"	SPC_NOMOD		4			"epicsMutexId     mlok"	
+NAME				"Record Name"	SPC_NOMOD				61		
+NCH				"Number of Channels"	SPC_NOMOD		1				
+NM1			GUI_COMMON	"Scaler 1 name"			1		16		
+NM10			GUI_COMMON	"Scaler 10 name"			1		16		
+NM11			GUI_COMMON	"Scaler 11 name"			1		16		
+NM12			GUI_COMMON	"Scaler 12 name"			1		16		
+NM13			GUI_COMMON	"Scaler 13 name"			1		16		
+NM14			GUI_COMMON	"Scaler 14 name"			1		16		
+NM15			GUI_COMMON	"Scaler 15 name"			1		16		
+NM16			GUI_COMMON	"Scaler 16 name"			1		16		
+NM17			GUI_COMMON	"Scaler 17 name"			1		16		
+NM18			GUI_COMMON	"Scaler 18 name"			1		16		
+NM19			GUI_COMMON	"Scaler 19 name"			1		16		
+NM2			GUI_COMMON	"Scaler 2 name"			1		16		
+NM20			GUI_COMMON	"Scaler 20 name"			1		16		
+NM21			GUI_COMMON	"Scaler 21 name"			1		16		
+NM22			GUI_COMMON	"Scaler 22 name"			1		16		
+NM23			GUI_COMMON	"Scaler 23 name"			1		16		
+NM24			GUI_COMMON	"Scaler 24 name"			1		16		
+NM25			GUI_COMMON	"Scaler 25 name"			1		16		
+NM26			GUI_COMMON	"Scaler 26 name"			1		16		
+NM27			GUI_COMMON	"Scaler 27 name"			1		16		
+NM28			GUI_COMMON	"Scaler 28 name"			1		16		
+NM29			GUI_COMMON	"Scaler 29 name"			1		16		
+NM3			GUI_COMMON	"Scaler 3 name"			1		16		
+NM30			GUI_COMMON	"Scaler 30 name"			1		16		
+NM31			GUI_COMMON	"Scaler 31 name"			1		16		
+NM32			GUI_COMMON	"Scaler 32 name"			1		16		
+NM33			GUI_COMMON	"Scaler name"			1		16		
+NM34			GUI_COMMON	"Scaler name"			1		16		
+NM35			GUI_COMMON	"Scaler name"			1		16		
+NM36			GUI_COMMON	"Scaler name"			1		16		
+NM37			GUI_COMMON	"Scaler name"			1		16		
+NM38			GUI_COMMON	"Scaler name"			1		16		
+NM39			GUI_COMMON	"Scaler name"			1		16		
+NM4			GUI_COMMON	"Scaler 4 name"			1		16		
+NM40			GUI_COMMON	"Scaler name"			1		16		
+NM41			GUI_COMMON	"Scaler name"			1		16		
+NM42			GUI_COMMON	"Scaler name"			1		16		
+NM43			GUI_COMMON	"Scaler name"			1		16		
+NM44			GUI_COMMON	"Scaler name"			1		16		
+NM45			GUI_COMMON	"Scaler name"			1		16		
+NM46			GUI_COMMON	"Scaler name"			1		16		
+NM47			GUI_COMMON	"Scaler name"			1		16		
+NM48			GUI_COMMON	"Scaler name"			1		16		
+NM49			GUI_COMMON	"Scaler name"			1		16		
+NM5			GUI_COMMON	"Scaler 5 name"			1		16		
+NM50			GUI_COMMON	"Scaler name"			1		16		
+NM51			GUI_COMMON	"Scaler name"			1		16		
+NM52			GUI_COMMON	"Scaler name"			1		16		
+NM53			GUI_COMMON	"Scaler name"			1		16		
+NM54			GUI_COMMON	"Scaler name"			1		16		
+NM55			GUI_COMMON	"Scaler name"			1		16		
+NM56			GUI_COMMON	"Scaler name"			1		16		
+NM57			GUI_COMMON	"Scaler name"			1		16		
+NM58			GUI_COMMON	"Scaler name"			1		16		
+NM59			GUI_COMMON	"Scaler name"			1		16		
+NM6			GUI_COMMON	"Scaler 6 name"			1		16		
+NM60			GUI_COMMON	"Scaler name"			1		16		
+NM61			GUI_COMMON	"Scaler name"			1		16		
+NM62			GUI_COMMON	"Scaler name"			1		16		
+NM63			GUI_COMMON	"Scaler name"			1		16		
+NM64			GUI_COMMON	"Scaler name"			1		16		
+NM7			GUI_COMMON	"Scaler 7 name"			1		16		
+NM8			GUI_COMMON	"Scaler 8 name"			1		16		
+NM9			GUI_COMMON	"Scaler 9 name"			1		16		
+NSEV				"New Alarm Severity"	SPC_NOMOD		2				menuAlarmSevr
+NSTA				"New Alarm Status"	SPC_NOMOD		2				menuAlarmStat
+OUT			GUI_COMMON	"Output Specification"	SPC_NOMOD		1				
+PACT				"Record active"	SPC_NOMOD		1				
+PCNT				"Prev Count"	SPC_NOMOD		1				scalerCNT
+PHAS			GUI_SCAN	"Scan Phase"	SPC_SCAN		1				
+PINI			GUI_SCAN	"Process at iocInit"			1				menuPini
+PPN				"addr of PUTNOTIFY"	SPC_NOMOD		4			"struct putNotify *ppn"	
+PPNR				"pputNotifyRecord"	SPC_NOMOD		4			"struct putNotifyRecord *ppnr"	
+PR1			GUI_COMMON	"Preset 1"	SPC_MOD		1				
+PR10			GUI_COMMON	"Preset 10"	SPC_MOD		1				
+PR11			GUI_COMMON	"Preset 11"	SPC_MOD		1				
+PR12			GUI_COMMON	"Preset 12"	SPC_MOD		1				
+PR13			GUI_COMMON	"Preset 13"	SPC_MOD		1				
+PR14			GUI_COMMON	"Preset 14"	SPC_MOD		1				
+PR15			GUI_COMMON	"Preset 15"	SPC_MOD		1				
+PR16			GUI_COMMON	"Preset 16"	SPC_MOD		1				
+PR17			GUI_COMMON	"Preset 17"	SPC_MOD		1				
+PR18			GUI_COMMON	"Preset 18"	SPC_MOD		1				
+PR19			GUI_COMMON	"Preset 19"	SPC_MOD		1				
+PR2			GUI_COMMON	"Preset 2"	SPC_MOD		1				
+PR20			GUI_COMMON	"Preset 20"	SPC_MOD		1				
+PR21			GUI_COMMON	"Preset 21"	SPC_MOD		1				
+PR22			GUI_COMMON	"Preset 22"	SPC_MOD		1				
+PR23			GUI_COMMON	"Preset 23"	SPC_MOD		1				
+PR24			GUI_COMMON	"Preset 24"	SPC_MOD		1				
+PR25			GUI_COMMON	"Preset 25"	SPC_MOD		1				
+PR26			GUI_COMMON	"Preset 26"	SPC_MOD		1				
+PR27			GUI_COMMON	"Preset 27"	SPC_MOD		1				
+PR28			GUI_COMMON	"Preset 28"	SPC_MOD		1				
+PR29			GUI_COMMON	"Preset 29"	SPC_MOD		1				
+PR3			GUI_COMMON	"Preset 3"	SPC_MOD		1				
+PR30			GUI_COMMON	"Preset 30"	SPC_MOD		1				
+PR31			GUI_COMMON	"Preset 31"	SPC_MOD		1				
+PR32			GUI_COMMON	"Preset 32"	SPC_MOD		1				
+PR33			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR34			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR35			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR36			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR37			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR38			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR39			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR4			GUI_COMMON	"Preset 4"	SPC_MOD		1				
+PR40			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR41			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR42			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR43			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR44			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR45			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR46			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR47			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR48			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR49			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR5			GUI_COMMON	"Preset 5"	SPC_MOD		1				
+PR50			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR51			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR52			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR53			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR54			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR55			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR56			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR57			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR58			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR59			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR6			GUI_COMMON	"Preset 6"	SPC_MOD		1				
+PR60			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR61			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR62			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR63			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR64			GUI_COMMON	"Preset"	SPC_MOD		1				
+PR7			GUI_COMMON	"Preset 7"	SPC_MOD		1				
+PR8			GUI_COMMON	"Preset 8"	SPC_MOD		1				
+PR9			GUI_COMMON	"Preset 9"	SPC_MOD		1				
+PREC			GUI_COMMON	"Display Precision"			1				
+PRIO			GUI_SCAN	"Scheduling Priority"	SPC_SCAN		1				menuPriority
+PROC				"Force Processing"		TRUE	3				
+PUTF				"dbPutField process"	SPC_NOMOD		1				
+RAT1			GUI_COMMON	"Auto Display Rate (Hz.)"	SPC_MOD						
+RATE		"10"	GUI_COMMON	"Display Rate (Hz.)"	SPC_MOD						
+RDES				"Address of dbRecordType"	SPC_NOMOD		4			"struct dbRecordType *rdes"	
+RPRO				"Reprocess "	SPC_NOMOD		1				
+RPVT				"Record Private"	SPC_NOMOD		4		4	"void *rpvt"	
+RSET				"Address of RSET"	SPC_NOMOD		4			"struct rset      *rset"	
+S1				"Count"	SPC_NOMOD		1				
+S10				"Count"	SPC_NOMOD		1				
+S11				"Count"	SPC_NOMOD		1				
+S12				"Count"	SPC_NOMOD		1				
+S13				"Count"	SPC_NOMOD		1				
+S14				"Count"	SPC_NOMOD		1				
+S15				"Count"	SPC_NOMOD		1				
+S16				"Count"	SPC_NOMOD		1				
+S17				"Count"	SPC_NOMOD		1				
+S18				"Count"	SPC_NOMOD		1				
+S19				"Count"	SPC_NOMOD		1				
+S2				"Count"	SPC_NOMOD		1				
+S20				"Count"	SPC_NOMOD		1				
+S21				"Count"	SPC_NOMOD		1				
+S22				"Count"	SPC_NOMOD		1				
+S23				"Count"	SPC_NOMOD		1				
+S24				"Count"	SPC_NOMOD		1				
+S25				"Count"	SPC_NOMOD		1				
+S26				"Count"	SPC_NOMOD		1				
+S27				"Count"	SPC_NOMOD		1				
+S28				"Count"	SPC_NOMOD		1				
+S29				"Count"	SPC_NOMOD		1				
+S3				"Count"	SPC_NOMOD		1				
+S30				"Count"	SPC_NOMOD		1				
+S31				"Count"	SPC_NOMOD		1				
+S32				"Count"	SPC_NOMOD		1				
+S33				"Count"	SPC_NOMOD		1				
+S34				"Count"	SPC_NOMOD		1				
+S35				"Count"	SPC_NOMOD		1				
+S36				"Count"	SPC_NOMOD		1				
+S37				"Count"	SPC_NOMOD		1				
+S38				"Count"	SPC_NOMOD		1				
+S39				"Count"	SPC_NOMOD		1				
+S4				"Count"	SPC_NOMOD		1				
+S40				"Count"	SPC_NOMOD		1				
+S41				"Count"	SPC_NOMOD		1				
+S42				"Count"	SPC_NOMOD		1				
+S43				"Count"	SPC_NOMOD		1				
+S44				"Count"	SPC_NOMOD		1				
+S45				"Count"	SPC_NOMOD		1				
+S46				"Count"	SPC_NOMOD		1				
+S47				"Count"	SPC_NOMOD		1				
+S48				"Count"	SPC_NOMOD		1				
+S49				"Count"	SPC_NOMOD		1				
+S5				"Count"	SPC_NOMOD		1				
+S50				"Count"	SPC_NOMOD		1				
+S51				"Count"	SPC_NOMOD		1				
+S52				"Count"	SPC_NOMOD		1				
+S53				"Count"	SPC_NOMOD		1				
+S54				"Count"	SPC_NOMOD		1				
+S55				"Count"	SPC_NOMOD		1				
+S56				"Count"	SPC_NOMOD		1				
+S57				"Count"	SPC_NOMOD		1				
+S58				"Count"	SPC_NOMOD		1				
+S59				"Count"	SPC_NOMOD		1				
+S6				"Count"	SPC_NOMOD		1				
+S60				"Count"	SPC_NOMOD		1				
+S61				"Count"	SPC_NOMOD		1				
+S62				"Count"	SPC_NOMOD		1				
+S63				"Count"	SPC_NOMOD		1				
+S64				"Count"	SPC_NOMOD		1				
+S7				"Count"	SPC_NOMOD		1				
+S8				"Count"	SPC_NOMOD		1				
+S9				"Count"	SPC_NOMOD		1				
+SCAN			GUI_SCAN	"Scan Mechanism"	SPC_SCAN		1				menuScan
+SDIS			GUI_SCAN	"Scanning Disable"			1				
+SEVR		"INVALID"		"Alarm Severity"	SPC_NOMOD						menuAlarmSevr
+SPVT				"Scan Private"	SPC_NOMOD		4			"struct scan_element *spvt"	
+SS				"Scaler state"	SPC_NOMOD		4				
+STAT		"UDF"		"Alarm Status"	SPC_NOMOD						menuAlarmStat
+T				"Timer"	SPC_NOMOD		1				
+TIME				"Time"	SPC_NOMOD		2			"epicsTimeStamp   time"	
+TP			GUI_COMMON	"Time Preset"	SPC_MOD		1				
+TP1		"1"	GUI_COMMON	"Time Preset"	SPC_MOD		1				
+TPRO				"Trace Processing"							
+TSE			GUI_SCAN	"Time Stamp Event"			1				
+TSEL			GUI_SCAN	"Time Stamp Link"			1				
+UDF		"1"	GUI_COMMON	"Undefined"		TRUE	1				
+US				"User state"	SPC_NOMOD		4				
+VAL				"Result"							
+VERS				"Code Version"	SPC_NOMOD						

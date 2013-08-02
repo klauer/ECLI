@@ -1,0 +1,155 @@
+Field	Summary	Type	DCT	Initial	Access	Modify	Rec Proc Monitor
+P1SM	Positioner 1 Step Mode	RECCHOICE	Yes	0	Yes	Yes	No
+P2SM	Positioner 2 Step Mod	RECCHOICE	Yes	0	Yes	Yes	No
+P3SM	Positioner 3 Step Mode	RECCHOICE	Yes	0	Yes	Yes	No
+P4SM	Positioner 4 Step Mode	RECCHOICE	Yes	0	Yes	Yes	No
+NPTS	Number of Points	SHORT	Yes	100	Yes	Yes	Yes
+MPTS	Maximum Number of Points	SHORT	Yes	100	Yes	No	No
+P1SP	Positioner 1 Starting Point	FLOAT	Yes	0	Yes	Yes	Yes
+P2SP	Positioner 2 Starting Point	FLOAT	Yes	0	Yes	Yes	Yes
+P3SP	Positioner 3 Starting Point	FLOAT	Yes	0	Yes	Yes	Yes
+P4SP	Positioner 4 Starting Point	FLOAT	Yes	0	Yes	Yes	Yes
+P1EP	Positioner 1 Ending Point	FLOAT	Yes	0	Yes	Yes	Yes
+P2EP	Positioner 2 Ending Point	FLOAT	Yes	0	Yes	Yes	Yes
+P3EP	Positioner 3 Ending Point	FLOAT	Yes	0	Yes	Yes	Yes
+P4EP	Positioner 4 Ending Point	FLOAT	Yes	0	Yes	Yes	Yes
+P1CP	Positioner 1 Center Point	FLOAT	Yes	0	Yes	Yes	Yes
+P2CP	Positioner 2 Center Point	FLOAT	Yes	0	Yes	Yes	Yes
+P3CP	Positioner 3 Center Point	FLOAT	Yes	0	Yes	Yes	Yes
+P4CP	Positioner 4 Center Point	FLOAT	Yes	0	Yes	Yes	Yes
+P1WD	Positioner 1 Width	FLOAT	Yes	0	Yes	Yes	Yes
+P2WD	Positioner 2 Width	FLOAT	Yes	0	Yes	Yes	Yes
+P3WD	Positioner 3 Width	FLOAT	Yes	0	Yes	Yes	Yes
+P4WD	Positioner 4 Width	FLOAT	Yes	0	Yes	Yes	Yes
+P1SI	Positioner 1 Step Increment	FLOAT	Yes	0	Yes	Yes	Yes
+P2SI	Positioner 2 Step Increment	FLOAT	Yes	0	Yes	Yes	Yes
+P3SI	Positioner 3 Step Increment	FLOAT	Yes	0	Yes	Yes	Yes
+P4SI	Positioner 4 Step Increment	FLOAT	Yes	0	Yes	Yes	Yes
+FPTS	Freeze Flag for NPTS	RECCHOICE	Yes	1	Yes	Yes	No
+FFO	Freeze Flag Override	RECCHOICE	Yes	Null	Yes	Yes	No
+		RECCHOICE	Yes	1	Yes	Yes	No
+		RECCHOICE	Yes	0	Yes	Yes	No
+		RECCHOICE	Yes	1	Yes	Yes	No
+		RECCHOICE	Yes	0	Yes	Yes	No
+		RECCHOICE	Yes	0	Yes	Yes	No
+P1PA	Positioner 1 Position Array	FLOAT[ ]	No	Null	Yes	Yes	Yes
+P2PA	Positioner 2 Position Array	FLOAT[ ]	No	Null	Yes	Yes	Yes
+P3PA	Positioner 3 Position Array	FLOAT[ ]	No	Null	Yes	Yes	Yes
+P4PA	Positioner 4 Position Array	FLOAT[ ]	No	Null	Yes	Yes	Yes
+R1PV	Readback 1 Process Variable	STRING [40]	Yes	Null	Yes	Yes	No
+R2PV	Readback 2 Process Variable	STRING [40]	Yes	Null	Yes	Yes	No
+R3PV	Readback 3 Process Variable	STRING [40]	Yes	Null	Yes	Yes	No
+R4PV	Readback 4 Process Variable	STRING [40]	Yes	Null	Yes	Yes	No
+R1DL	Readback 1 Delta	FLOAT	Yes	0	Yes	Yes	No
+R2DL	Readback 2 Delta	FLOAT	Yes	0	Yes	Yes	No
+R3DL	Readback 3 Delta	FLOAT	Yes	0	Yes	Yes	No
+R4DL	Readback 4 Delta	FLOAT	Yes	0	Yes	Yes	No
+T1PV	Detector Trigger 1 Process Variable	STRING [40]	Yes	Null	Yes	Yes	No
+T2PV	Detector Trigger 2 Process Variable	STRING [40]	Yes	Null	Yes	Yes	No
+T1CD	Trigger 1 Command	FLOAT	Yes	0	Yes	Yes	No
+T2CD	Trigger 2 Command	FLOAT	Yes	0	Yes	Yes	No
+D1PV	Data 1 Process Variable	STRING [40]	Yes	Null	Yes	Yes	No
+D2PV	Data 2 Process Variable	STRING [40]	Yes	Null	Yes	Yes	No
+D3PV	Data 3 Process Variable	STRING [40]	Yes	Null	Yes	Yes	No
+D4PV	Data 4 Process Variable	STRING [40]	Yes	Null	Yes	Yes	No
+EXSC	Execute Scan Flag	SHORT	No	0	Yes	Yes	Yes
+D1DA	Detector 1 Data Array	FLOAT[ ]	No	Null	Yes	No	Yes
+D2DA	Detector 2 Data Array	FLOAT[ ]	No	Null	Yes	No	Yes
+D3DA	Detector 3 Data Array	FLOAT[ ]	No	Null	Yes	No	Yes
+D4DA	Detector 4 Data Array	FLOAT[ ]	No	Null	Yes	No	Yes
+P1EU	Positioner 1 Eng. Units	STRING [16]	Yes	16	Yes	Yes	No
+P1HR	Pos. 1 High Range	FLOAT	Yes	0	Yes	Yes	No
+P1LR	Pos. 1 Low Range	FLOAT	Yes	0	Yes	Yes	No
+P1PR	Pos. 1 Precision	SHORT	Yes	0	Yes	Yes	No
+P2EU	Pos. 2 Eng Units	STRING [16]	Yes	16	Yes	Yes	No
+P2HR	Pos. 2 High Range	FLOAT	Yes	0	Yes	Yes	No
+P2LR	Pos. 2 Low Range	FLOAT	Yes	0	Yes	Yes	No
+P2PR	Pos. 2 Precision	SHORT	Yes	0	Yes	Yes	No
+P3EU	Pos. 3 Eng Units	STRING [16]	Yes	16	Yes	Yes	No
+P3HR	Pos. 3 High Range	FLOAT	Yes	0	Yes	Yes	No
+P3LR	Pos. 3 Low Range	FLOAT	Yes	0	Yes	Yes	No
+P3PR	Pos. 3 Precision	SHORT	Yes	0	Yes	Yes	No
+P4EU	Pos. 4 Eng Units	STRING [16]	Yes	16	Yes	Yes	No
+P4HR	Pos. 4 High Range	FLOAT	Yes	0	Yes	Yes	No
+P4LR	Pos. 4 Low Range	FLOAT	Yes	0	Yes	Yes	No
+P4PR	Pos. 4 Precision	SHORT	Yes	0	Yes	Yes	No
+D1EU	Detector 1 Eng. Units	STRING [16]	Yes	16	Yes	Yes	No
+D1HR	Det. 1 High Range	FLOAT	Yes	0	Yes	Yes	No
+D1LR	Det. 1 Low Range	FLOAT	Yes	0	Yes	Yes	No
+D1PR	Det. 1 Precision	SHORT	Yes	0	Yes	Yes	No
+D2EU	Det. 2 Eng. Units	STRING [16]	Yes	16	Yes	Yes	No
+D2HR	Det. 2 High Range	FLOAT	Yes	0	Yes	Yes	No
+D2LR	Det. 2 Low Range	FLOAT	Yes	0	Yes	Yes	No
+D2PR	Det. 2 Precision	SHORT	Yes	0	Yes	Yes	No
+D3EU	Det. 3 Eng. Units	STRING [16]	Yes	16	Yes	Yes	No
+D3HR	Det. 3 High Range	FLOAT	Yes	0	Yes	Yes	No
+D3LR	Det. 3 Low Range	FLOAT	Yes	0	Yes	Yes	No
+D3PR	Det. 3 Precision	SHORT	Yes	0	Yes	Yes	No
+D4EU	Det. 4 Eng. Units	STRING [16]	Yes	16	Yes	Yes	No
+D4HR	Det. 4 High Range	FLOAT	Yes	0	Yes	Yes	No
+D4LR	Det. 4 Low Range	FLOAT	Yes	0	Yes	Yes	No
+D4PR	Det. 4 Precision	SHORT	Yes	0	Yes	Yes	No
+NAME	Record Name	STRING [29]	Yes	0	Yes	No	No
+DESC	Description	STRING [29]	Yes	Null	Yes	Yes	No
+VERS	Code Version	FLOAT	No	1.0	Yes	No	No
+VAL	Value Field	DOUBLE	No	0	Yes	Yes	No
+SMSG	State Message	STRING [40]	No	Null	Yes	Yes	Yes
+CMND	Command Field	ENUM	No	0	Yes	Yes	Yes
+ALRT	Alert Field	UCHAR	No	0	Yes	No	Yes
+RPVT	Record Private	NOACCESS	No	Null	No	No	No
+PXSC	Previous Execute Scan	UCHAR	No	0	Yes	No	No
+CPT	Current Point	SHORT	No	0	Yes	No	Yes*
+PCPT	Previous Current Point	SHORT	No	0	Yes	No	No
+TOLP	Time of Last Posting	ULONG	No	0	Yes	No	No
+P1NV	Pos. 1 Name Valid	LONG	No	0	Yes	Yes	Yes
+P2NV	Pos. 2 Name Valid	LONG	No	0	Yes	Yes	Yes
+P3NV	Pos. 3 Name Valid	LONG	No	0	Yes	Yes	Yes
+P4NV	Pos. 4 Name Valid	LONG	No	0	Yes	Yes	Yes
+R1NV	Readback 1 Name Valid	LONG	No	0	Yes	Yes	Yes
+R2NV	Rbk. 2 Name Valid	LONG	No	0	Yes	Yes	Yes
+R3NV	Rbk. 3 Name Valid	LONG	No	0	Yes	Yes	Yes
+R4NV	Rbk. 4 Name Valid	LONG	No	0	Yes	Yes	Yes
+T1NV	Trigger 1 Name Valid	LONG	No	0	Yes	Yes	Yes
+T2NV	Trigger 2 Name Valid	LONG	No	0	Yes	Yes	Yes
+D1NV	Data 1 Name Valid	LONG	No	0	Yes	Yes	Yes
+D2NV	Data 2 Name Valid	LONG	No	0	Yes	Yes	Yes
+D3NV	Data 3 Name Valid	LONG	No	0	Yes	Yes	Yes
+D4NV	Data 4 Name Valid	LONG	No	0	Yes	Yes	Yes
+P1DV	Pos. 1 Desired Value	FLOAT	No	0	Yes	No	Yes*
+P1LV	Pos. 1 Last Value	FLOAT	No	0	Yes	No	No
+R1CV	Readback 1 Current Value	FLOAT	No	0	Yes	No	Yes*
+R1LV	Readback 1 Last Value	FLOAT	No	0	Yes	No	No
+P2DV	Pos. 2 Desired Value	FLOAT	No	0	Yes	No	Yes*
+P2LV	Pos. 2 Last Value	FLOAT	No	0	Yes	No	No
+R2CV	Readback 4 Current Value	FLOAT	No	0	Yes	No	Yes*
+R2LV	Readback 2 Last Value	FLOAT	No	0	Yes	No	No
+P3DV	Pos. 3 Desired Value	FLOAT	No	0	Yes	No	Yes*
+P3LV	Pos. 3 Last Value	FLOAT	No	0	Yes	No	No
+R3CV	Readback 4 Current Value	FLOAT	No	0	Yes	No	Yes*
+R3LV	Readback 3 Last Value	FLOAT	No	0	Yes	No	No
+P4DV	Pos. 4 Desired Value	FLOAT	No	0	Yes	No	Yes*
+P4LV	Pos. 4 Last Value	FLOAT	No	0	Yes	No	No
+R4CV	Readback 4 Current Value	FLOAT	No	0	Yes	No	Yes*
+R4LV	Readback 4 Last Value	FLOAT	No	0	Yes	No	No
+D1CV	Detector 1 Current Value	FLOAT	No	0	Yes	No	Yes*
+D1LV	Detector 1 Last Value	FLOAT	No	0	Yes	No	No
+D2CV	Detector 2 Current Value	FLOAT	No	0	Yes	No	Yes*
+D2LV	Detector 2 Last Value	FLOAT	No	0	Yes	No	No
+D3CV	Detector 3 Current Value	FLOAT	No	0	Yes	No	Yes*
+D3LV	Detector 3 Last Value	FLOAT	No	0	Yes	No	No
+D4CV	Detector 4 Current Value	FLOAT	No	0	Yes	No	Yes*
+D4LV	Detector 4 Last Value	FLOAT	No	0	Yes	No	No
+P1DB	Pos. 1 dbAddr	NOACCESS	No	Null	No	No	No
+P2DB	Pos. 2 dbAddr	NOACCESS	No	Null	No	No	No
+P3DB	Pos. 3 dbAddr	NOACCESS	No	Null	No	No	No
+P4DB	Pos. 4 dbAddr	NOACCESS	No	Null	No	No	No
+R1DB	Readback 1 dbAddr	NOACCESS	No	Null	No	No	No
+R2DB	Readback 2 dbAddr	NOACCESS	No	Null	No	No	No
+R3DB	Readback 3 dbAddr	NOACCESS	No	Null	No	No	No
+R4DB	Readback 4 dbAddr	NOACCESS	No	Null	No	No	No
+T1DB	Trigger 1 dbAddr	NOACCESS	No	Null	No	No	No
+T2DB	Trigger 2 dbAddr	NOACCESS	No	Null	No	No	No
+D1DB	Detector 1 dbAddr	NOACCESS	No	Null	No	No	No
+D2DB	Detector 2 dbAddr	NOACCESS	No	Null	No	No	No
+D3DB	Detector 3 dbAddr	NOACCESS	No	Null	No	No	No
+D4DB	Detector 4 dbAddr	NOACCESS	No	Null	No	No	No

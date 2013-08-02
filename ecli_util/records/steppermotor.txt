@@ -1,0 +1,59 @@
+Field	Summary	Type	DCT	Initial	Access	Modify	Rec Proc Monitor
+ACCL	Seconds to Reach Velocity	FLOAT	Yes	0	Yes	Yes	No
+VELO	Velocity in Pulses per Second	FLOAT	Yes	0	Yes	Yes	No
+DIST	Distance in Engineering Units of 1 Pulse	FLOAT	Yes	0	Yes	Yes	No
+IVAL	Initial Value	FLOAT	Yes	0	Yes	Yes	No
+MODE	Mode--Position/Velocity	RECCHOICE	Yes	0	Yes	Yes	No
+IALG	Initialization Algorithm	RECCHOICE	Yes	0	Yes	Yes	No
+RTRY	Number Of Retries Before Failure	SHORT	Yes	0	Yes	Yes	No
+RDBD	Retry Deadband	FLOAT	Yes	0	Yes	Yes	No
+MRES	Motor Pulses per Revolution	USHORT	Yes	0	Yes	Yes	No
+ERES	Encoder Pulses per Revolution	USHORT	Yes	0	Yes	Yes	No
+VAL	Value	FLOAT	No	0	Yes	Yes	Yes
+DOL	Desired Output Location (Input Link)	INLINK	Yes	0	No	No	N/A
+OMSL	Output Mode Select	GBLCHOICE	Yes	0	Yes	Yes	No
+OUT	Output Link	OUTLINK	Yes	0	No	No	N/A
+DTYP	Device Type	DEVCHOICE	Yes	0	Yes	No	No
+RDBL	Read Back Location (an input link)	INLINK	Yes	0	No	No	N/A
+RBV	Read Back Value	FLOAT	No	0	Yes	Yes	Yes
+EGU	Engineering Units	STRING [16]	Yes	null	Yes	Yes	No
+HOPR	High Operating Range	FLOAT	Yes	0	Yes	Yes	No
+LOPR	Low Operating Range	FLOAT	Yes	0	Yes	Yes	No
+PREC	Display Precision	SHORT	Yes	0	Yes	Yes	No
+NAME	Record Name	STRING [29]	Yes	0	Yes	No	No
+DESC	Description	STRING [29]	Yes	Null	Yes	Yes	No
+HIHI	Hihi Alarm Limit	FLOAT	Yes	0	Yes	Yes	No
+HIGH	High Alarm Limit	FLOAT	Yes	0	Yes	Yes	No
+LOW	Low Alarm Limit	FLOAT	Yes	0	Yes	Yes	No
+LOLO	Lolo Alarm Limit	FLOAT	Yes	0	Yes	Yes	No
+HHSV	Hihi Alarm Severity	GBLCHOICE	Yes	0	Yes	Yes	No
+HSV	High Alarm Severity	GBLCHOICE	Yes	0	Yes	Yes	No
+LSV	Low Alarm Severity	GBLCHOICE	Yes	0	Yes	Yes	No
+LLSV	Lolo Alarm Severity	GBLCHOICE	Yes	0	Yes	Yes	No
+HYST	Alarm Deadband	DOUBLE	Yes	0	Yes	Yes	No
+ADEL	Archive Deadband	DOUBLE	Yes	0	Yes	Yes	No
+MDEL	Monitor, i.e. value change, Deadband	DOUBLE	Yes	0	Yes	Yes	No
+STHM	Set Home	SHORT	No	0	Yes	Yes	No
+STOP	Stop	SHORT	No	0	Yes	Yes	No
+DMOV	Done Moving to Value	SHORT	No	0	Yes	Yes	No
+RVAL	Raw Data Value	LONG	No	0	Yes	Yes	Yes
+RRBV	Raw Read Back Value	LONG	No	0	Yes	Yes	Yes
+INIT	Initialize	SHORT	No	0	Yes	Yes	No
+MOVN	Moving Status	SHORT	No	0	Yes	Yes	No
+DIR	Current Direction	SHORT	No	0	Yes	Yes	No
+MCW	Motor Clockwise Limit Switch Value	SHORT	No	0	Yes	Yes	No
+MCCW	Motor Counter Clockwise Limit Switch Value	SHORT	No	0	Yes	Yes	No
+CW	Clockwise Limit	SHORT	No	0	Yes	Yes	No
+CCW	Counter Clockwise Limit	SHORT	No	0	Yes	Yes	No
+CVEL	Constant Velocity	SHORT	No	0	Yes	Yes	No
+RCNT	Current Retry Count	SHORT	No	0	Yes	Yes	Yes
+POSM	Positive Motion	FLOAT	No	0	Yes	No	Yes
+MISS	First Attempt Error	FLOAT	No	0	Yes	Yes	Yes
+EPOS	Encoder Read Back Position	FLOAT	No	0	Yes	Yes	No
+MPOS	Motor Position	FLOAT	No	0	Yes	Yes	No
+ALST	Archive Last Value	FLOAT	No	0	Yes	No	No
+MLST	Monitor Last Value	FLOAT	No	0	Yes	No	No
+LVEL	Last Velocity Set	FLOAT	No	0	Yes	Yes	No
+LACC	Last Acceleration Set	FLOAT	No	0	Yes	Yes	No
+LVAL	Last Value	SHORT	No	0	Yes	Yes	No
+CMOD	Current Mode	RECCHOICE	Yes	0	Yes	Yes	No

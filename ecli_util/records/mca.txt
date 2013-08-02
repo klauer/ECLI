@@ -1,0 +1,364 @@
+field	asl	initial	promptgroup	prompt	special	pp	interest	base	size	extra	menu
+ACKS				"Alarm Ack Severity"	SPC_NOMOD		2				menuAlarmSevr
+ACKT		"YES"	GUI_ALARMS	"Alarm Ack Transient"	SPC_NOMOD		2				menuYesNo
+ACQG				"Acquiring"	SPC_NOMOD		1				mcaSTRT
+ACT				"Actual counts in pregio"	SPC_NOMOD		1				
+ASG			GUI_COMMON	"Access Security Group"	SPC_AS				29		
+ASP				"Access Security Pvt"	SPC_NOMOD		4			"struct asgMember *asp"	
+BG				"Background"	SPC_DBADDR	TRUE			4	"void *bg"	
+BKPT				"Break Point"	SPC_NOMOD		1			"char bkpt"	
+BPTR				"Buffer Pointer"	SPC_NOMOD		4		4	"void *bptr"	
+CALO			GUI_COMMON	"Calibration offset"			1				
+CALQ			GUI_COMMON	"Calibration quadratic"			1				
+CALS		"1"	GUI_COMMON	"Calibration slope"			1				
+CHAS			GUI_COMMON	"Channel-advance source"	SPC_MOD	TRUE	1				mcaCHAS
+DESC			GUI_COMMON	"Descriptor"					41		
+DISA				"Disable"							
+DISP				"Disable putField"							
+DISS			GUI_SCAN	"Disable Alarm Sevrty"			1				menuAlarmSevr
+DISV		"1"	GUI_SCAN	"Disable Value"							
+DPVT				"Device Private"	SPC_NOMOD		4			"void             *dpvt"	
+DSET				"DSET address"	SPC_NOMOD		4			"struct dset      *dset"	
+DTIM				"Average % dead time"	SPC_NOMOD		1				
+DTYP			GUI_LINKS	"Device Type"			1				
+DWEL		"1.0"	GUI_COMMON	"Dwell time per channel"	SPC_MOD	TRUE	1				
+EGU			GUI_DISPLAY	"Calibration Units Name"			1		16		
+ELTM				"Elapsed live time"			1				
+ERAS			GUI_COMMON	"Erase array"	SPC_MOD	TRUE	1				mcaERAS
+ERST			GUI_COMMON	"Erase & Start Acquire"	SPC_MOD	TRUE	1				mcaSTRT
+ERTM				"Elapsed real time"			1				
+EVNT			GUI_SCAN	"Event Number"	SPC_SCAN		1				
+FLNK			GUI_LINKS	"Forward Process Link"			1				
+FTVL		"5"	GUI_COMMON	"Field Type of Value"	SPC_NOMOD		1				menuFtype
+HHSV			GUI_ALARMS	"Hihi Severity"			1				menuAlarmSevr
+HIGH			GUI_ALARMS	"High Deviation Limit"			1				
+HIHI			GUI_ALARMS	"Hihi Deviation Limit"			1				
+HOPR			GUI_DISPLAY	"High Operating Range"			1				
+HSV			GUI_ALARMS	"High Severity"			1				menuAlarmSevr
+HYST			GUI_ALARMS	"Alarm Deadband"			1				
+IDTIM				"Instantaneous % dead time"	SPC_NOMOD		1				
+INP			GUI_INPUTS	"Input Specification"	SPC_NOMOD		1				
+LALM				"Last Value Alarmed"	SPC_NOMOD		3				
+LCNT				"Lock Count"	SPC_NOMOD		2				
+LLSV			GUI_ALARMS	"Lolo Severity"			1				menuAlarmSevr
+LOLO			GUI_ALARMS	"Lolo Deviation Limit"			1				
+LOPR			GUI_DISPLAY	"Low Operating Range"			1				
+LOW			GUI_ALARMS	"Low Deviation Limit"			1				
+LSET				"Lock Set"	SPC_NOMOD		4			"struct lockRecord *lset"	
+LSV			GUI_ALARMS	"Low Severity"			1				menuAlarmSevr
+MLIS				"Monitor List"	SPC_NOMOD		4			"ELLLIST          mlis"	
+MLOK				"Monitor lock"	SPC_NOMOD		4			"epicsMutexId     mlok"	
+MMAP				"Monitor map"	SPC_NOMOD		4				
+MODE			GUI_COMMON	"Mode PHA/MCS/LIST"	SPC_MOD	TRUE					mcaMODE
+NACK				"Message not acknowledge"	SPC_NOMOD	TRUE	1				
+NAME				"Record Name"	SPC_NOMOD				61		
+NEWR				"New ROI Value map"	SPC_NOMOD		4				
+NEWV				"New Value map"	SPC_NOMOD		4				
+NMAX		"1"	GUI_COMMON	"Max number of channels"	SPC_NOMOD		1				
+NORD				"Number of channels read"	SPC_NOMOD						
+NSEV				"New Alarm Severity"	SPC_NOMOD		2				menuAlarmSevr
+NSTA				"New Alarm Status"	SPC_NOMOD		2				menuAlarmStat
+NUSE			GUI_COMMON	" # of channels to use"	SPC_MOD	TRUE	1				
+PACT				"Record active"	SPC_NOMOD		1				
+PBG				"Background buffer"	SPC_NOMOD		4		4	"void *pbg"	
+PCT			GUI_COMMON	"Preset counts"	SPC_MOD	TRUE	1				
+PCTH			GUI_COMMON	"Preset count high chann"	SPC_MOD	TRUE	1				
+PCTL			GUI_COMMON	"Preset count low channe"	SPC_MOD	TRUE	1				
+PHAS			GUI_SCAN	"Scan Phase"	SPC_SCAN		1				
+PINI			GUI_SCAN	"Process at iocInit"			1				menuPini
+PLTM			GUI_COMMON	"Preset live time"	SPC_MOD	TRUE	1				
+PPN				"addr of PUTNOTIFY"	SPC_NOMOD		4			"struct putNotify *ppn"	
+PPNR				"pputNotifyRecord"	SPC_NOMOD		4			"struct putNotifyRecord *ppnr"	
+PREC			GUI_DISPLAY	"Display Precision"			1				
+PRIO			GUI_SCAN	"Scheduling Priority"	SPC_SCAN		1				menuPriority
+PROC				"Force Processing"		TRUE	3				
+PRTM			GUI_COMMON	"Preset real time"	SPC_MOD	TRUE	1				
+PSCL		"1"	GUI_COMMON	"Channel advance prescale"	SPC_MOD	TRUE	1				
+PSTATUS				"Status buffer"	SPC_NOMOD		4		4	"void *pstatus"	
+PSWP		"1"	GUI_COMMON	"Preset number of sweeps"	SPC_MOD	TRUE	1				
+PUTF				"dbPutField process"	SPC_NOMOD		1				
+R0				"Region 0 counts"	SPC_NOMOD		1				
+R0BG			GUI_COMMON	"Region 0 bkgrnd chans"	SPC_MOD	TRUE	1				
+R0HI		"-1"	GUI_COMMON	"Region 0 high channel"	SPC_MOD	TRUE	1				
+R0IP			GUI_COMMON	"Region 0 is preset"	SPC_MOD	TRUE					mcaR0IP
+R0LO		"-1"	GUI_COMMON	"Region 0 low channel"	SPC_MOD	TRUE	1				
+R0N				"Region 0 net counts"	SPC_NOMOD		1				
+R0NM			GUI_COMMON	"Region 0 name"			1		16		
+R0P				"Region 0 preset count"	SPC_MOD		1				
+R1				"Region 1 counts"	SPC_NOMOD		1				
+R10				"Region 10 counts"	SPC_NOMOD		1				
+R10BG			GUI_COMMON	"Region 10 bkgrnd chans"	SPC_MOD	TRUE	1				
+R10HI		"-1"	GUI_COMMON	"Region 10 high channel"	SPC_MOD	TRUE	1				
+R10IP			GUI_COMMON	"Region 10 is preset"	SPC_MOD	TRUE					mcaR0IP
+R10LO		"-1"	GUI_COMMON	"Region 10 low channel"	SPC_MOD	TRUE	1				
+R10N				"Region 10 net counts"	SPC_NOMOD		1				
+R10NM			GUI_COMMON	"Region 10 name"			1		16		
+R10P				"Region 10 preset"	SPC_MOD		1				
+R11				"Region 11 counts"	SPC_NOMOD		1				
+R11BG			GUI_COMMON	"Region 11 bkgrnd chans"	SPC_MOD	TRUE	1				
+R11HI		"-1"	GUI_COMMON	"Region 11 high channel"	SPC_MOD	TRUE	1				
+R11IP			GUI_COMMON	"Region 11 is preset"	SPC_MOD	TRUE					mcaR0IP
+R11LO		"-1"	GUI_COMMON	"Region 11 low channel"	SPC_MOD	TRUE	1				
+R11N				"Region 11 net counts"	SPC_NOMOD		1				
+R11NM			GUI_COMMON	"Region 11 name"			1		16		
+R11P				"Region 11 preset"	SPC_MOD		1				
+R12				"Region 12 counts"	SPC_NOMOD		1				
+R12BG			GUI_COMMON	"Region 12 bkgrnd chans"	SPC_MOD	TRUE	1				
+R12HI		"-1"	GUI_COMMON	"Region 12 high channel"	SPC_MOD	TRUE	1				
+R12IP			GUI_COMMON	"Region 12 is preset"	SPC_MOD	TRUE					mcaR0IP
+R12LO		"-1"	GUI_COMMON	"Region 12 low channel"	SPC_MOD	TRUE	1				
+R12N				"Region 12 net counts"	SPC_NOMOD		1				
+R12NM			GUI_COMMON	"Region 12 name"			1		16		
+R12P				"Region 12 preset"	SPC_MOD		1				
+R13				"Region 13 counts"	SPC_NOMOD		1				
+R13BG			GUI_COMMON	"Region 13 bkgrnd chans"	SPC_MOD	TRUE	1				
+R13HI		"-1"	GUI_COMMON	"Region 13 high channel"	SPC_MOD	TRUE	1				
+R13IP			GUI_COMMON	"Region 13 is preset"	SPC_MOD	TRUE					mcaR0IP
+R13LO		"-1"	GUI_COMMON	"Region 13 low channel"	SPC_MOD	TRUE	1				
+R13N				"Region 13 net counts"	SPC_NOMOD		1				
+R13NM			GUI_COMMON	"Region 13 name"			1		16		
+R13P				"Region 13 preset"	SPC_MOD		1				
+R14				"Region 14 counts"	SPC_NOMOD		1				
+R14BG			GUI_COMMON	"Region 14 bkgrnd chans"	SPC_MOD	TRUE	1				
+R14HI		"-1"	GUI_COMMON	"Region 14 high channel"	SPC_MOD	TRUE	1				
+R14IP			GUI_COMMON	"Region 14 is preset"	SPC_MOD	TRUE					mcaR0IP
+R14LO		"-1"	GUI_COMMON	"Region 14 low channel"	SPC_MOD	TRUE	1				
+R14N				"Region 14 net counts"	SPC_NOMOD		1				
+R14NM			GUI_COMMON	"Region 14 name"			1		16		
+R14P				"Region 14 preset"	SPC_MOD		1				
+R15				"Region 15 counts"	SPC_NOMOD		1				
+R15BG			GUI_COMMON	"Region 15 bkgrnd chans"	SPC_MOD	TRUE	1				
+R15HI		"-1"	GUI_COMMON	"Region 15 high channel"	SPC_MOD	TRUE	1				
+R15IP			GUI_COMMON	"Region 15 is preset"	SPC_MOD	TRUE					mcaR0IP
+R15LO		"-1"	GUI_COMMON	"Region 15 low channel"	SPC_MOD	TRUE	1				
+R15N				"Region 15 net counts"	SPC_NOMOD		1				
+R15NM			GUI_COMMON	"Region 15 name"			1		16		
+R15P				"Region 15 preset"	SPC_MOD		1				
+R16				"Region 16 counts"	SPC_NOMOD		1				
+R16BG			GUI_COMMON	"Region 16 bkgrnd chans"	SPC_MOD	TRUE	1				
+R16HI		"-1"	GUI_COMMON	"Region 16 high channel"	SPC_MOD	TRUE	1				
+R16IP			GUI_COMMON	"Region 16 is preset"	SPC_MOD	TRUE					mcaR0IP
+R16LO		"-1"	GUI_COMMON	"Region 16 low channel"	SPC_MOD	TRUE	1				
+R16N				"Region 16 net counts"	SPC_NOMOD		1				
+R16NM			GUI_COMMON	"Region 16 name"			1		16		
+R16P				"Region 16 preset"	SPC_MOD		1				
+R17				"Region 17 counts"	SPC_NOMOD		1				
+R17BG			GUI_COMMON	"Region 17 bkgrnd chans"	SPC_MOD	TRUE	1				
+R17HI		"-1"	GUI_COMMON	"Region 17 high channel"	SPC_MOD	TRUE	1				
+R17IP			GUI_COMMON	"Region 17 is preset"	SPC_MOD	TRUE					mcaR0IP
+R17LO		"-1"	GUI_COMMON	"Region 17 low channel"	SPC_MOD	TRUE	1				
+R17N				"Region 17 net counts"	SPC_NOMOD		1				
+R17NM			GUI_COMMON	"Region 17 name"			1		16		
+R17P				"Region 17 preset"	SPC_MOD		1				
+R18				"Region 18 counts"	SPC_NOMOD		1				
+R18BG			GUI_COMMON	"Region 18 bkgrnd chans"	SPC_MOD	TRUE	1				
+R18HI		"-1"	GUI_COMMON	"Region 18 high channel"	SPC_MOD	TRUE	1				
+R18IP			GUI_COMMON	"Region 18 is preset"	SPC_MOD	TRUE					mcaR0IP
+R18LO		"-1"	GUI_COMMON	"Region 18 low channel"	SPC_MOD	TRUE	1				
+R18N				"Region 18 net counts"	SPC_NOMOD		1				
+R18NM			GUI_COMMON	"Region 18 name"			1		16		
+R18P				"Region 18 preset"	SPC_MOD		1				
+R19				"Region 19 counts"	SPC_NOMOD		1				
+R19BG			GUI_COMMON	"Region 19 bkgrnd chans"	SPC_MOD	TRUE	1				
+R19HI		"-1"	GUI_COMMON	"Region 19 high channel"	SPC_MOD	TRUE	1				
+R19IP			GUI_COMMON	"Region 19 is preset"	SPC_MOD	TRUE					mcaR0IP
+R19LO		"-1"	GUI_COMMON	"Region 19 low channel"	SPC_MOD	TRUE	1				
+R19N				"Region 19 net counts"	SPC_NOMOD		1				
+R19NM			GUI_COMMON	"Region 19 name"			1		16		
+R19P				"Region 19 preset"	SPC_MOD		1				
+R1BG			GUI_COMMON	"Region 1 bkgrnd chans"	SPC_MOD	TRUE	1				
+R1HI		"-1"	GUI_COMMON	"Region 1 high channel"	SPC_MOD	TRUE	1				
+R1IP			GUI_COMMON	"Region 1 is preset"	SPC_MOD	TRUE					mcaR0IP
+R1LO		"-1"	GUI_COMMON	"Region 1 low channel"	SPC_MOD	TRUE	1				
+R1N				"Region 1 net counts"	SPC_NOMOD		1				
+R1NM			GUI_COMMON	"Region 1 name"			1		16		
+R1P				"Region 1 preset count"	SPC_MOD		1				
+R2				"Region 2 counts"	SPC_NOMOD		1				
+R20				"Region 20 counts"	SPC_NOMOD		1				
+R20BG			GUI_COMMON	"Region 20 bkgrnd chans"	SPC_MOD	TRUE	1				
+R20HI		"-1"	GUI_COMMON	"Region 20 high channel"	SPC_MOD	TRUE	1				
+R20IP			GUI_COMMON	"Region 20 is preset"	SPC_MOD	TRUE					mcaR0IP
+R20LO		"-1"	GUI_COMMON	"Region 20 low channel"	SPC_MOD	TRUE	1				
+R20N				"Region 20 net counts"	SPC_NOMOD		1				
+R20NM			GUI_COMMON	"Region 20 name"			1		16		
+R20P				"Region 20 preset"	SPC_MOD		1				
+R21				"Region 21 counts"	SPC_NOMOD		1				
+R21BG			GUI_COMMON	"Region 21 bkgrnd chans"	SPC_MOD	TRUE	1				
+R21HI		"-1"	GUI_COMMON	"Region 21 high channel"	SPC_MOD	TRUE	1				
+R21IP			GUI_COMMON	"Region 21 is preset"	SPC_MOD	TRUE					mcaR0IP
+R21LO		"-1"	GUI_COMMON	"Region 21 low channel"	SPC_MOD	TRUE	1				
+R21N				"Region 21 net counts"	SPC_NOMOD		1				
+R21NM			GUI_COMMON	"Region 21 name"			1		16		
+R21P				"Region 21 preset"	SPC_MOD		1				
+R22				"Region 22 counts"	SPC_NOMOD		1				
+R22BG			GUI_COMMON	"Region 22 bkgrnd chans"	SPC_MOD	TRUE	1				
+R22HI		"-1"	GUI_COMMON	"Region 22 high channel"	SPC_MOD	TRUE	1				
+R22IP			GUI_COMMON	"Region 22 is preset"	SPC_MOD	TRUE					mcaR0IP
+R22LO		"-1"	GUI_COMMON	"Region 22 low channel"	SPC_MOD	TRUE	1				
+R22N				"Region 22 net counts"	SPC_NOMOD		1				
+R22NM			GUI_COMMON	"Region 22 name"			1		16		
+R22P				"Region 22 preset"	SPC_MOD		1				
+R23				"Region 23 counts"	SPC_NOMOD		1				
+R23BG			GUI_COMMON	"Region 23 bkgrnd chans"	SPC_MOD	TRUE	1				
+R23HI		"-1"	GUI_COMMON	"Region 23 high channel"	SPC_MOD	TRUE	1				
+R23IP			GUI_COMMON	"Region 23 is preset"	SPC_MOD	TRUE					mcaR0IP
+R23LO		"-1"	GUI_COMMON	"Region 23 low channel"	SPC_MOD	TRUE	1				
+R23N				"Region 23 net counts"	SPC_NOMOD		1				
+R23NM			GUI_COMMON	"Region 23 name"			1		16		
+R23P				"Region 23 preset"	SPC_MOD		1				
+R24				"Region 24 counts"	SPC_NOMOD		1				
+R24BG			GUI_COMMON	"Region 24 bkgrnd chans"	SPC_MOD	TRUE	1				
+R24HI		"-1"	GUI_COMMON	"Region 24 high channel"	SPC_MOD	TRUE	1				
+R24IP			GUI_COMMON	"Region 24 is preset"	SPC_MOD	TRUE					mcaR0IP
+R24LO		"-1"	GUI_COMMON	"Region 24 low channel"	SPC_MOD	TRUE	1				
+R24N				"Region 24 net counts"	SPC_NOMOD		1				
+R24NM			GUI_COMMON	"Region 24 name"			1		16		
+R24P				"Region 24 preset"	SPC_MOD		1				
+R25				"Region 25 counts"	SPC_NOMOD		1				
+R25BG			GUI_COMMON	"Region 25 bkgrnd chans"	SPC_MOD	TRUE	1				
+R25HI		"-1"	GUI_COMMON	"Region 25 high channel"	SPC_MOD	TRUE	1				
+R25IP			GUI_COMMON	"Region 25 is preset"	SPC_MOD	TRUE					mcaR0IP
+R25LO		"-1"	GUI_COMMON	"Region 25 low channel"	SPC_MOD	TRUE	1				
+R25N				"Region 25 net counts"	SPC_NOMOD		1				
+R25NM			GUI_COMMON	"Region 25 name"			1		16		
+R25P				"Region 25 preset"	SPC_MOD		1				
+R26				"Region 26 counts"	SPC_NOMOD		1				
+R26BG			GUI_COMMON	"Region 26 bkgrnd chans"	SPC_MOD	TRUE	1				
+R26HI		"-1"	GUI_COMMON	"Region 26 high channel"	SPC_MOD	TRUE	1				
+R26IP			GUI_COMMON	"Region 26 is preset"	SPC_MOD	TRUE					mcaR0IP
+R26LO		"-1"	GUI_COMMON	"Region 26 low channel"	SPC_MOD	TRUE	1				
+R26N				"Region 26 net counts"	SPC_NOMOD		1				
+R26NM			GUI_COMMON	"Region 26 name"			1		16		
+R26P				"Region 26 preset"	SPC_MOD		1				
+R27				"Region 27 counts"	SPC_NOMOD		1				
+R27BG			GUI_COMMON	"Region 27 bkgrnd chans"	SPC_MOD	TRUE	1				
+R27HI		"-1"	GUI_COMMON	"Region 27 high channel"	SPC_MOD	TRUE	1				
+R27IP			GUI_COMMON	"Region 27 is preset"	SPC_MOD	TRUE					mcaR0IP
+R27LO		"-1"	GUI_COMMON	"Region 27 low channel"	SPC_MOD	TRUE	1				
+R27N				"Region 27 net counts"	SPC_NOMOD		1				
+R27NM			GUI_COMMON	"Region 27 name"			1		16		
+R27P				"Region 27 preset"	SPC_MOD		1				
+R28				"Region 28 counts"	SPC_NOMOD		1				
+R28BG			GUI_COMMON	"Region 28 bkgrnd chans"	SPC_MOD	TRUE	1				
+R28HI		"-1"	GUI_COMMON	"Region 28 high channel"	SPC_MOD	TRUE	1				
+R28IP			GUI_COMMON	"Region 28 is preset"	SPC_MOD	TRUE					mcaR0IP
+R28LO		"-1"	GUI_COMMON	"Region 28 low channel"	SPC_MOD	TRUE	1				
+R28N				"Region 28 net counts"	SPC_NOMOD		1				
+R28NM			GUI_COMMON	"Region 28 name"			1		16		
+R28P				"Region 28 preset"	SPC_MOD		1				
+R29				"Region 29 counts"	SPC_NOMOD		1				
+R29BG			GUI_COMMON	"Region 29 bkgrnd chans"	SPC_MOD	TRUE	1				
+R29HI		"-1"	GUI_COMMON	"Region 29 high channel"	SPC_MOD	TRUE	1				
+R29IP			GUI_COMMON	"Region 29 is preset"	SPC_MOD	TRUE					mcaR0IP
+R29LO		"-1"	GUI_COMMON	"Region 29 low channel"	SPC_MOD	TRUE	1				
+R29N				"Region 29 net counts"	SPC_NOMOD		1				
+R29NM			GUI_COMMON	"Region 29 name"			1		16		
+R29P				"Region 29 preset"	SPC_MOD		1				
+R2BG			GUI_COMMON	"Region 2 bkgrnd chans"	SPC_MOD	TRUE	1				
+R2HI		"-1"	GUI_COMMON	"Region 2 high channel"	SPC_MOD	TRUE	1				
+R2IP			GUI_COMMON	"Region 2 is preset"	SPC_MOD	TRUE					mcaR0IP
+R2LO		"-1"	GUI_COMMON	"Region 2 low channel"	SPC_MOD	TRUE	1				
+R2N				"Region 2 net counts"	SPC_NOMOD		1				
+R2NM			GUI_COMMON	"Region 2 name"			1		16		
+R2P				"Region 2 preset count"	SPC_MOD		1				
+R3				"Region 3 counts"	SPC_NOMOD		1				
+R30				"Region 30 counts"	SPC_NOMOD		1				
+R30BG			GUI_COMMON	"Region 30 bkgrnd chans"	SPC_MOD	TRUE	1				
+R30HI		"-1"	GUI_COMMON	"Region 30 high channel"	SPC_MOD	TRUE	1				
+R30IP			GUI_COMMON	"Region 30 is preset"	SPC_MOD	TRUE					mcaR0IP
+R30LO		"-1"	GUI_COMMON	"Region 30 low channel"	SPC_MOD	TRUE	1				
+R30N				"Region 30 net counts"	SPC_NOMOD		1				
+R30NM			GUI_COMMON	"Region 30 name"			1		16		
+R30P				"Region 30 preset"	SPC_MOD		1				
+R31				"Region 31 counts"	SPC_NOMOD		1				
+R31BG			GUI_COMMON	"Region 31 bkgrnd chans"	SPC_MOD	TRUE	1				
+R31HI		"-1"	GUI_COMMON	"Region 31 high channel"	SPC_MOD	TRUE	1				
+R31IP			GUI_COMMON	"Region 31 is preset"	SPC_MOD	TRUE					mcaR0IP
+R31LO		"-1"	GUI_COMMON	"Region 31 low channel"	SPC_MOD	TRUE	1				
+R31N				"Region 31 net counts"	SPC_NOMOD		1				
+R31NM			GUI_COMMON	"Region 31 name"			1		16		
+R31P				"Region 31 preset"	SPC_MOD		1				
+R3BG			GUI_COMMON	"Region 3 bkgrnd chans"	SPC_MOD	TRUE	1				
+R3HI		"-1"	GUI_COMMON	"Region 3 high channel"	SPC_MOD	TRUE	1				
+R3IP			GUI_COMMON	"Region 3 is preset"	SPC_MOD	TRUE					mcaR0IP
+R3LO		"-1"	GUI_COMMON	"Region 3 low channel"	SPC_MOD	TRUE	1				
+R3N				"Region 3 net counts"	SPC_NOMOD		1				
+R3NM			GUI_COMMON	"Region 3 name"			1		16		
+R3P				"Region 3 preset count"	SPC_MOD		1				
+R4				"Region 4 counts"	SPC_NOMOD		1				
+R4BG			GUI_COMMON	"Region 4 bkgrnd chans"	SPC_MOD	TRUE	1				
+R4HI		"-1"	GUI_COMMON	"Region 4 high channel"	SPC_MOD	TRUE	1				
+R4IP			GUI_COMMON	"Region 4 is preset"	SPC_MOD	TRUE					mcaR0IP
+R4LO		"-1"	GUI_COMMON	"Region 4 low channel"	SPC_MOD	TRUE	1				
+R4N				"Region 4 net counts"	SPC_NOMOD		1				
+R4NM			GUI_COMMON	"Region 4 name"			1		16		
+R4P				"Region 4 preset count"	SPC_MOD		1				
+R5				"Region 5 counts"	SPC_NOMOD		1				
+R5BG			GUI_COMMON	"Region 5 bkgrnd chans"	SPC_MOD	TRUE	1				
+R5HI		"-1"	GUI_COMMON	"Region 5 high channel"	SPC_MOD	TRUE	1				
+R5IP			GUI_COMMON	"Region 5 is preset"	SPC_MOD	TRUE					mcaR0IP
+R5LO		"-1"	GUI_COMMON	"Region 5 low channel"	SPC_MOD	TRUE	1				
+R5N				"Region 5 net counts"	SPC_NOMOD		1				
+R5NM			GUI_COMMON	"Region 5 name"			1		16		
+R5P				"Region 5 preset count"	SPC_MOD		1				
+R6				"Region 6 counts"	SPC_NOMOD		1				
+R6BG			GUI_COMMON	"Region 6 bkgrnd chans"	SPC_MOD	TRUE	1				
+R6HI		"-1"	GUI_COMMON	"Region 6 high channel"	SPC_MOD	TRUE	1				
+R6IP			GUI_COMMON	"Region 6 is preset"	SPC_MOD	TRUE					mcaR0IP
+R6LO		"-1"	GUI_COMMON	"Region 6 low channel"	SPC_MOD	TRUE	1				
+R6N				"Region 6 net counts"	SPC_NOMOD		1				
+R6NM			GUI_COMMON	"Region 6 name"			1		16		
+R6P				"Region 6 preset"	SPC_MOD		1				
+R7				"Region 7 counts"	SPC_NOMOD		1				
+R7BG			GUI_COMMON	"Region 7 bkgrnd chans"	SPC_MOD	TRUE	1				
+R7HI		"-1"	GUI_COMMON	"Region 7 high channel"	SPC_MOD	TRUE	1				
+R7IP			GUI_COMMON	"Region 7 is preset"	SPC_MOD	TRUE					mcaR0IP
+R7LO		"-1"	GUI_COMMON	"Region 7 low channel"	SPC_MOD	TRUE	1				
+R7N				"Region 7 net counts"	SPC_NOMOD		1				
+R7NM			GUI_COMMON	"Region 7 name"			1		16		
+R7P				"Region 7 preset"	SPC_MOD		1				
+R8				"Region 8 counts"	SPC_NOMOD		1				
+R8BG			GUI_COMMON	"Region 8 bkgrnd chans"	SPC_MOD	TRUE	1				
+R8HI		"-1"	GUI_COMMON	"Region 8 high channel"	SPC_MOD	TRUE	1				
+R8IP			GUI_COMMON	"Region 8 is preset"	SPC_MOD	TRUE					mcaR0IP
+R8LO		"-1"	GUI_COMMON	"Region 8 low channel"	SPC_MOD	TRUE	1				
+R8N				"Region 8 net counts"	SPC_NOMOD		1				
+R8NM			GUI_COMMON	"Region 8 name"			1		16		
+R8P				"Region 8 preset"	SPC_MOD		1				
+R9				"Region 9 counts"	SPC_NOMOD		1				
+R9BG			GUI_COMMON	"Region 9 bkgrnd chans"	SPC_MOD	TRUE	1				
+R9HI		"-1"	GUI_COMMON	"Region 9 high channel"	SPC_MOD	TRUE	1				
+R9IP			GUI_COMMON	"Region 9 is preset"	SPC_MOD	TRUE					mcaR0IP
+R9LO		"-1"	GUI_COMMON	"Region 9 low channel"	SPC_MOD	TRUE	1				
+R9N				"Region 9 net counts"	SPC_NOMOD		1				
+R9NM			GUI_COMMON	"Region 9 name"			1		16		
+R9P				"Region 9 preset"	SPC_MOD		1				
+RDES				"Address of dbRecordType"	SPC_NOMOD		4			"struct dbRecordType *rdes"	
+RDNG				"Reading array"	SPC_NOMOD		1				mcaREAD
+RDNS				"Reading status"	SPC_NOMOD		1				mcaREAD
+READ			GUI_COMMON	"Read array"		TRUE	1				mcaREAD
+RMAP				"ROI monitor map"	SPC_NOMOD		4				
+RPRO				"Reprocess "	SPC_NOMOD		1				
+RSET				"Address of RSET"	SPC_NOMOD		4			"struct rset      *rset"	
+RTIM				"Last read time"	SPC_NOMOD		1				
+SCAN			GUI_SCAN	"Scan Mechanism"	SPC_SCAN		1				menuScan
+SDIS			GUI_SCAN	"Scanning Disable"			1				
+SEQ			GUI_COMMON	"Time sequence #"	SPC_MOD	TRUE	1				
+SEVR		"INVALID"		"Alarm Severity"	SPC_NOMOD						menuAlarmSevr
+SIML			GUI_INPUTS	"Sim Mode Location"	SPC_NOMOD		1				
+SIMM				"Simulation Mode"			1				menuYesNo
+SIMS			GUI_INPUTS	"Sim mode Alarm Svrty"			2				menuAlarmSevr
+SIOL			GUI_INPUTS	"Sim Input Specifctn"	SPC_NOMOD		1				
+SPVT				"Scan Private"	SPC_NOMOD		4			"struct scan_element *spvt"	
+STAT		"UDF"		"Alarm Status"	SPC_NOMOD						menuAlarmStat
+STIM			GUI_DISPLAY	"Acquisition start time"	SPC_NOMOD		1		40		
+STOP			GUI_COMMON	"Stop Acquire"		TRUE	1				mcaSTRT
+STRT			GUI_COMMON	"Start Acquire"		TRUE	1				mcaSTRT
+TIME				"Time"	SPC_NOMOD		2			"epicsTimeStamp   time"	
+TPRO				"Trace Processing"							
+TSE			GUI_SCAN	"Time Stamp Event"			1				
+TSEL			GUI_SCAN	"Time Stamp Link"			1				
+TTH		"10"	GUI_COMMON	"Two-theta"			1				
+UDF		"1"	GUI_COMMON	"Undefined"		TRUE	1				
+VAL				"Value"	SPC_DBADDR	TRUE			4	"void *val"	
+VERS		"1"		"Code Version"	SPC_NOMOD						

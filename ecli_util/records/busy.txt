@@ -1,0 +1,69 @@
+field	asl	initial	promptgroup	prompt	special	pp	interest	base	size	extra	menu
+ACKS				"Alarm Ack Severity"	SPC_NOMOD		2				menuAlarmSevr
+ACKT		"YES"	GUI_ALARMS	"Alarm Ack Transient"	SPC_NOMOD		2				menuYesNo
+ASG			GUI_COMMON	"Access Security Group"	SPC_AS				29		
+ASP				"Access Security Pvt"	SPC_NOMOD		4			"struct asgMember *asp"	
+BKPT				"Break Point"	SPC_NOMOD		1			"char bkpt"	
+COSV			GUI_ALARMS	"Change of State Sevr"		TRUE	1				menuAlarmSevr
+DESC			GUI_COMMON	"Descriptor"					41		
+DISA				"Disable"							
+DISP				"Disable putField"							
+DISS			GUI_SCAN	"Disable Alarm Sevrty"			1				menuAlarmSevr
+DISV		"1"	GUI_SCAN	"Disable Value"							
+DOL			GUI_OUTPUT	"Desired Output Loc"			1				
+DPVT				"Device Private"	SPC_NOMOD		4			"void             *dpvt"	
+DSET				"DSET address"	SPC_NOMOD		4			"struct dset      *dset"	
+DTYP			GUI_LINKS	"Device Type"			1				
+EVNT			GUI_SCAN	"Event Number"	SPC_SCAN		1				
+FLNK			GUI_LINKS	"Forward Process Link"			1				
+HIGH			GUI_OUTPUT	"Seconds to Hold High"			1				
+IVOA			GUI_OUTPUT	"INVALID outpt action"			2				menuIvoa
+IVOV			GUI_OUTPUT	"INVALID output value"			2				
+LALM				"Last Value Alarmed"	SPC_NOMOD		3				
+LCNT				"Lock Count"	SPC_NOMOD		2				
+LSET				"Lock Set"	SPC_NOMOD		4			"struct lockRecord *lset"	
+MASK			"	"Hardware Mask"	SPC_NOMOD		1				
+MLIS				"Monitor List"	SPC_NOMOD		4			"ELLLIST          mlis"	
+MLOK				"Monitor lock"	SPC_NOMOD		4			"epicsMutexId     mlok"	
+MLST				"Last Value Monitored"	SPC_NOMOD		3				
+NAME				"Record Name"	SPC_NOMOD				61		
+NSEV				"New Alarm Severity"	SPC_NOMOD		2				menuAlarmSevr
+NSTA				"New Alarm Status"	SPC_NOMOD		2				menuAlarmStat
+OMSL			GUI_OUTPUT	"Output Mode Select"			1				menuOmsl
+ONAM		"Busy"	GUI_DISPLAY	"One Name"		TRUE	1		26		
+ORAW				"prev Raw Value"	SPC_NOMOD		3				
+ORBV				"Prev Readback Value"	SPC_NOMOD		3				
+OSV			GUI_ALARMS	"One Error Severity"		TRUE	1				menuAlarmSevr
+OUT			GUI_OUTPUT	"Output Specification"			1				
+PACT				"Record active"	SPC_NOMOD		1				
+PHAS			GUI_SCAN	"Scan Phase"	SPC_SCAN		1				
+PINI			GUI_SCAN	"Process at iocInit"			1				menuPini
+PPN				"addr of PUTNOTIFY"	SPC_NOMOD		4			"struct putNotify *ppn"	
+PPNR				"pputNotifyRecord"	SPC_NOMOD		4			"struct putNotifyRecord *ppnr"	
+PRIO			GUI_SCAN	"Scheduling Priority"	SPC_SCAN		1				menuPriority
+PROC				"Force Processing"		TRUE	3				
+PUTF				"dbPutField process"	SPC_NOMOD		1				
+RBV				"Readback Value"	SPC_NOMOD						
+RDES				"Address of dbRecordType"	SPC_NOMOD		4			"struct dbRecordType *rdes"	
+RPRO				"Reprocess "	SPC_NOMOD		1				
+RPVT				"Record Private"	SPC_NOMOD		4			"void *  rpvt"	
+RSET				"Address of RSET"	SPC_NOMOD		4			"struct rset      *rset"	
+RVAL				"Raw Value"		TRUE					
+SCAN			GUI_SCAN	"Scan Mechanism"	SPC_SCAN		1				menuScan
+SDIS			GUI_SCAN	"Scanning Disable"			1				
+SEVR		"INVALID"		"Alarm Severity"	SPC_NOMOD						menuAlarmSevr
+SIML			GUI_INPUTS	"Sim Mode Location"			1				
+SIMM				"Simulation Mode"			1				menuYesNo
+SIMS			GUI_INPUTS	"Sim mode Alarm Svrty"			2				menuAlarmSevr
+SIOL			GUI_INPUTS	"Sim Output Specifctn"			1				
+SPVT				"Scan Private"	SPC_NOMOD		4			"struct scan_element *spvt"	
+STAT		"UDF"		"Alarm Status"	SPC_NOMOD						menuAlarmStat
+TIME				"Time"	SPC_NOMOD		2			"epicsTimeStamp   time"	
+TPRO				"Trace Processing"							
+TSE			GUI_SCAN	"Time Stamp Event"			1				
+TSEL			GUI_SCAN	"Time Stamp Link"			1				
+UDF		"1"	GUI_COMMON	"Undefined"		TRUE	1				
+VAL	ASL0		GUI_OUTPUT	"Current Value"		TRUE					
+WDPT				"Watch Dog Timer ID"	SPC_NOMOD		4			"void *   wdpt"	
+ZNAM		"Done"	GUI_DISPLAY	"Zero Name"		TRUE	1		26		
+ZSV			GUI_ALARMS	"Zero Error Severity"		TRUE	1				menuAlarmSevr

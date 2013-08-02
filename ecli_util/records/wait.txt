@@ -1,0 +1,35 @@
+Field	Summary	Type	DCT	Initial	Access	Modify	Rec Proc Monitor
+CALC	Calculation	DBF_STRING	Yes	0	Yes	Yes	Yes
+RPCL	Reverse Polish	DBF_NOACCESS	No	0	No	No	N/A
+DOLN	Desired Output Location	STRING [40]	Yes	Null	Yes	Yes	No
+DOLD	Desired Output Location Data	DOUBLE	Yes	0	Yes	Yes	Yes
+OOPT	Output Option	RECCHOICE	Yes	0	Yes	Yes	No
+OUTN	Output Link Name	STRING [40]	Yes	Null	Yes	Yes	No
+DOPT	Data Option	RECCHOICE	Yes	0	Yes	Yes	No
+OEVT	Output Event	USHORT	Yes	0	Yes	Yes	No
+HOPR	High Operating Range	FLOAT	Yes	0	Yes	Yes	No
+LOPR	Low Operating Range	FLOAT	Yes	0	Yes	Yes	No
+PREC	Display Precision	SHORT	Yes	0	Yes	Yes	No
+NAME	Record Name	STRING [29]	Yes	0	Yes	No	No
+DESC	Description	STRING [29]	Yes	Null	Yes	Yes	No
+ADEL	Archive Deadband	DOUBLE	Yes	0	Yes	Yes	No
+MDEL	Monitor, i.e. value change, Deadband	DOUBLE	Yes	0	Yes	Yes	No
+CBST	Callback Structure	NOACCESS	No	Null	No	No	No
+OVAL	Old Value	DOUBLE	No	0	Yes	Yes	No
+DOLA	Desired Output Location Address	NOACCESS	No	Null	No	No	No
+DOLV	Desired Output Location Valid	LONG	No	0	Yes	Yes	Yes
+ALST	Archive Last Value	DOUBLE	No	0	Yes	No	No
+MLST	Monitor Last Value	DOUBLE	No	0	Yes	No	No
+CLCV	Calculation String Valid	LONG	No	0	Yes	Yes	Yes
+LA	Previous Input	DOUBLE	No	0	Yes	Yes	No
+LB	Previous Input	DOUBLE	No	0	Yes	Yes	No
+LC	Previous Input	DOUBLE	No	0	Yes	Yes	No
+LD	Previous Input	DOUBLE	No	0	Yes	Yes	No
+LE	Previous Input	DOUBLE	No	0	Yes	Yes	No
+LF	Previous Input	DOUBLE	No	0	Yes	Yes	No
+LG	Previous Input	DOUBLE	No	0	Yes	Yes	No
+LH	Previous Input	DOUBLE	No	0	Yes	Yes	No
+LI	Previous Input	DOUBLE	No	0	Yes	Yes	No
+LJ	Previous Input	DOUBLE	No	0	Yes	Yes	No
+LK	Previous Input	DOUBLE	No	0	Yes	Yes	No
+LL	Previous Input	DOUBLE	No	0	Yes	Yes	No

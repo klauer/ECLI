@@ -1,0 +1,19 @@
+Field	Summary	Type	DCT	Initial	Access	Modify	Rec Proc Monitor
+GTYP	Gate Type	RECCHOICE	Yes	0	Yes	Yes	No
+SGL	Soft Gate Location (Input Link)	INLINK	Yes	0	No	No	N/A
+SGV	Soft Gate Value	RECCHOICE	Yes	0	Yes	Yes	No
+HGV	Hardware Gate Value	SHORT	Yes	0	Yes	Yes	No
+CSIZ	Counter Size		Yes	1	Yes	Yes	No
+CNTE	Count Edge	RECCHOICE	Yes	0	Yes	Yes	No
+CNTS	Count Source	SHORT	Yes	0	Yes	Yes	No
+OUT	Output Link	OUTLINK	Yes	0	No	No	N/A
+DTYP	Device Type	DEVCHOICE	Yes	0	Yes	No	No
+HOPR	High Operating Range	FLOAT	Yes	4.3e+9	Yes	Yes	No
+LOPR	Low Operating Range	FLOAT	Yes	0	Yes	Yes	No
+NAME	Record Name	STRING [29]	Yes	0	Yes	No	No
+DESC	Description	STRING [29]	Yes	Null	Yes	Yes	No
+CMD	Command	RECCHOICE	No	0	Yes	Yes	Yes
+SCMD	Save Command	USHORT	No	0	Yes	No	No
+CPTR	Callback	ULONG	No	0	Yes	No	No
+VAL	Counter Value	ULONG	No	0	Yes	Yes	Yes
+OSGV	Old Soft Gate Value	SHORT	No	0	Yes	No	No

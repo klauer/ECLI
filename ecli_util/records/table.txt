@@ -1,0 +1,208 @@
+field	asl	initial	promptgroup	prompt	special	pp	interest	base	size	extra	menu
+A				"x to m matrix"	SPC_DBADDR		1		4	"double **        a"	
+ACKS				"Alarm Ack Severity"	SPC_NOMOD		2				menuAlarmSevr
+ACKT		"YES"	GUI_ALARMS	"Alarm Ack Transient"	SPC_NOMOD		2				menuYesNo
+AEGU			GUI_COMMON	"Angular Units Name"			1		16		
+ASG			GUI_COMMON	"Access Security Group"	SPC_AS				29		
+ASP				"Access Security Pvt"	SPC_NOMOD		4			"struct asgMember *asp"	
+AX				"x angle"	SPC_MOD	TRUE					
+AX0				"x-angle offset"							
+AXL				"x angle true value"	SPC_NOMOD						
+AXRB				"x angle readback"	SPC_NOMOD						
+AY				"y angle"	SPC_MOD	TRUE					
+AY0				"y-angle offset"							
+AYL				"y angle true value"	SPC_NOMOD						
+AYRB				"y angle readback"	SPC_NOMOD						
+AZ				"z angle"	SPC_MOD	TRUE					
+AZ0				"z-angle offset"							
+AZL				"z angle true value"	SPC_NOMOD						
+AZRB				"z angle readback"	SPC_NOMOD						
+B				"m to x matrix"	SPC_DBADDR		1		4	"double **        b"	
+BKPT				"Break Point"	SPC_NOMOD		1			"char bkpt"	
+DESC			GUI_COMMON	"Descriptor"					41		
+DISA				"Disable"							
+DISP				"Disable putField"							
+DISS			GUI_SCAN	"Disable Alarm Sevrty"			1				menuAlarmSevr
+DISV		"1"	GUI_SCAN	"Disable Value"							
+DPVT				"Device Private"	SPC_NOMOD		4			"void             *dpvt"	
+DSET				"DSET address"	SPC_NOMOD		4			"struct dset      *dset"	
+DTYP			GUI_LINKS	"Device Type"			1				
+E0X				"encoder 0X val"	SPC_NOMOD						
+E0XI			GUI_COMMON	"encoder 0X inlink"	SPC_NOMOD		1				
+E0Y				"encoder 0Y val"	SPC_NOMOD						
+E0YI			GUI_COMMON	"encoder 0Y inlink"	SPC_NOMOD		1				
+E1Y				"encoder 1Y val"	SPC_NOMOD						
+E1YI			GUI_COMMON	"encoder 1Y inlink"	SPC_NOMOD		1				
+E2X				"encoder 2X val"	SPC_NOMOD						
+E2XI			GUI_COMMON	"encoder 2X inlink"	SPC_NOMOD		1				
+E2Y				"encoder 2Y val"	SPC_NOMOD						
+E2YI			GUI_COMMON	"encoder 2Y inlink"	SPC_NOMOD		1				
+E2Z				"encoder 2Z val"	SPC_NOMOD						
+E2ZI			GUI_COMMON	"encoder 2Z inlink"	SPC_NOMOD		1				
+EAX				"encoder x angle"	SPC_NOMOD						
+EAY				"encoder y angle"	SPC_NOMOD						
+EAZ				"encoder z angle"	SPC_NOMOD						
+EVNT			GUI_SCAN	"Event Number"	SPC_SCAN		1				
+EX				"encoder x"	SPC_NOMOD						
+EY				"encoder y"	SPC_NOMOD						
+EZ				"encoder z"	SPC_NOMOD						
+FLNK			GUI_LINKS	"Forward Process Link"			1				
+GEOM			GUI_COMMON	"Geometry"	SPC_MOD	TRUE					tableGEOM
+H0X				"motor 0X hi limit"	SPC_NOMOD						
+H0XL			GUI_COMMON	"motor 0X HLM link"	SPC_NOMOD		1				
+H0Y				"motor 0Y hi limit"	SPC_NOMOD						
+H0YL			GUI_COMMON	"motor 0Y HLM link"	SPC_NOMOD		1				
+H1Y				"motor 1Y hi limit"	SPC_NOMOD						
+H1YL			GUI_COMMON	"motor 1Y HLM link"	SPC_NOMOD		1				
+H2X				"motor 2X hi limit"	SPC_NOMOD						
+H2XL			GUI_COMMON	"motor 2X HLM link"	SPC_NOMOD		1				
+H2Y				"motor 2Y hi limit"	SPC_NOMOD						
+H2YL			GUI_COMMON	"motor 2Y HLM link"	SPC_NOMOD		1				
+H2Z				"motor 2Z hi limit"	SPC_NOMOD						
+H2ZL			GUI_COMMON	"motor 2Z HLM link"	SPC_NOMOD		1				
+HLAX				"x angle hi limit"	SPC_NOMOD						
+HLAY				"y angle hi limit"	SPC_NOMOD						
+HLAZ				"z angle hi limit"	SPC_NOMOD						
+HLX				"x hi limit"	SPC_NOMOD						
+HLY				"y hi limit"	SPC_NOMOD						
+HLZ				"z hi limit"	SPC_NOMOD						
+INIT				"init table"	SPC_MOD	TRUE					
+L0X				"motor 0X lo limit"	SPC_NOMOD						
+L0XL			GUI_COMMON	"motor 0X LLM link"	SPC_NOMOD		1				
+L0Y				"motor 0Y lo limit"	SPC_NOMOD						
+L0YL			GUI_COMMON	"motor 0Y LLM link"	SPC_NOMOD		1				
+L1Y				"motor 1Y lo limit"	SPC_NOMOD						
+L1YL			GUI_COMMON	"motor 1Y LLM link"	SPC_NOMOD		1				
+L2X				"motor 2X lo limit"	SPC_NOMOD						
+L2XL			GUI_COMMON	"motor 2X LLM link"	SPC_NOMOD		1				
+L2Y				"motor 2Y lo limit"	SPC_NOMOD						
+L2YL			GUI_COMMON	"motor 2Y LLM link"	SPC_NOMOD		1				
+L2Z				"motor 2Z lo limit"	SPC_NOMOD						
+L2ZL			GUI_COMMON	"motor 2Z LLM link"	SPC_NOMOD		1				
+LCNT				"Lock Count"	SPC_NOMOD		2				
+LEGU			GUI_COMMON	"Linear Units Name"			1		16		
+LLAX				"x angle lo limit"	SPC_NOMOD						
+LLAY				"y angle lo limit"	SPC_NOMOD						
+LLAZ				"z angle lo limit"	SPC_NOMOD						
+LLX				"x lo limit"	SPC_NOMOD						
+LLY				"y lo limit"	SPC_NOMOD						
+LLZ				"z lo limit"	SPC_NOMOD						
+LSET				"Lock Set"	SPC_NOMOD		4			"struct lockRecord *lset"	
+LVIO				"limit violation"	SPC_NOMOD						
+LX			GUI_COMMON	"wheelbase x"	SPC_MOD	TRUE					
+LZ			GUI_COMMON	"wheelbase z"	SPC_MOD	TRUE					
+M0X				"motor 0X val"	SPC_NOMOD						
+M0XL			GUI_COMMON	"motor 0X outlink"	SPC_NOMOD		1				
+M0Y				"motor 0Y val"	SPC_NOMOD						
+M0YL			GUI_COMMON	"motor 0Y outlink"	SPC_NOMOD		1				
+M1Y				"motor 1Y val"	SPC_NOMOD						
+M1YL			GUI_COMMON	"motor 1Y outlink"	SPC_NOMOD		1				
+M2X				"motor 2X val"	SPC_NOMOD						
+M2XL			GUI_COMMON	"motor 2X outlink"	SPC_NOMOD		1				
+M2Y				"motor 2Y val"	SPC_NOMOD						
+M2YL			GUI_COMMON	"motor 2Y outlink"	SPC_NOMOD		1				
+M2Z				"motor 2Z val"	SPC_NOMOD						
+M2ZL			GUI_COMMON	"motor 2Z outlink"	SPC_NOMOD		1				
+MLIS				"Monitor List"	SPC_NOMOD		4			"ELLLIST          mlis"	
+MLOK				"Monitor lock"	SPC_NOMOD		4			"epicsMutexId     mlok"	
+MMAP				"Monitor Mask"	SPC_NOMOD		3				
+NAME				"Record Name"	SPC_NOMOD				61		
+NSEV				"New Alarm Severity"	SPC_NOMOD		2				menuAlarmSevr
+NSTA				"New Alarm Status"	SPC_NOMOD		2				menuAlarmStat
+PACT				"Record active"	SPC_NOMOD		1				
+PHAS			GUI_SCAN	"Scan Phase"	SPC_SCAN		1				
+PINI			GUI_SCAN	"Process at iocInit"			1				menuPini
+PP0				"pivot pt 0"	SPC_DBADDR		1		4	"double * pp0"	
+PP1				"pivot pt 1"	SPC_DBADDR		1		4	"double * pp1"	
+PP2				"pivot pt 2"	SPC_DBADDR		1		4	"double * pp2"	
+PPN				"addr of PUTNOTIFY"	SPC_NOMOD		4			"struct putNotify *ppn"	
+PPNR				"pputNotifyRecord"	SPC_NOMOD		4			"struct putNotifyRecord *ppnr"	
+PPO0				"pivot pt 0 orig"	SPC_DBADDR		1		4	"double * ppo0"	
+PPO1				"pivot pt 1 orig"	SPC_DBADDR		1		4	"double * ppo1"	
+PPO2				"pivot pt 2 orig"	SPC_DBADDR		1		4	"double * ppo2"	
+PREC			GUI_COMMON	"Display Precision"			1				
+PRIO			GUI_SCAN	"Scheduling Priority"	SPC_SCAN		1				menuPriority
+PROC				"Force Processing"		TRUE	3				
+PUTF				"dbPutField process"	SPC_NOMOD		1				
+R0X				"motor 0X readback"	SPC_NOMOD						
+R0XI			GUI_COMMON	"motor 0X RBV link"	SPC_NOMOD		1				
+R0Y				"motor 0Y readback"	SPC_NOMOD						
+R0YI			GUI_COMMON	"motor 0Y RBV link"	SPC_NOMOD		1				
+R1Y				"motor 1Y readback"	SPC_NOMOD						
+R1YI			GUI_COMMON	"motor 1Y RBV link"	SPC_NOMOD		1				
+R2X				"motor 2X readback"	SPC_NOMOD						
+R2XI			GUI_COMMON	"motor 2X RBV link"	SPC_NOMOD		1				
+R2Y				"motor 2Y readback"	SPC_NOMOD						
+R2YI			GUI_COMMON	"motor 2Y RBV link"	SPC_NOMOD		1				
+R2Z				"motor 2Z readback"	SPC_NOMOD						
+R2ZI			GUI_COMMON	"motor 2Z RBV link"	SPC_NOMOD		1				
+RDES				"Address of dbRecordType"	SPC_NOMOD		4			"struct dbRecordType *rdes"	
+READ				"readback motors"	SPC_MOD	TRUE					
+RPRO				"Reprocess "	SPC_NOMOD		1				
+RSET				"Address of RSET"	SPC_NOMOD		4			"struct rset      *rset"	
+RX			GUI_COMMON	"x of ref point"	SPC_MOD	TRUE					
+RY			GUI_COMMON	"y of ref point"	SPC_MOD	TRUE					
+RZ			GUI_COMMON	"z of ref point"	SPC_MOD	TRUE					
+SCAN			GUI_SCAN	"Scan Mechanism"	SPC_SCAN		1				menuScan
+SDIS			GUI_SCAN	"Scanning Disable"			1				
+SET				"set table"			1				tableSET
+SEVR		"INVALID"		"Alarm Severity"	SPC_NOMOD						menuAlarmSevr
+SPVT				"Scan Private"	SPC_NOMOD		4			"struct scan_element *spvt"	
+SSET	ASL0			"Set SET Mode"	SPC_MOD		1				
+STAT		"UDF"		"Alarm Status"	SPC_NOMOD						menuAlarmStat
+SUSE	ASL0			"Set USE Mode"	SPC_MOD		1				
+SX			GUI_COMMON	"x of fixed point"	SPC_MOD	TRUE					
+SY			GUI_COMMON	"y of fixed point"	SPC_MOD	TRUE					
+SYNC				"sync with motors"	SPC_MOD	TRUE					
+SZ			GUI_COMMON	"z of fixed point"	SPC_MOD	TRUE					
+TIME				"Time"	SPC_NOMOD		2			"epicsTimeStamp   time"	
+TPRO				"Trace Processing"							
+TSE			GUI_SCAN	"Time Stamp Event"			1				
+TSEL			GUI_SCAN	"Time Stamp Link"			1				
+UDF		"1"	GUI_COMMON	"Undefined"		TRUE	1				
+UHAX			GUI_COMMON	"x angle user hi limit"		TRUE					
+UHAY			GUI_COMMON	"y angle user hi limit"		TRUE					
+UHAZ			GUI_COMMON	"z angle user hi limit"		TRUE					
+UHX			GUI_COMMON	"x user hi limit"		TRUE					
+UHY			GUI_COMMON	"y user hi limit"		TRUE					
+UHZ			GUI_COMMON	"z user hi limit"		TRUE					
+ULAX			GUI_COMMON	"x angle user lo limit"		TRUE					
+ULAY			GUI_COMMON	"y angle user lo limit"		TRUE					
+ULAZ			GUI_COMMON	"z angle user lo limit"		TRUE					
+ULX			GUI_COMMON	"x user lo limit"		TRUE					
+ULY			GUI_COMMON	"y user lo limit"		TRUE					
+ULZ			GUI_COMMON	"z user lo limit"		TRUE					
+V0X				"speed 0X val"	SPC_NOMOD						
+V0XI			GUI_COMMON	"speed 0X inlink"	SPC_NOMOD		1				
+V0XL			GUI_COMMON	"speed 0X outlink"	SPC_NOMOD		1				
+V0Y				"speed 0Y val"	SPC_NOMOD						
+V0YI			GUI_COMMON	"speed 0Y inlink"	SPC_NOMOD		1				
+V0YL			GUI_COMMON	"speed 0Y outlink"	SPC_NOMOD		1				
+V1Y				"speed 1Y val"	SPC_NOMOD						
+V1YI			GUI_COMMON	"speed 1Y inlink"	SPC_NOMOD		1				
+V1YL			GUI_COMMON	"speed 1Y outlink"	SPC_NOMOD		1				
+V2X				"speed 2X val"	SPC_NOMOD						
+V2XI			GUI_COMMON	"speed 2X inlink"	SPC_NOMOD		1				
+V2XL			GUI_COMMON	"speed 2X outlink"	SPC_NOMOD		1				
+V2Y				"speed 2Y val"	SPC_NOMOD						
+V2YI			GUI_COMMON	"speed 2Y inlink"	SPC_NOMOD		1				
+V2YL			GUI_COMMON	"speed 2Y outlink"	SPC_NOMOD		1				
+V2Z				"speed 2Z val"	SPC_NOMOD						
+V2ZI			GUI_COMMON	"speed 2Z inlink"	SPC_NOMOD		1				
+V2ZL			GUI_COMMON	"speed 2Z outlink"	SPC_NOMOD		1				
+VAL				"Result"							
+VERS		"1"		"Code Version"	SPC_NOMOD						
+X				"x translation"	SPC_MOD	TRUE					
+X0				"x offset"							
+XL				"x true value"	SPC_NOMOD						
+XRB				"x readback value"	SPC_NOMOD						
+Y				"y translation"	SPC_MOD	TRUE					
+Y0				"y offset"							
+YANG			GUI_COMMON	"Orientation angle"	SPC_MOD	TRUE					
+YL				"y true value"	SPC_NOMOD						
+YRB				"y readback value"	SPC_NOMOD						
+Z				"z translation"	SPC_MOD	TRUE					
+Z0				"z offset"							
+ZERO				"zero table"	SPC_MOD	TRUE					
+ZL				"z true value"	SPC_NOMOD						
+ZRB				"z readback value"	SPC_NOMOD						

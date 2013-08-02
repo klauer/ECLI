@@ -1,0 +1,298 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ecli_xmlrpc – ECLI XML RPC (remote procedure call) server &mdash; ECLI 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ECLI 0.1 documentation" href="index.html" />
+    <link rel="next" title="ecli_scaler – scaler record interface" href="ecli_scaler.html" />
+    <link rel="prev" title="ecli_opi – OPI tools" href="ecli_opi.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ecli_scaler.html" title="ecli_scaler – scaler record interface"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="ecli_opi.html" title="ecli_opi – OPI tools"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">ECLI 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <span class="target" id="module-ecli_xmlrpc"></span><div class="section" id="module-ecli_xmlrpc">
+<span id="ecli-xmlrpc-ecli-xml-rpc-remote-procedure-call-server"></span><h1><a class="reference internal" href="#module-ecli_xmlrpc" title="ecli_xmlrpc: Provides a simple interface to other programs via XML RPC, allowing sharing of data, a way to execute commands, and so on. Although there are plans to change it (TODO), it currently allows for scan visualization in PyMca"><tt class="xref py py-mod docutils literal"><span class="pre">ecli_xmlrpc</span></tt></a> &#8211; ECLI XML RPC (remote procedure call) server<a class="headerlink" href="#module-ecli_xmlrpc" title="Permalink to this headline">¶</a></h1>
+<dl class="class">
+<dt id="ecli_xmlrpc.ECLIxmlrpc">
+<em class="property">class </em><tt class="descclassname">ecli_xmlrpc.</tt><tt class="descname">ECLIxmlrpc</tt><big>(</big><em>shell</em>, <em>config</em><big>)</big><a class="headerlink" href="#ecli_xmlrpc.ECLIxmlrpc" title="Permalink to this definition">¶</a></dt>
+<dd><p>ECLI xmlrpc server</p>
+<p>Functions prefixed with <cite>server_</cite> are automatically added to the
+list of remote procedure calls.</p>
+<dl class="method">
+<dt id="ecli_xmlrpc.ECLIxmlrpc.post_scan">
+<tt class="descname">post_scan</tt><big>(</big><em>scan=None</em>, <em>abort=False</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#ecli_xmlrpc.ECLIxmlrpc.post_scan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scan callback &#8211; scan finished</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_xmlrpc.ECLIxmlrpc.pre_scan">
+<tt class="descname">pre_scan</tt><big>(</big><em>scan=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#ecli_xmlrpc.ECLIxmlrpc.pre_scan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scan callback &#8211; new scan started</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_xmlrpc.ECLIxmlrpc.server_get_detector_list">
+<tt class="descname">server_get_detector_list</tt><big>(</big><big>)</big><a class="headerlink" href="#ecli_xmlrpc.ECLIxmlrpc.server_get_detector_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>XMLRPC server function: get detector list
+:return: a list of tuples in the format (detector, pv_info),</p>
+<blockquote>
+<div>where pv_info is a dictionary like {&#8216;spectrum&#8217;: &#8216;spectrum_pv.VAL&#8217;}</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_xmlrpc.ECLIxmlrpc.server_get_scan_data">
+<tt class="descname">server_get_scan_data</tt><big>(</big><big>)</big><a class="headerlink" href="#ecli_xmlrpc.ECLIxmlrpc.server_get_scan_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>XMLRPC server function: get scan data
+:return: the scan data, in list format</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_xmlrpc.ECLIxmlrpc.server_get_scan_info">
+<tt class="descname">server_get_scan_info</tt><big>(</big><big>)</big><a class="headerlink" href="#ecli_xmlrpc.ECLIxmlrpc.server_get_scan_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>XMLRPC server function: get scan information
+:return: the scan information in a dictionary</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_xmlrpc.ECLIxmlrpc.server_get_scan_key">
+<tt class="descname">server_get_scan_key</tt><big>(</big><big>)</big><a class="headerlink" href="#ecli_xmlrpc.ECLIxmlrpc.server_get_scan_key" title="Permalink to this definition">¶</a></dt>
+<dd><p>The scan key is an integer tag which allows pymca, as the
+xmlrpc client, to know if the scan has updated.  (this is
+to mimic how pymca&#8217;s SPS works)
+:return: the current scan key</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_xmlrpc.ECLIxmlrpc.server_get_user_variable">
+<tt class="descname">server_get_user_variable</tt><big>(</big><em>var</em><big>)</big><a class="headerlink" href="#ecli_xmlrpc.ECLIxmlrpc.server_get_user_variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>XMLRPC server function: get a variable from the user&#8217;s namespace
+:param var: the variable name
+:return: the variable&#8217;s value</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_xmlrpc.ECLIxmlrpc.server_get_variable_list">
+<tt class="descname">server_get_variable_list</tt><big>(</big><big>)</big><a class="headerlink" href="#ecli_xmlrpc.ECLIxmlrpc.server_get_variable_list" title="Permalink to this definition">¶</a></dt>
+<dd><p>XMLRPC server function: list of variables in the user&#8217;s namespace</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_xmlrpc.ECLIxmlrpc.server_set_user_variable">
+<tt class="descname">server_set_user_variable</tt><big>(</big><em>var</em>, <em>value</em><big>)</big><a class="headerlink" href="#ecli_xmlrpc.ECLIxmlrpc.server_set_user_variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>XMLRPC server function: set a variable in the user&#8217;s namespace
+:param var: the variable name
+:param value: the value to set
+:return: the old value (or None)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_xmlrpc.ECLIxmlrpc.single_step">
+<tt class="descname">single_step</tt><big>(</big><em>scan=None</em>, <em>point=0</em>, <em>array_idx=0</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#ecli_xmlrpc.ECLIxmlrpc.single_step" title="Permalink to this definition">¶</a></dt>
+<dd><p>Scan callback per point &#8211; prepares data for pymca</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_xmlrpc.ECLIxmlrpc.start_server">
+<tt class="descname">start_server</tt><big>(</big><big>)</big><a class="headerlink" href="#ecli_xmlrpc.ECLIxmlrpc.start_server" title="Permalink to this definition">¶</a></dt>
+<dd><p>Start the XMLRPC server on the user-configured port</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="ecli_xmlrpc.EpicsMCA">
+<em class="property">class </em><tt class="descclassname">ecli_xmlrpc.</tt><tt class="descname">EpicsMCA</tt><big>(</big><em>name</em>, <em>prefix</em><big>)</big><a class="headerlink" href="#ecli_xmlrpc.EpicsMCA" title="Permalink to this definition">¶</a></dt>
+<dd><p>Epics MCA PV information for PyMca</p>
+</dd></dl>
+
+</div>
+<dl class="class">
+<dt>
+<em class="property">class </em><tt class="descclassname">ecli_xmlrpc.</tt><tt class="descname">ECLIxmlrpc</tt><big>(</big><em>shell</em>, <em>config</em><big>)</big></dt>
+<dd><p>ECLI xmlrpc server</p>
+<p>Functions prefixed with <cite>server_</cite> are automatically added to the
+list of remote procedure calls.</p>
+<dl class="method">
+<dt>
+<tt class="descname">post_scan</tt><big>(</big><em>scan=None</em>, <em>abort=False</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Scan callback &#8211; scan finished</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">pre_scan</tt><big>(</big><em>scan=None</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Scan callback &#8211; new scan started</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">server_get_detector_list</tt><big>(</big><big>)</big></dt>
+<dd><p>XMLRPC server function: get detector list
+:return: a list of tuples in the format (detector, pv_info),</p>
+<blockquote>
+<div>where pv_info is a dictionary like {&#8216;spectrum&#8217;: &#8216;spectrum_pv.VAL&#8217;}</div></blockquote>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">server_get_scan_data</tt><big>(</big><big>)</big></dt>
+<dd><p>XMLRPC server function: get scan data
+:return: the scan data, in list format</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">server_get_scan_info</tt><big>(</big><big>)</big></dt>
+<dd><p>XMLRPC server function: get scan information
+:return: the scan information in a dictionary</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">server_get_scan_key</tt><big>(</big><big>)</big></dt>
+<dd><p>The scan key is an integer tag which allows pymca, as the
+xmlrpc client, to know if the scan has updated.  (this is
+to mimic how pymca&#8217;s SPS works)
+:return: the current scan key</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">server_get_user_variable</tt><big>(</big><em>var</em><big>)</big></dt>
+<dd><p>XMLRPC server function: get a variable from the user&#8217;s namespace
+:param var: the variable name
+:return: the variable&#8217;s value</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">server_get_variable_list</tt><big>(</big><big>)</big></dt>
+<dd><p>XMLRPC server function: list of variables in the user&#8217;s namespace</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">server_set_user_variable</tt><big>(</big><em>var</em>, <em>value</em><big>)</big></dt>
+<dd><p>XMLRPC server function: set a variable in the user&#8217;s namespace
+:param var: the variable name
+:param value: the value to set
+:return: the old value (or None)</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">single_step</tt><big>(</big><em>scan=None</em>, <em>point=0</em>, <em>array_idx=0</em>, <em>**kwargs</em><big>)</big></dt>
+<dd><p>Scan callback per point &#8211; prepares data for pymca</p>
+</dd></dl>
+
+<dl class="method">
+<dt>
+<tt class="descname">start_server</tt><big>(</big><big>)</big></dt>
+<dd><p>Start the XMLRPC server on the user-configured port</p>
+</dd></dl>
+
+</dd></dl>
+
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ecli_opi.html"
+                        title="previous chapter"><tt class="docutils literal docutils literal docutils literal"><span class="pre">ecli_opi</span></tt> &#8211; OPI tools</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ecli_scaler.html"
+                        title="next chapter"><tt class="docutils literal docutils literal docutils literal"><span class="pre">ecli_scaler</span></tt> &#8211; scaler record interface</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/ecli_xmlrpc.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ecli_scaler.html" title="ecli_scaler – scaler record interface"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="ecli_opi.html" title="ecli_opi – OPI tools"
+             >previous</a> |</li>
+        <li><a href="index.html">ECLI 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Ken Lauer.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,17 @@
+Field	Description	Notes
+# Shared by many output records (https://wiki-ext.aps.anl.gov/epics/index.php/RRM_3-14_Common )
+OUT	Output Link	"This field is used by the device support routines to decide where to send output. For soft records, it can be a constant, a database link, or a channel access link. If the link is a constant, the result is no output."
+DTYP	Device Type	"DTYP specifies the name of the device support module that will receive values. Each record type has its own set of device support routines. If a record type does not have any associated device support, DTYP is meaningless."
+VAL	Value	This is the desired value before any conversions to raw output have been performed.
+OVAL	Output Value	"OVAL is used to decide when to invoke monitors. Archive and value change monitors are invoked if OVAL is not equal to VAL. If a record type needs to make adjustments, OVAL is used to enforce the maximum rate of change limit before converting the desired value to a raw value."
+RVAL	Raw Value	Whenever possible this is the actual value sent to the hardware itself or to the associated device driver.
+RBV	Read Back Value	Whenever possible this is the actual read back value obtained from the hardware itself or from the associated device driver.
+DOL	Desired Output Location (an Input Link)	"DOL can be a constant, a database link, or a channel access link. There is no device support associated with DOL. If DOL is a database or channel access link and OMSL is closed_loop, then VAL is obtained from DOL."
+OMSL	Output Mode Select	"This field has either the value ""supervisory"" or ""closed_loop"". DOL is used to determine VAL only if OMSL has the value ""closed_loop"". By setting this field the record can be switched between supervisory and closed loop mode of operation. While in closed loop mode, the VAL field cannot be set via dbPuts."
+OIF	Output Full or Incremental (analog output record only)	"This field, which is only used when input is obtained from DOL, determines if the value obtained from DOL is an increment to add to the current VAL or is the actual VAL desired."
+SIMM	Simulation Mode	"This field has either the value YES or NO. By setting this field to YES, the record can be switched into simulation mode of operation. While in simulation mode, output will be written to SIOL instead of OUT."
+SIML	Simulation Mode Location	"This field can be a constant, a database link, or a channel access link. If SIML is a database or channel access link, then SIMM is read from SIML. If SIML is a constant link then SIMM is initialized with the constant value but can be changed via dbPuts."
+SIOL	Simulation Value Location	"This field can be a constant, a database link, or a channel access link. If SIOL is a database or channel access link, then the output value is written to SIOL. If this link is a constant, the result is no output."
+SIMS	Simulation Mode Alarm Severity	"When this record is in simulation mode, it will be put into alarm with this severity and a status of SIMM_ALARM."
+IVOA	Invalid Alarm Output Action	"Whenever the record is put into INVALID alarm severity IVOA specifies an action. IVOA can be one of the following actions: Continue normally, Don't drive outputs, Set output equal to IVOV"
+IVOV	"Invalid Alarm Output Value, In Engineering Units"	"When new severity has been set to INVALID alarm and IVOA is ""Set output equal to IVOV"", then, VAL is set to IVOV and converted to RVAL before device support is called."
