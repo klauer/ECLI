@@ -1,0 +1,278 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ecli_core – ECLI Core module &mdash; ECLI 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ECLI 0.1 documentation" href="index.html" />
+    <link rel="next" title="ecli_cas – ECLI Channel Access Server" href="ecli_cas.html" />
+    <link rel="prev" title="Installation" href="installation.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ecli_cas.html" title="ecli_cas – ECLI Channel Access Server"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">ECLI 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <span class="target" id="module-ecli_core"></span><div class="section" id="module-ecli_core">
+<span id="ecli-core-ecli-core-module"></span><h1><a class="reference internal" href="#module-ecli_core" title="ecli_core: Core extension for ECLI, the EPICS command-line interface"><tt class="xref py py-mod docutils literal"><span class="pre">ecli_core</span></tt></a> &#8211; ECLI Core module<a class="headerlink" href="#module-ecli_core" title="Permalink to this headline">¶</a></h1>
+<dl class="function">
+<dt id="ecli_core.caget">
+<tt class="descclassname">ecli_core.</tt><tt class="descname">caget</tt><big>(</big><em>self</em>, <em>arg</em><big>)</big><a class="headerlink" href="#ecli_core.caget" title="Permalink to this definition">¶</a></dt>
+<dd><p>%caget pv [pv ...]</p>
+<p>Get one or more PV&#8217;s values over channel access</p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd>pv  PV(s) to get</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_core.camonitor">
+<tt class="descclassname">ecli_core.</tt><tt class="descname">camonitor</tt><big>(</big><em>self</em>, <em>arg</em><big>)</big><a class="headerlink" href="#ecli_core.camonitor" title="Permalink to this definition">¶</a></dt>
+<dd><p>%camonitor pvs [pvs ...]</p>
+<p>$ monitor pv1 [[pv2] [pv3]...]
+Monitor until Ctrl-C is pressed</p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd>pvs  PV(s) to monitor</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_core.caput">
+<tt class="descclassname">ecli_core.</tt><tt class="descname">caput</tt><big>(</big><em>self</em>, <em>arg</em><big>)</big><a class="headerlink" href="#ecli_core.caput" title="Permalink to this definition">¶</a></dt>
+<dd><p>%caput pv value</p>
+<p>Put (set) a process variable&#8217;s (PV) value over channel access</p>
+<dl class="docutils">
+<dt>positional arguments:</dt>
+<dd>pv     PV to set
+value</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_core.find_field">
+<tt class="descclassname">ecli_core.</tt><tt class="descname">find_field</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#ecli_core.find_field" title="Permalink to this definition">¶</a></dt>
+<dd><p>Search the field information database for &#8216;text&#8217;. If the first
+argument is a PV it will detect its record type, otherwise use a
+record type (.RTYP) to start with.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_core.shell_function_wrapper">
+<tt class="descclassname">ecli_core.</tt><tt class="descname">shell_function_wrapper</tt><big>(</big><em>exe_</em><big>)</big><a class="headerlink" href="#ecli_core.shell_function_wrapper" title="Permalink to this definition">¶</a></dt>
+<dd><p>(decorator)
+Allows for shell commands to be directly added to IPython&#8217;s
+user namespace</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_core.showcaerrors">
+<tt class="descclassname">ecli_core.</tt><tt class="descname">showcaerrors</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#ecli_core.showcaerrors" title="Permalink to this definition">¶</a></dt>
+<dd><p>$ showcaerrors
+Toggle display of CA errors / warnings</p>
+</dd></dl>
+
+</div>
+<dl class="class">
+<dt id="ecli_core.ECLICore">
+<em class="property">class </em><tt class="descclassname">ecli_core.</tt><tt class="descname">ECLICore</tt><big>(</big><em>shell</em>, <em>config</em><big>)</big><a class="headerlink" href="#ecli_core.ECLICore" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="method">
+<dt id="ecli_core.ECLICore.add_callback">
+<tt class="descname">add_callback</tt><big>(</big><em>name</em>, <em>fcn</em>, <em>extension='ECLICore'</em><big>)</big><a class="headerlink" href="#ecli_core.ECLICore.add_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls <cite>fcn</cite> when the named callback is triggered</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_core.ECLICore.check_requirements">
+<tt class="descname">check_requirements</tt><big>(</big><em>requirements</em><big>)</big><a class="headerlink" href="#ecli_core.ECLICore.check_requirements" title="Permalink to this definition">¶</a></dt>
+<dd><p>Do a basic check on a list of extension requirements</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>requirements</strong> &#8211; Each requirement should be in the format of a tuple:
+(&#8216;name&#8217;, minimum_version)</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_core.ECLICore.exit">
+<tt class="descname">exit</tt><big>(</big><big>)</big><a class="headerlink" href="#ecli_core.ECLICore.exit" title="Permalink to this definition">¶</a></dt>
+<dd><p>Called before the user exits IPython, notifying each registered
+plugin</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_core.ECLICore.get_aliased_name">
+<tt class="descname">get_aliased_name</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#ecli_core.ECLICore.get_aliased_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns an aliased name if it exists
+(e.g., if PREFIX:PV is aliased to pv, it returns pv)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_core.ECLICore.get_variable">
+<tt class="descname">get_variable</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#ecli_core.ECLICore.get_variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a variable&#8217;s value from the user namespace (visible to user
+on the command line)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_core.ECLICore.register_callback">
+<tt class="descname">register_callback</tt><big>(</big><em>name</em>, <em>extension='ECLICore'</em><big>)</big><a class="headerlink" href="#ecli_core.ECLICore.register_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Define a callback for an extension, allowing other extensions
+to be notified when it is triggered</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_core.ECLICore.register_extension">
+<tt class="descname">register_extension</tt><big>(</big><em>plugin_class</em>, <em>globals_=None</em>, <em>class_magic=True</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#ecli_core.ECLICore.register_extension" title="Permalink to this definition">¶</a></dt>
+<dd><p>Register an extension with ECLI</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>plugin_class</strong> (<em>class</em>) &#8211; The class of the extension/plugin</li>
+<li><strong>globals</strong> (<em>dict</em>) &#8211; if specified, the global namespace will be checked for
+magicargument/ECLIExport decorators, automatically exporting
+those to the user namespace</li>
+<li><strong>class_magic</strong> (<em>bool</em>) &#8211; if enabled, the class will be checked for magic args/
+ECLIExport decorators</li>
+<li><strong>kwargs</strong> (<em>dict</em>) &#8211; passed to the plugin class initializer</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_core.ECLICore.run_callback">
+<tt class="descname">run_callback</tt><big>(</big><em>name</em>, <em>extension</em>, <em>handle_exceptions=True</em>, <em>show_traceback=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#ecli_core.ECLICore.run_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Trigger a previously registered callback</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_core.ECLICore.set_variable">
+<tt class="descname">set_variable</tt><big>(</big><em>name</em>, <em>value</em><big>)</big><a class="headerlink" href="#ecli_core.ECLICore.set_variable" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set a variable in the user namespace (visible to user on the command
+line)</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_core.ECLICore.unregister_callback">
+<tt class="descname">unregister_callback</tt><big>(</big><em>name</em>, <em>extension='ECLICore'</em><big>)</big><a class="headerlink" href="#ecli_core.ECLICore.unregister_callback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unregister a previously defined callback</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_core.ECLICore.unregister_extension">
+<tt class="descname">unregister_extension</tt><big>(</big><em>name</em><big>)</big><a class="headerlink" href="#ecli_core.ECLICore.unregister_extension" title="Permalink to this definition">¶</a></dt>
+<dd><p>Unregister an extension by name (remove its callbacks, etc.)</p>
+</dd></dl>
+
+</dd></dl>
+
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="installation.html"
+                        title="previous chapter">Installation</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="ecli_cas.html"
+                        title="next chapter"><tt class="docutils literal docutils literal"><span class="pre">ecli_cas</span></tt> &#8211; ECLI Channel Access Server</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/ecli_core.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ecli_cas.html" title="ecli_cas – ECLI Channel Access Server"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="installation.html" title="Installation"
+             >previous</a> |</li>
+        <li><a href="index.html">ECLI 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Ken Lauer.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>

@@ -1,0 +1,941 @@
+
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>ECLI utility functions &mdash; ECLI 0.1 documentation</title>
+    
+    <link rel="stylesheet" href="_static/default.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '0.1',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="ECLI 0.1 documentation" href="index.html" />
+    <link rel="prev" title="ecli_scaler – scaler record interface" href="ecli_scaler.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ecli_scaler.html" title="ecli_scaler – scaler record interface"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">ECLI 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-ecli_util">
+<span id="ecli-utility-functions"></span><h1>ECLI utility functions<a class="headerlink" href="#module-ecli_util" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-ecli_util">
+<span id="ecli-util-utility-functions-for-ecli-developers"></span><h2><a class="reference internal" href="#module-ecli_util" title="ecli_util"><tt class="xref py py-mod docutils literal"><span class="pre">ecli_util</span></tt></a> &#8211; Utility functions for ECLI developers<a class="headerlink" href="#module-ecli_util" title="Permalink to this headline">¶</a></h2>
+</div>
+<span class="target" id="module-ecli_util.check"></span><div class="section" id="module-ecli_util.check">
+<span id="ecli-util-check-simple-string-conversion-checks"></span><h2><a class="reference internal" href="#module-ecli_util.check" title="ecli_util.check"><tt class="xref py py-mod docutils literal"><span class="pre">ecli_util.check</span></tt></a> &#8211; Simple string conversion checks<a class="headerlink" href="#module-ecli_util.check" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="ecli_util.check.check_bool">
+<tt class="descclassname">ecli_util.check.</tt><tt class="descname">check_bool</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#ecli_util.check.check_bool" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensures a proper boolean value (even from a string). Raises UsageError on failure</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.check.check_float">
+<tt class="descclassname">ecli_util.check.</tt><tt class="descname">check_float</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#ecli_util.check.check_float" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensures a proper floating-point value. Raises UsageError if not</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.check.check_int">
+<tt class="descclassname">ecli_util.check.</tt><tt class="descname">check_int</tt><big>(</big><em>value</em><big>)</big><a class="headerlink" href="#ecli_util.check.check_int" title="Permalink to this definition">¶</a></dt>
+<dd><p>Ensures a proper integer value (from a string). Raises UsageError if not</p>
+</dd></dl>
+
+</div>
+<span class="target" id="module-ecli_util.conditional_monitor"></span><div class="section" id="module-ecli_util.conditional_monitor">
+<span id="ecli-util-conditional-monitor-pv-monitor-utility"></span><h2><a class="reference internal" href="#module-ecli_util.conditional_monitor" title="ecli_util.conditional_monitor"><tt class="xref py py-mod docutils literal"><span class="pre">ecli_util.conditional_monitor</span></tt></a> &#8211; PV monitor utility<a class="headerlink" href="#module-ecli_util.conditional_monitor" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ecli_util.conditional_monitor.ConditionalMonitor">
+<em class="property">class </em><tt class="descclassname">ecli_util.conditional_monitor.</tt><tt class="descname">ConditionalMonitor</tt><big>(</big><em>pv</em>, <em>desired_value=None</em>, <em>desired_epsilon=1e-05</em>, <em>stop_condition_pv=None</em>, <em>stop_pv_value=None</em>, <em>wait=False</em>, <em>stop_index=0</em>, <em>timeout=None</em>, <em>use_type=None</em>, <em>stop_event=None</em>, <em>connection_timeout=2.0</em>, <em>pv_timeout=1.0</em>, <em>poll_rate=0.01</em>, <em>update_cb=None</em>, <em>print_updates=False</em>, <em>print_file=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x40294078&gt;</em><big>)</big><a class="headerlink" href="#ecli_util.conditional_monitor.ConditionalMonitor" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Monitors a PV until one of several conditions occur:</dt>
+<dd><ol class="first last arabic">
+<li><p class="first">Ctrl-C is hit</p>
+</li>
+<li><p class="first">desired_value is reached (if numeric, within desired_epsilon)</p>
+</li>
+<li><dl class="first docutils">
+<dt>The PV stop_condition_pv changes</dt>
+<dd><ol class="first last loweralpha simple">
+<li>If stop_pv_value is set, then it waits for this condition</li>
+<li>Otherwise, when the pv changes, the monitor will stop</li>
+</ol>
+</dd>
+</dl>
+</li>
+<li><p class="first">The timeout value is reached</p>
+</li>
+<li><p class="first">The timeout event is triggered (a threading.Event instance)</p>
+</li>
+<li><p class="first">The update callback function returns False</p>
+</li>
+</ol>
+</dd>
+</dl>
+<p>Stop condition value can be a tuple/list, such that the full set of
+conditions should be followed in order.</p>
+<dl class="attribute">
+<dt id="ecli_util.conditional_monitor.ConditionalMonitor.aborted">
+<tt class="descname">aborted</tt><a class="headerlink" href="#ecli_util.conditional_monitor.ConditionalMonitor.aborted" title="Permalink to this definition">¶</a></dt>
+<dd><p>Was the monitor cancelled?</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="ecli_util.conditional_monitor.ConditionalMonitor.desired_epsilon">
+<tt class="descname">desired_epsilon</tt><a class="headerlink" href="#ecli_util.conditional_monitor.ConditionalMonitor.desired_epsilon" title="Permalink to this definition">¶</a></dt>
+<dd><p>The factor by which desired_value can differ from the actual value</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="ecli_util.conditional_monitor.ConditionalMonitor.desired_value">
+<tt class="descname">desired_value</tt><a class="headerlink" href="#ecli_util.conditional_monitor.ConditionalMonitor.desired_value" title="Permalink to this definition">¶</a></dt>
+<dd><p>The desired value to reach, after which the monitor can stop</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="ecli_util.conditional_monitor.ConditionalMonitor.pv">
+<tt class="descname">pv</tt><a class="headerlink" href="#ecli_util.conditional_monitor.ConditionalMonitor.pv" title="Permalink to this definition">¶</a></dt>
+<dd><p>The main PV</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_util.conditional_monitor.ConditionalMonitor.stop">
+<tt class="descname">stop</tt><big>(</big><big>)</big><a class="headerlink" href="#ecli_util.conditional_monitor.ConditionalMonitor.stop" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop monitoring and waiting.</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="ecli_util.conditional_monitor.ConditionalMonitor.stop_pv">
+<tt class="descname">stop_pv</tt><a class="headerlink" href="#ecli_util.conditional_monitor.ConditionalMonitor.stop_pv" title="Permalink to this definition">¶</a></dt>
+<dd><p>The PV to monitor for a stop condition</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_util.conditional_monitor.ConditionalMonitor.stop_updated">
+<tt class="descname">stop_updated</tt><big>(</big><em>pvname=None</em>, <em>value=None</em>, <em>char_value=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#ecli_util.conditional_monitor.ConditionalMonitor.stop_updated" title="Permalink to this definition">¶</a></dt>
+<dd><p>Stop PV value updated callback</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_util.conditional_monitor.ConditionalMonitor.value_updated">
+<tt class="descname">value_updated</tt><big>(</big><em>timestamp=None</em>, <em>pvname=None</em>, <em>value=None</em>, <em>char_value=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#ecli_util.conditional_monitor.ConditionalMonitor.value_updated" title="Permalink to this definition">¶</a></dt>
+<dd><p>PV value updated callback</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_util.conditional_monitor.ConditionalMonitor.wait">
+<tt class="descname">wait</tt><big>(</big><big>)</big><a class="headerlink" href="#ecli_util.conditional_monitor.ConditionalMonitor.wait" title="Permalink to this definition">¶</a></dt>
+<dd><p>Waits for the conditions in ConditionalMonitor.__doc__</p>
+<p>Raises TimeoutError</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<span class="target" id="module-ecli_util.decorators"></span><div class="section" id="module-ecli_util.decorators">
+<span id="ecli-util-decorators-ecli-function-decorators"></span><h2><a class="reference internal" href="#module-ecli_util.decorators" title="ecli_util.decorators"><tt class="xref py py-mod docutils literal"><span class="pre">ecli_util.decorators</span></tt></a> &#8211; ECLI function decorators<a class="headerlink" href="#module-ecli_util.decorators" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="ecli_util.decorators.ECLIExport">
+<tt class="descclassname">ecli_util.decorators.</tt><tt class="descname">ECLIExport</tt><big>(</big><em>fcn</em><big>)</big><a class="headerlink" href="#ecli_util.decorators.ECLIExport" title="Permalink to this definition">¶</a></dt>
+<dd><p>Simple decorator to indicate the function should be exported to the user
+namespace</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ecli_util.decorators.ECLIExported">
+<em class="property">class </em><tt class="descclassname">ecli_util.decorators.</tt><tt class="descname">ECLIExported</tt><a class="headerlink" href="#ecli_util.decorators.ECLIExported" title="Permalink to this definition">¶</a></dt>
+<dd><p>ECLI exported function</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="ecli_util.decorators.ShowElapsed">
+<em class="property">class </em><tt class="descclassname">ecli_util.decorators.</tt><tt class="descname">ShowElapsed</tt><big>(</big><em>display_toggle=None</em>, <em>format_='n  Elapsed: %.3g'</em>, <em>file_=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x40294078&gt;</em><big>)</big><a class="headerlink" href="#ecli_util.decorators.ShowElapsed" title="Permalink to this definition">¶</a></dt>
+<dd><p>Decorator for (optionally) showing elapsed times of commands.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.decorators.evaluate_arguments">
+<tt class="descclassname">ecli_util.decorators.</tt><tt class="descname">evaluate_arguments</tt><big>(</big><em>fcn</em><big>)</big><a class="headerlink" href="#ecli_util.decorators.evaluate_arguments" title="Permalink to this definition">¶</a></dt>
+<dd><p>(decorator)
+Use the user namespace in IPython to evaluate each argument</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fcn</strong> &#8211; The function to decorate</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.decorators.expand_aliases">
+<tt class="descclassname">ecli_util.decorators.</tt><tt class="descname">expand_aliases</tt><big>(</big><em>fcn=None</em>, <em>no_expansion=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="headerlink" href="#ecli_util.decorators.expand_aliases" title="Permalink to this definition">¶</a></dt>
+<dd><p>(decorator)
+Expand aliases in a command</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fcn</strong> &#8211; The function to decorate</li>
+<li><strong>no_expansion</strong> &#8211; A list of argument indices to not expand</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.decorators.wrap_command">
+<tt class="descclassname">ecli_util.decorators.</tt><tt class="descname">wrap_command</tt><big>(</big><em>fcn</em><big>)</big><a class="headerlink" href="#ecli_util.decorators.wrap_command" title="Permalink to this definition">¶</a></dt>
+<dd><p>(decorator)
+Allows exported functions to be called in a simple fashion:</p>
+<dl class="docutils">
+<dt>For example,</dt>
+<dd>monitor pv</dd>
+<dt>instead of</dt>
+<dd>monitor(&#8216;pv&#8217;)</dd>
+</dl>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>fcn</strong> &#8211; The function to decorate</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<span class="target" id="module-ecli_util.epics_device"></span><div class="section" id="module-ecli_util.epics_device">
+<span id="ecli-util-epics-device-ecli-pyepics-device-utilities"></span><h2><a class="reference internal" href="#module-ecli_util.epics_device" title="ecli_util.epics_device"><tt class="xref py py-mod docutils literal"><span class="pre">ecli_util.epics_device</span></tt></a> &#8211; ECLI pyEpics device utilities<a class="headerlink" href="#module-ecli_util.epics_device" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="ecli_util.epics_device.get_record_from_device">
+<tt class="descclassname">ecli_util.epics_device.</tt><tt class="descname">get_record_from_device</tt><big>(</big><em>s</em><big>)</big><a class="headerlink" href="#ecli_util.epics_device.get_record_from_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>If the device is an epics.Device instance, return
+just the PV.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">a PV, or raises UsageError if invalid</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.epics_device.get_records_from_devices">
+<tt class="descclassname">ecli_util.epics_device.</tt><tt class="descname">get_records_from_devices</tt><big>(</big><em>device_list</em><big>)</big><a class="headerlink" href="#ecli_util.epics_device.get_records_from_devices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Like <cite>get_record_from_device</cite> but accepts a list of devices/records.</p>
+</dd></dl>
+
+</div>
+<span class="target" id="module-ecli_util.epics_util"></span><div class="section" id="module-ecli_util.epics_util">
+<span id="ecli-util-epics-util-ecli-epics-utilities"></span><h2><a class="reference internal" href="#module-ecli_util.epics_util" title="ecli_util.epics_util"><tt class="xref py py-mod docutils literal"><span class="pre">ecli_util.epics_util</span></tt></a> &#8211; ECLI epics utilities<a class="headerlink" href="#module-ecli_util.epics_util" title="Permalink to this headline">¶</a></h2>
+<dl class="function">
+<dt id="ecli_util.epics_util.get_motor_limits">
+<tt class="descclassname">ecli_util.epics_util.</tt><tt class="descname">get_motor_limits</tt><big>(</big><em>motor_rec</em><big>)</big><a class="headerlink" href="#ecli_util.epics_util.get_motor_limits" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the user limits, given a motor record</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.epics_util.get_motor_rbv_pv">
+<tt class="descclassname">ecli_util.epics_util.</tt><tt class="descname">get_motor_rbv_pv</tt><big>(</big><em>motor</em><big>)</big><a class="headerlink" href="#ecli_util.epics_util.get_motor_rbv_pv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the associated (user) readback-value PV from a given motor record.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.epics_util.get_record_type">
+<tt class="descclassname">ecli_util.epics_util.</tt><tt class="descname">get_record_type</tt><big>(</big><em>pv</em><big>)</big><a class="headerlink" href="#ecli_util.epics_util.get_record_type" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the record type</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.epics_util.is_motor_record">
+<tt class="descclassname">ecli_util.epics_util.</tt><tt class="descname">is_motor_record</tt><big>(</big><em>rec</em><big>)</big><a class="headerlink" href="#ecli_util.epics_util.is_motor_record" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is rec an actual motor record?</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.epics_util.is_scan_record">
+<tt class="descclassname">ecli_util.epics_util.</tt><tt class="descname">is_scan_record</tt><big>(</big><em>rec</em><big>)</big><a class="headerlink" href="#ecli_util.epics_util.is_scan_record" title="Permalink to this definition">¶</a></dt>
+<dd><p>Is rec an actual sscan record?</p>
+</dd></dl>
+
+</div>
+<span class="target" id="module-ecli_util.errors"></span><div class="section" id="module-ecli_util.errors">
+<span id="ecli-util-errors-ecli-errors-and-exceptions"></span><h2><a class="reference internal" href="#module-ecli_util.errors" title="ecli_util.errors"><tt class="xref py py-mod docutils literal"><span class="pre">ecli_util.errors</span></tt></a> &#8211; ECLI errors and exceptions<a class="headerlink" href="#module-ecli_util.errors" title="Permalink to this headline">¶</a></h2>
+</div>
+<span class="target" id="module-ecli_util.magic_args"></span><div class="section" id="module-ecli_util.magic_args">
+<span id="ecli-util-magic-args-ipython-magic-args-helpers"></span><h2><a class="reference internal" href="#module-ecli_util.magic_args" title="ecli_util.magic_args"><tt class="xref py py-mod docutils literal"><span class="pre">ecli_util.magic_args</span></tt></a> &#8211; IPython magic_args helpers<a class="headerlink" href="#module-ecli_util.magic_args" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ecli_util.magic_args.AliasedPV">
+<em class="property">class </em><tt class="descclassname">ecli_util.magic_args.</tt><tt class="descname">AliasedPV</tt><a class="headerlink" href="#ecli_util.magic_args.AliasedPV" title="Permalink to this definition">¶</a></dt>
+<dd><p>Used for magic_arguments (argparse), it allows for automatic
+expansion of PV aliases</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.magic_args.argument_count_range">
+<tt class="descclassname">ecli_util.magic_args.</tt><tt class="descname">argument_count_range</tt><big>(</big><em>nmin=None</em>, <em>nmax=None</em><big>)</big><a class="headerlink" href="#ecli_util.magic_args.argument_count_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>For magic arguments, sets a minimum number/maximum number of arguments.
+Partly from <a class="reference external" href="http://stackoverflow.com/questions/4194948">http://stackoverflow.com/questions/4194948</a></p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="ecli_util.magic_args.argument_or_flag">
+<tt class="descclassname">ecli_util.magic_args.</tt><tt class="descname">argument_or_flag</tt><a class="headerlink" href="#ecli_util.magic_args.argument_or_flag" title="Permalink to this definition">¶</a></dt>
+<dd><p>alias of <tt class="xref py py-class docutils literal"><span class="pre">RequiredLength</span></tt></p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.magic_args.export_class_magic">
+<tt class="descclassname">ecli_util.magic_args.</tt><tt class="descname">export_class_magic</tt><big>(</big><em>ipython</em>, <em>instance</em><big>)</big><a class="headerlink" href="#ecli_util.magic_args.export_class_magic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Functions of a class instance that are decorated with specific
+decorators will be exported to the user in IPython.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ipython</strong> &#8211; the IPython shell instance</li>
+<li><strong>instance</strong> &#8211; the class instance to look check via introspection</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.magic_args.export_magic_by_decorator">
+<tt class="descclassname">ecli_util.magic_args.</tt><tt class="descname">export_magic_by_decorator</tt><big>(</big><em>ipython</em>, <em>obj</em>, <em>magic_arguments=True</em>, <em>modify_name=None</em>, <em>strip_underscores=True</em>, <em>wrap_fcn=None</em><big>)</big><a class="headerlink" href="#ecli_util.magic_args.export_magic_by_decorator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Functions that are decorated with specific decorators will be exported
+to the user in IPython.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ipython</strong> &#8211; the IPython shell instance</li>
+<li><strong>obj</strong> &#8211; the namespace (e.g., globals()) to check for functions,
+or alternatively, an instance of a class</li>
+<li><strong>magic_arguments</strong> (<em>bool</em>) &#8211; export functions decorated with magic_arguments</li>
+<li><strong>strip_underscores</strong> &#8211; remove underscores from beginning of function
+name.  This is useful if exported func() and
+magic %func both exist.</li>
+<li><strong>modify_name</strong> &#8211; callback optionally allowing to change the exported
+name. new_name = modify_name(old_name, obj)
+strip_underscores is ignored if this is used.</li>
+<li><strong>wrap_fcn</strong> &#8211; optionally wrap the function prior to exporting it</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.magic_args.export_magic_by_prefix">
+<tt class="descclassname">ecli_util.magic_args.</tt><tt class="descname">export_magic_by_prefix</tt><big>(</big><em>ipython</em>, <em>ns</em>, <em>prefix='ipy_'</em>, <em>strip_prefix=True</em><big>)</big><a class="headerlink" href="#ecli_util.magic_args.export_magic_by_prefix" title="Permalink to this definition">¶</a></dt>
+<dd><p>Functions/classes/etc that start with <cite>prefix</cite> will be exported (i.e., accessible in ipython)
+to the user namespace</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ipython</strong> &#8211; the IPython shell instance</li>
+<li><strong>ns</strong> &#8211; the namespace (e.g., globals()) to check for functions</li>
+<li><strong>prefix</strong> &#8211; the prefix to check for</li>
+<li><strong>strip_prefix</strong> &#8211; strip off the prefix before exporting</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<span class="target" id="module-ecli_util.misc"></span><div class="section" id="module-ecli_util.misc">
+<span id="ecli-util-misc-miscellaneous-utilities"></span><h2><a class="reference internal" href="#module-ecli_util.misc" title="ecli_util.misc"><tt class="xref py py-mod docutils literal"><span class="pre">ecli_util.misc</span></tt></a> &#8211; miscellaneous utilities<a class="headerlink" href="#module-ecli_util.misc" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ecli_util.misc.OutputStreamHandler">
+<em class="property">class </em><tt class="descclassname">ecli_util.misc.</tt><tt class="descname">OutputStreamHandler</tt><big>(</big><em>write_fcn=None</em>, <em>flush_fcn=None</em><big>)</big><a class="headerlink" href="#ecli_util.misc.OutputStreamHandler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Redirects an output stream to a callback functions</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.misc.clear_line">
+<tt class="descclassname">ecli_util.misc.</tt><tt class="descname">clear_line</tt><big>(</big><big>)</big><a class="headerlink" href="#ecli_util.misc.clear_line" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clear the current line of text on the terminal.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.misc.edit_file">
+<tt class="descclassname">ecli_util.misc.</tt><tt class="descname">edit_file</tt><big>(</big><em>fn</em>, <em>editor=None</em><big>)</big><a class="headerlink" href="#ecli_util.misc.edit_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Edit a file with the system&#8217;s default editor.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>fn</strong> &#8211; the file to edit</li>
+<li><strong>editor</strong> &#8211; optionally specify the editor to use</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.misc.fix_label">
+<tt class="descclassname">ecli_util.misc.</tt><tt class="descname">fix_label</tt><big>(</big><em>label</em><big>)</big><a class="headerlink" href="#ecli_util.misc.fix_label" title="Permalink to this definition">¶</a></dt>
+<dd><p>No spaces for SPS &#8216;axistitles&#8217;
+No commas for SPS &#8216;plotlist&#8217;</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.misc.get_column_formatting_string">
+<tt class="descclassname">ecli_util.misc.</tt><tt class="descname">get_column_formatting_string</tt><big>(</big><em>lines</em>, <em>fixed_width_format='%%-%ds'</em>, <em>full_width_format='%s'</em>, <em>delim='  '</em><big>)</big><a class="headerlink" href="#ecli_util.misc.get_column_formatting_string" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assuming a sequence of string lists: calculate the maximum width of each
+column, and generate a format string so all lines can be printed neatly
+in a tabular format.</p>
+<dl class="docutils">
+<dt>Output example for 3 columns, with maximum widths of 5, 2, and 3:</dt>
+<dd>%-5s %-2s %3s</dd>
+</dl>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.misc.get_column_widths">
+<tt class="descclassname">ecli_util.misc.</tt><tt class="descname">get_column_widths</tt><big>(</big><em>lines</em>, <em>maximum_width=100</em><big>)</big><a class="headerlink" href="#ecli_util.misc.get_column_widths" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="docutils">
+<dt>Assuming lines has the format:</dt>
+<dd>[ [item, item, ...], [item, item, ...], ... ]</dd>
+</dl>
+<p>Where each line has the same number of items, and each item supports a
+conversion to string, calculate the maximum width of each column, and
+return it as a list.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.misc.load_csv_header">
+<tt class="descclassname">ecli_util.misc.</tt><tt class="descname">load_csv_header</tt><big>(</big><em>fname</em>, <em>main_col='field'</em>, <em>delimiter='\t'</em><big>)</big><a class="headerlink" href="#ecli_util.misc.load_csv_header" title="Permalink to this definition">¶</a></dt>
+<dd><p>Expects a (tab) delimited file with the first row being a header (column names)
+Lines starting with # are ignored (after the first row)
+Raises ValueError if main column not present</p>
+<p>For example:</p>
+<div class="highlight-python"><pre>Field   name1   name2
+field_1 value1  value2
+...</pre>
+</div>
+<p>Returns a dictionary:</p>
+<div class="highlight-python"><pre>{ 'field_1' : { 'name1' : 'value1', 'name2' : 'value2', ... }, ... }</pre>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.misc.print_sameline">
+<tt class="descclassname">ecli_util.misc.</tt><tt class="descname">print_sameline</tt><big>(</big><em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#ecli_util.misc.print_sameline" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print text on the same line (same arguments as the Python print function)</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.misc.print_table">
+<tt class="descclassname">ecli_util.misc.</tt><tt class="descname">print_table</tt><big>(</big><em>rows</em>, <em>min_col_width=5</em>, <em>format_str=u'{:&gt;%d}'</em>, <em>f=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x40294078&gt;</em>, <em>delimiter=u' '</em>, <em>first_column_format=None</em>, <em>remove_empty=True</em><big>)</big><a class="headerlink" href="#ecli_util.misc.print_table" title="Permalink to this definition">¶</a></dt>
+<dd><p>Not to be confused with the SimpleTable class, this prints out a table
+stored as a list of lists:</p>
+<div class="highlight-python"><pre>[['row1, 1', 'row1, 2', '...'], ['row2', ...'], ...]</pre>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>rows</strong> &#8211; the rows</li>
+<li><strong>min_col_width</strong> &#8211; minimum column width (spaces)</li>
+<li><strong>format_str</strong> &#8211; the format string to use with str.format()
+defaults to right-aligned columns</li>
+<li><strong>f</strong> &#8211; the file/stream to output to (requires write method)</li>
+<li><strong>delimeter</strong> &#8211; the delimeter to print between columns</li>
+<li><strong>first_column_format</strong> &#8211; the first column can optionally
+have a different format</li>
+<li><strong>remove_empty</strong> &#8211; remove empty columns first</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">the printed rows</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.misc.print_traceback">
+<tt class="descclassname">ecli_util.misc.</tt><tt class="descname">print_traceback</tt><big>(</big><em>ex=None</em>, <em>f=&lt;open file '&lt;stderr&gt;'</em>, <em>mode 'w' at 0x402940d0&gt;</em><big>)</big><a class="headerlink" href="#ecli_util.misc.print_traceback" title="Permalink to this definition">¶</a></dt>
+<dd><p>Dump a text traceback from the last exception to the file
+specified</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>ex</strong> &#8211; the exception to print</li>
+<li><strong>f</strong> &#8211; the file to dump to</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.misc.remove_columns">
+<tt class="descclassname">ecli_util.misc.</tt><tt class="descname">remove_columns</tt><big>(</big><em>table</em>, <em>remove_columns</em>, <em>in_place=False</em><big>)</big><a class="headerlink" href="#ecli_util.misc.remove_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>From a list of rows, remove columns by index</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>rows</strong> &#8211; the rows</li>
+<li><strong>remove_columns</strong> &#8211; the column indices to remove</li>
+<li><strong>in_place</strong> &#8211; if in-place, the list will be modified</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.misc.remove_empty_columns">
+<tt class="descclassname">ecli_util.misc.</tt><tt class="descname">remove_empty_columns</tt><big>(</big><em>rows</em>, <em>in_place=False</em><big>)</big><a class="headerlink" href="#ecli_util.misc.remove_empty_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>From a list of rows, remove empty columns.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>rows</strong> &#8211; the rows</li>
+<li><strong>in_place</strong> &#8211; if in-place, the list will be modified</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+</div>
+<span class="target" id="module-ecli_util.record_info"></span><div class="section" id="module-ecli_util.record_info">
+<span id="ecli-util-record-info-epics-record-information"></span><h2><a class="reference internal" href="#module-ecli_util.record_info" title="ecli_util.record_info: Manages record field information, loaded from tab-delimited text files in records/*.txt (which were distilled from dbd files originally)"><tt class="xref py py-mod docutils literal"><span class="pre">ecli_util.record_info</span></tt></a> &#8211; EPICS record information<a class="headerlink" href="#module-ecli_util.record_info" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ecli_util.record_info.RecordFields">
+<em class="property">class </em><tt class="descclassname">ecli_util.record_info.</tt><tt class="descname">RecordFields</tt><big>(</big><em>rtyp=None</em>, <em>fn=None</em><big>)</big><a class="headerlink" href="#ecli_util.record_info.RecordFields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Inefficiently manages record field information, loaded from text files
+located in records/<a href="#id1"><span class="problematic" id="id2">*</span></a>.txt (relative to this file)</p>
+<dl class="method">
+<dt id="ecli_util.record_info.RecordFields.find">
+<tt class="descname">find</tt><big>(</big><em>text</em>, <em>columns=None</em>, <em>case_sensitive=False</em><big>)</big><a class="headerlink" href="#ecli_util.record_info.RecordFields.find" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find &#8220;text&#8221; in any column or field name</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_util.record_info.RecordFields.generate_dict">
+<tt class="descname">generate_dict</tt><big>(</big><em>columns</em>, <em>fill_value=None</em><big>)</big><a class="headerlink" href="#ecli_util.record_info.RecordFields.generate_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>From the detailed information in the database,
+return a simplified one containing only the main
+keys and the specified field(s).</p>
+<dl class="docutils">
+<dt>If one field is specified, the result is:</dt>
+<dd>{ &#8216;field&#8217; : &#8216;value&#8217; }</dd>
+<dt>Otherwise, it&#8217;s a list in the same order as &#8216;columns&#8217;:</dt>
+<dd>{ &#8216;field&#8217; : [&#8216;value1&#8217;, &#8216;value2&#8217;] }</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.record_info.get_record_fields">
+<tt class="descclassname">ecli_util.record_info.</tt><tt class="descname">get_record_fields</tt><big>(</big><em>rtyp</em><big>)</big><a class="headerlink" href="#ecli_util.record_info.get_record_fields" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the RecordFields instance associated with the specific
+record type (rtyp) &#8211; e.g., &#8216;motor&#8217; or &#8216;ai&#8217;</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">As the RecordFields instances are cached, users should use this
+function instead of instantiating their own.</p>
+</div>
+</dd></dl>
+
+</div>
+<span class="target" id="module-ecli_util.simple_table"></span><div class="section" id="module-ecli_util.simple_table">
+<span id="ecli-util-simple-table"></span><h2><a class="reference internal" href="#module-ecli_util.simple_table" title="ecli_util.simple_table"><tt class="xref py py-mod docutils literal"><span class="pre">ecli_util.simple_table</span></tt></a><a class="headerlink" href="#module-ecli_util.simple_table" title="Permalink to this headline">¶</a></h2>
+<dl class="class">
+<dt id="ecli_util.simple_table.SimpleTable">
+<em class="property">class </em><tt class="descclassname">ecli_util.simple_table.</tt><tt class="descname">SimpleTable</tt><big>(</big><em>headers=</em><span class="optional">[</span><span class="optional">]</span>, <em>empty=''</em><big>)</big><a class="headerlink" href="#ecli_util.simple_table.SimpleTable" title="Permalink to this definition">¶</a></dt>
+<dd><p>A simple, inefficient representation of a table, where data is stored by
+column. Column header text must be unique.</p>
+<dl class="method">
+<dt id="ecli_util.simple_table.SimpleTable.add_column">
+<tt class="descname">add_column</tt><big>(</big><em>header</em>, <em>index=None</em>, <em>fill=None</em><big>)</big><a class="headerlink" href="#ecli_util.simple_table.SimpleTable.add_column" title="Permalink to this definition">¶</a></dt>
+<dd><p>Add a column with a <cite>header</cite> before <cite>index</cite> in the table,
+filling its contents with <cite>fill</cite>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>header</strong> &#8211; the column header label</li>
+<li><strong>index</strong> &#8211; the column index to insert before</li>
+<li><strong>fill</strong> &#8211; the data to fill the column with (list or string)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_util.simple_table.SimpleTable.add_row">
+<tt class="descname">add_row</tt><big>(</big><em>row</em>, <em>index=None</em><big>)</big><a class="headerlink" href="#ecli_util.simple_table.SimpleTable.add_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a row at a specific index (default is to append)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>row</strong> &#8211; the row data</li>
+<li><strong>index</strong> &#8211; the index to insert before</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_util.simple_table.SimpleTable.column_index">
+<tt class="descname">column_index</tt><big>(</big><em>header</em><big>)</big><a class="headerlink" href="#ecli_util.simple_table.SimpleTable.column_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the index of a column header in the table</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_util.simple_table.SimpleTable.column_indices">
+<tt class="descname">column_indices</tt><big>(</big><em>headers</em><big>)</big><a class="headerlink" href="#ecli_util.simple_table.SimpleTable.column_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the indices of column headers in the table</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_util.simple_table.SimpleTable.columns">
+<tt class="descname">columns</tt><big>(</big><em>include_headers=True</em>, <em>include_empty=True</em><big>)</big><a class="headerlink" href="#ecli_util.simple_table.SimpleTable.columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>(generator)
+Gives all columns in the table, optionally including headers
+or removing empty columns.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>include_headers</strong> &#8211; include column headers</li>
+<li><strong>include_empty</strong> &#8211; include empty columns in the result</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="ecli_util.simple_table.SimpleTable.from_columns">
+<em class="property">static </em><tt class="descname">from_columns</tt><big>(</big><em>columns</em>, <em>headers=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#ecli_util.simple_table.SimpleTable.from_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>(static method)
+Create a SimpleTable from column data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>columns</strong> &#8211; the column data</li>
+<li><strong>headers</strong> &#8211; the headers (if None, the first entry of each
+column is used)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>kwargs are passed onto the table constructor</p>
+</dd></dl>
+
+<dl class="staticmethod">
+<dt id="ecli_util.simple_table.SimpleTable.from_rows">
+<em class="property">static </em><tt class="descname">from_rows</tt><big>(</big><em>rows</em>, <em>headers=None</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#ecli_util.simple_table.SimpleTable.from_rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>(static method)
+Create a SimpleTable from row data</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>rows</strong> &#8211; the row data</li>
+<li><strong>headers</strong> &#8211; the headers (if None, the first row is used)</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>kwargs are passed onto the table constructor</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_util.simple_table.SimpleTable.get_rows">
+<tt class="descname">get_rows</tt><big>(</big><em>skip_columns=None</em><big>)</big><a class="headerlink" href="#ecli_util.simple_table.SimpleTable.get_rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>All of the row data, including the header row</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="ecli_util.simple_table.SimpleTable.headers">
+<tt class="descname">headers</tt><a class="headerlink" href="#ecli_util.simple_table.SimpleTable.headers" title="Permalink to this definition">¶</a></dt>
+<dd><p>The column headers [list]</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_util.simple_table.SimpleTable.insert_row">
+<tt class="descname">insert_row</tt><big>(</big><em>row</em>, <em>index=None</em><big>)</big><a class="headerlink" href="#ecli_util.simple_table.SimpleTable.insert_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert a row at a specific index (default is to append)</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>row</strong> &#8211; the row data</li>
+<li><strong>index</strong> &#8211; the index to insert before</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_util.simple_table.SimpleTable.print_">
+<tt class="descname">print_</tt><big>(</big><em>min_col_width=5</em>, <em>format_str=u'{:&gt;%d}'</em>, <em>f=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x40294078&gt;</em>, <em>delimiter=u' '</em>, <em>first_column_format=None</em>, <em>include_empty=False</em><big>)</big><a class="headerlink" href="#ecli_util.simple_table.SimpleTable.print_" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print the table to a stream (default: stdout) with a specific format</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>min_col_width</strong> &#8211; minimum column width (spaces)</li>
+<li><strong>format_str</strong> &#8211; the format string to use with str.format()
+defaults to right-aligned columns</li>
+<li><strong>f</strong> &#8211; the file/stream to output to (requires write method)</li>
+<li><strong>delimeter</strong> &#8211; the delimeter to print between columns</li>
+<li><strong>first_column_format</strong> &#8211; the first column can optionally
+have a different format</li>
+<li><strong>include_empty</strong> &#8211; display empty columns</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_util.simple_table.SimpleTable.remove_column_by_index">
+<tt class="descname">remove_column_by_index</tt><big>(</big><em>idx</em><big>)</big><a class="headerlink" href="#ecli_util.simple_table.SimpleTable.remove_column_by_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a column by index</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_util.simple_table.SimpleTable.remove_columns_by_index">
+<tt class="descname">remove_columns_by_index</tt><big>(</big><em>indices</em><big>)</big><a class="headerlink" href="#ecli_util.simple_table.SimpleTable.remove_columns_by_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove multiple columns by index</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_util.simple_table.SimpleTable.remove_empty_columns">
+<tt class="descname">remove_empty_columns</tt><big>(</big><big>)</big><a class="headerlink" href="#ecli_util.simple_table.SimpleTable.remove_empty_columns" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove all empty columns</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="ecli_util.simple_table.SimpleTable.remove_row">
+<tt class="descname">remove_row</tt><big>(</big><em>idx</em><big>)</big><a class="headerlink" href="#ecli_util.simple_table.SimpleTable.remove_row" title="Permalink to this definition">¶</a></dt>
+<dd><p>Remove a row by index</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="ecli_util.simple_table.SimpleTable.rows">
+<tt class="descname">rows</tt><a class="headerlink" href="#ecli_util.simple_table.SimpleTable.rows" title="Permalink to this definition">¶</a></dt>
+<dd><p>All of the row data, including the header row</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<span class="target" id="module-ecli_util.spvinfo"></span><div class="section" id="module-ecli_util.spvinfo">
+<span id="ecli-util-spvinfo-structured-pv-info"></span><h2><a class="reference internal" href="#module-ecli_util.spvinfo" title="ecli_util.spvinfo"><tt class="xref py py-mod docutils literal"><span class="pre">ecli_util.spvinfo</span></tt></a> &#8211; Structured PV info<a class="headerlink" href="#module-ecli_util.spvinfo" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">(TODO) this needs to be converted to a SimpleTable someday</p>
+</div>
+<dl class="function">
+<dt id="ecli_util.spvinfo.format_structured_pv_info">
+<tt class="descclassname">ecli_util.spvinfo.</tt><tt class="descname">format_structured_pv_info</tt><big>(</big><em>d</em>, <em>level_indent=u' '</em>, <em>format_=u'%.4g'</em>, <em>value_delimiter=u' '</em>, <em>column_headers=</em><span class="optional">[</span><span class="optional">]</span><big>)</big><a class="headerlink" href="#ecli_util.spvinfo.format_structured_pv_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Format the pv info from get_structured_pv_info(), for usage with print_table</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.spvinfo.get_structured_pv_info">
+<tt class="descclassname">ecli_util.spvinfo.</tt><tt class="descname">get_structured_pv_info</tt><big>(</big><em>dict_</em>, <em>prefix=''</em>, <em>timeout=None</em>, <em>t_start=None</em>, <em>fail_on_error=False</em><big>)</big><a class="headerlink" href="#ecli_util.spvinfo.get_structured_pv_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>For a dictionary like the following with a prefix of &#8216;PV&#8217;:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">get_structured_pv_info</span><span class="p">(</span>
+    <span class="p">{</span> <span class="s">&#39;User&#39;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;High&#39;</span> <span class="p">:</span> <span class="s">&#39;.HLM&#39;</span><span class="p">,</span>
+        <span class="s">&#39;Current&#39;</span> <span class="p">:</span> <span class="s">&#39;.RBV&#39;</span><span class="p">,</span>
+        <span class="s">&#39;Low&#39;</span> <span class="p">:</span> <span class="s">&#39;.LLM&#39;</span><span class="p">,</span>
+         <span class="p">}</span> <span class="p">,</span>
+    <span class="p">},</span> <span class="n">prefix</span><span class="o">=</span><span class="s">&#39;PV&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The result would look like:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="p">{</span>
+    <span class="s">&#39;User&#39;</span> <span class="p">:</span> <span class="p">{</span>
+        <span class="s">&#39;High&#39;</span> <span class="p">:</span> <span class="mf">2.0</span><span class="p">,</span>     <span class="c"># &lt;-- caget PV.HLM = 2.0</span>
+        <span class="s">&#39;Current&#39;</span> <span class="p">:</span> <span class="mf">1.0</span><span class="p">,</span>  <span class="c"># &lt;-- caget PV.RBV = 1.0</span>
+        <span class="s">&#39;Low&#39;</span> <span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span>      <span class="c"># &lt;-- caget PV.RBV = 0.0</span>
+     <span class="p">}</span> <span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p><cite>prefix</cite> can also be a list (or sequence), and the result would then be:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="k">return</span> <span class="p">{</span>
+        <span class="s">&#39;User&#39;</span> <span class="p">:</span> <span class="p">{</span>
+            <span class="s">&#39;High&#39;</span> <span class="p">:</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="o">...</span><span class="p">]</span>
+                 <span class="p">}</span>
+       <span class="p">}</span>
+</pre></div>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="ecli_util.spvinfo.print_structured_pv_info">
+<tt class="descclassname">ecli_util.spvinfo.</tt><tt class="descname">print_structured_pv_info</tt><big>(</big><em>d</em>, <em>first_column_format=u'{:&lt;%d}'</em>, <em>f=&lt;open file '&lt;stdout&gt;'</em>, <em>mode 'w' at 0x40294078&gt;</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#ecli_util.spvinfo.print_structured_pv_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print the structured pv info in a table</p>
+</dd></dl>
+
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">ECLI utility functions</a><ul>
+<li><a class="reference internal" href="#module-ecli_util"><tt class="docutils literal"><span class="pre">ecli_util</span></tt> &#8211; Utility functions for ECLI developers</a></li>
+<li><a class="reference internal" href="#module-ecli_util.check"><tt class="docutils literal"><span class="pre">ecli_util.check</span></tt> &#8211; Simple string conversion checks</a></li>
+<li><a class="reference internal" href="#module-ecli_util.conditional_monitor"><tt class="docutils literal"><span class="pre">ecli_util.conditional_monitor</span></tt> &#8211; PV monitor utility</a></li>
+<li><a class="reference internal" href="#module-ecli_util.decorators"><tt class="docutils literal"><span class="pre">ecli_util.decorators</span></tt> &#8211; ECLI function decorators</a></li>
+<li><a class="reference internal" href="#module-ecli_util.epics_device"><tt class="docutils literal"><span class="pre">ecli_util.epics_device</span></tt> &#8211; ECLI pyEpics device utilities</a></li>
+<li><a class="reference internal" href="#module-ecli_util.epics_util"><tt class="docutils literal"><span class="pre">ecli_util.epics_util</span></tt> &#8211; ECLI epics utilities</a></li>
+<li><a class="reference internal" href="#module-ecli_util.errors"><tt class="docutils literal"><span class="pre">ecli_util.errors</span></tt> &#8211; ECLI errors and exceptions</a></li>
+<li><a class="reference internal" href="#module-ecli_util.magic_args"><tt class="docutils literal"><span class="pre">ecli_util.magic_args</span></tt> &#8211; IPython magic_args helpers</a></li>
+<li><a class="reference internal" href="#module-ecli_util.misc"><tt class="docutils literal"><span class="pre">ecli_util.misc</span></tt> &#8211; miscellaneous utilities</a></li>
+<li><a class="reference internal" href="#module-ecli_util.record_info"><tt class="docutils literal"><span class="pre">ecli_util.record_info</span></tt> &#8211; EPICS record information</a></li>
+<li><a class="reference internal" href="#module-ecli_util.simple_table"><tt class="docutils literal"><span class="pre">ecli_util.simple_table</span></tt></a></li>
+<li><a class="reference internal" href="#module-ecli_util.spvinfo"><tt class="docutils literal"><span class="pre">ecli_util.spvinfo</span></tt> &#8211; Structured PV info</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="ecli_scaler.html"
+                        title="previous chapter"><tt class="docutils literal docutils literal"><span class="pre">ecli_scaler</span></tt> &#8211; scaler record interface</a></p>
+  <h3>This Page</h3>
+  <ul class="this-page-menu">
+    <li><a href="_sources/ecli_util.txt"
+           rel="nofollow">Show Source</a></li>
+  </ul>
+<div id="searchbox" style="display: none">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    <p class="searchtip" style="font-size: 90%">
+    Enter search terms or a module, class or function name.
+    </p>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="py-modindex.html" title="Python Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="ecli_scaler.html" title="ecli_scaler – scaler record interface"
+             >previous</a> |</li>
+        <li><a href="index.html">ECLI 0.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+        &copy; Copyright 2013, Ken Lauer.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1.3.
+    </div>
+  </body>
+</html>
