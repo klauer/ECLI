@@ -12,7 +12,6 @@
 from __future__ import print_function
 import logging
 import os
-import sys
 import time
 
 import epics
@@ -35,19 +34,18 @@ logger = logging.getLogger('ECLICore')
 
 
 def load_ipython_extension(ipython):
-    print('load core')
     if ECLICore.instance is not None:
         print('ECLICore already loaded')
         return None
 
     logging.basicConfig()
 
-
     instance = ECLICore(shell=ipython, config=ipython.config)
     ECLICore.instance = instance
 
     util.__ipython__ = ipython
     util.export_magic_by_decorator(ipython, globals())
+    util.export_class_magic(ipython, instance)
     return instance
 
 
@@ -98,7 +96,7 @@ class ECLICore(ECLIPlugin):
         'IPython.core.interactiveshell.InteractiveShellABC')
     use_catools = traitlets.Bool(False, config=True)
     catools_path = traitlets.Unicode(u'', config=True)
-    ca_show_errors = traitlets.Bool(True, config=True)
+    ca_show_errors = traitlets.Bool(False, config=True)
     ca_logfile = traitlets.Unicode(u'', config=True)
 
     find_field_columns = traitlets.List(traitlets.Unicode,
@@ -148,9 +146,9 @@ class ECLICore(ECLIPlugin):
             else:
                 change_fcn(trait, None, getattr(self, trait))
 
-        # TODO: this causes a crash on both Linux and Windows:
-        # self._ca_writehandler=\
-        #                       epics.ca.replace_printf_handler(self._ca_write)
+        if epics.__version__ > '3.2.2':
+            logger.debug('Using ECLI CA printf handler')
+            self._ca_output = epics.ca.replace_printf_handler(self._ca_write)
 
         # ECLI extensions
         self._extensions = {self.__class__.__name__: self}
@@ -426,7 +424,7 @@ class ECLICore(ECLIPlugin):
         else:
             self._ca_logfile = None
 
-    def _ca_write(self, *args, **kwargs):
+    def _ca_write(self, msg):
         """
         Called when CA wants to print an exception, such as:
          CA.Client.Exception...............................................
@@ -436,14 +434,17 @@ class ECLICore(ECLIPlugin):
              Current Time: Mon Jun 17 2000 10:22:30.002440862
          ..................................................................
         """
-        print(args, kwargs)
-        try:
-            if self._ca_logfile is not None:
+        msg = msg.rstrip()
+        if self._ca_logfile is not None:
+            try:
                 print(args, file=self._calogfile)
-            if self.ca_show_errors:
-                print('(CA)', args)
-        except Exception as ex:
-            print('--', ex)
+            except Exception as ex:
+                logger.debug('ca error', ex)
+
+        if self.ca_show_errors:
+            print('(CA) %s' % msg)
+
+        logger.debug('(CA) %s' % msg)
 
     def exit(self):
         """
@@ -469,22 +470,112 @@ class ECLICore(ECLIPlugin):
 
         self._shell_exit()
 
-# Utility Functions #
+    def _save_config(self, filename, ignore=[u'shell', u'config']):
+        """
+        Save ECLI-related configuration to `filename`
+
+        :param filename: filename to save to
+        :param ignore: list of traits to ignore, by name
+        """
+
+        with open(filename, 'wt') as f:
+            # TODO deal with overwriting old configuration files and unloaded
+            # extensions, this whole thing not being very smart, etc.
+            print('c = get_config()', file=f)
+
+            for extension in self._extensions.values():
+                ext_name = extension.__class__.__name__
+                print('', file=f)
+                print('# Extension: %s' % ext_name, file=f)
+
+                if ext_name.startswith('ECLI') and hasattr(extension, '_trait_dict'):
+                    for name, value in extension._trait_dict.items():
+                        if name in ignore:
+                            continue
+
+                        name = '%s.%s' % (ext_name, name)
+                        repr_ = repr(value)
+                        # TODO ... ugh
+                        if repr_.startswith('<'):
+                            continue
+
+                        print('c.%s = %s' % (name, repr_), file=f)
+
+        logger.info('Wrote configuration to %s' % filename)
+
+    def _load_ecli_config(self, filename):
+        """
+        Load ECLI-related configuration from `filename`
+
+        :param filename: configuration filename
+        """
+        import IPython.config.loader as loader
+
+        c = loader.PyFileConfigLoader(filename, )
+        try:
+            c.load_config()
+        except Exception as ex:
+            logger.error("Failed to load config file %s" % filename,
+                         exc_info=True)
+            # TODO can still load successfully parsed parts...
+            return False
+
+        for extension in self._extensions.values():
+            ext_name = extension.__class__.__name__
+            if ext_name in c.config:
+                logging.debug('Updating configuration for %s' % ext_name)
+                for name, value in c.config[ext_name].items():
+                    try:
+                        setattr(extension, name, value)
+                    except Exception as ex:
+                        logging.error('Failed %s.%s (%s) %s' %
+                                      (ext_name, name,
+                                       ex.__class__.__name__, ex))
+
+                        logging.debug('Configuration file load failed %s.%s' %
+                                      (ext_name, name, value),
+                                      ext_info=True)
+        return True
 
 
-# # TODO remove
-# def get_list():
-#     return list(['a', 'b', 'c'])
-#
-#
-# def set_list(list_):
-#     print('set', list_)
-#
-# ipy_test1 = lambda self, arg: util.list_management(str)(self, arg,
-#                                                         get_list=get_list,
-#                                                         set_list=set_list)
-# # TODO fix doc string:
-# ipy_test1.__doc__ = util.list_management.__doc__
+@magic_arguments()
+@argument('filename', type=unicode, help='Configuration filename',
+          nargs='?', default=u'ecli_config.py')
+def save_config(magic_self, arg):
+    """
+    Save ECLI-related configuration to `filename`.
+
+    Output file should be readable by
+    IPython.config.loader.PyFileConfigLoader
+    """
+
+    args = parse_argstring(save_config, arg)
+
+    if args is None:
+        return
+
+    core = get_core_plugin()
+    core._save_config(args.filename)
+
+
+@magic_arguments()
+@argument('filename', type=unicode, help='Configuration filename',
+          nargs='?', default=u'ecli_config.py')
+def load_config(magic_self, arg):
+    """
+    Load ECLI-related configuration from `filename`.
+
+    Input file should be readable by
+    IPython.config.loader.PyFileConfigLoader
+    """
+
+    args = parse_argstring(save_config, arg)
+
+    if args is None:
+        return
+
+    core = get_core_plugin()
+    core._load_ecli_config(args.filename)
 
 
 @magic_arguments()
@@ -514,7 +605,7 @@ def camonitor(self, arg):
     except KeyboardInterrupt:
         pass
     except Exception as ex:
-        print('Monitor failed: (%s) %s' % (ex.__class__.__name__, ex))
+        logger.error('Monitor failed: (%s) %s' % (ex.__class__.__name__, ex))
     finally:
         for pv in pvs:
             epics.camonitor_clear(pv)

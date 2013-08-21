@@ -103,6 +103,8 @@ class ECLIxmlrpc(ECLIPlugin):
 
         self.server_functions = self._find_functions(prefix='server_')
         self.server_thread = None
+        self.server = None
+        self.handler = None
         self._scan_info = {}
         self._scan_data = {}
         self._new_scan = {}
@@ -136,11 +138,22 @@ class ECLIxmlrpc(ECLIPlugin):
 
         return functions
 
-    def _port_changed(self, name='', old=0, new=0):
+    def _port_changed(self, name='', old=None, new=None):
+        port = self.port
+        if self.server is not None:
+            old_port = self.server.server_address[1]
+            if old_port == port:
+                return
+
         self.stop_server()
         self.start_server()
 
     def _rpc_path_changed(self, name='', old=0, new=0):
+        path = self.rpc_path
+        if self.handler is not None:
+            if path in self.handler.rpc_paths:
+                return
+
         self.stop_server()
         self.start_server()
 
@@ -166,6 +179,8 @@ class ECLIxmlrpc(ECLIPlugin):
                                          requestHandler=req_handler,
                                          logRequests=False,
                                          allow_none=True)
+
+        self.handler = req_handler
 
         self.server.register_introspection_functions()
         for name, function in self.server_functions:

@@ -109,8 +109,7 @@ class ECLIMotor(ECLIPlugin):
     def _motor_list_changed(self, *args):
         shell = self.shell
         new_motors = [motor for motor in self.motor_list
-                      if motor
-                      not in shell.user_ns]
+                      if motor not in shell.user_ns]
 
         for motor in new_motors:
             if util.is_valid_python_identifier(motor):

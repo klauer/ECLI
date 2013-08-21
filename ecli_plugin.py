@@ -17,7 +17,7 @@ import logging
 from IPython.config.configurable import Configurable
 import IPython.utils.traitlets as traitlets
 
-from ecli_util import get_core_plugin
+from ecli_util import (get_plugin, get_core_plugin)
 import ecli_util as util
 
 # Extension Initialization #
@@ -70,8 +70,7 @@ class ECLIPlugin(Configurable):
                     cname = self.__class__.__name__
                     exname = ex.__class__.__name__
                     self.logger.error('trait %s.%s (%s) %s' %
-                                      (cname, trait, exname, ex),
-                                      file=sys.stderr)
+                                      (cname, trait, exname, ex), exc_info=True)
                     util.log_exception()
 
     @property
@@ -103,3 +102,15 @@ class ECLIPlugin(Configurable):
 
     def exit(self):
         pass
+
+    @property
+    def _trait_dict(self):
+        ret = {}
+        for name, value in self.traits().items():
+            ret[name] = getattr(self, name)
+
+        return ret
+
+    @classmethod
+    def get_plugin(cls):
+        return get_plugin(cls.__name__)

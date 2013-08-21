@@ -5,6 +5,7 @@ ECLI - an EPICS Command-Line Interface (CLI)
    :maxdepth: 2
 
    installation
+   tutorial
    ecli_core
    ecli_cas
    ecli_plugin

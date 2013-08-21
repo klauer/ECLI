@@ -6,7 +6,20 @@
 #   ipython qtconsole --profile=ecli --pylab=inline
 
 PROFILE="${1:-ecli}"
-echo Profile is located in: `ipython locate profile $PROFILE`
+PROFILE_PATH=$(ipython locate profile $PROFILE)
 
-ipython --profile=$PROFILE 
-#2> stderr
+echo "Profile is located in: $PROFILE_PATH"
+
+if [ -f "$PROFILE_PATH/ecli_config.py" ]
+then
+    # If a configuration file exists in the profile directory, load it
+    echo "Loading ECLI configuration from profile directory"
+    ipython --profile=$PROFILE -c "%load_config $PROFILE_PATH/ecli_config.py" -i
+elif [ -f ecli_config.py ]
+then
+    # If a configuration file exists in the current directory, load it
+    echo "Loading ECLI configuration from the current directory"
+    ipython --profile=$PROFILE -c "%load_config ecli_config.py" -i
+else
+    ipython --profile=$PROFILE
+fi
