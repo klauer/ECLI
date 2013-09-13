@@ -81,7 +81,8 @@ from .magic_args import (
 from .decorators import (expand_aliases, evaluate_arguments, wrap_command)
 from .epics_util import (split_record_field, is_valid_field_name, caget,
                          get_record_type, is_motor_record, is_scan_record,
-                         get_motor_rbv_pv, get_motor_limits)
+                         get_motor_rbv_pv, get_motor_limits,
+                         check_alarm)
 
 from .spvinfo import (get_structured_pv_info, structured_pv_info_to_list,
                       format_structured_pv_info, print_structured_pv_info)

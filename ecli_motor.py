@@ -139,10 +139,12 @@ def print_motor_info(motors):
 
     # TODO convert this to the SimpleTable thing eventually
     motor_info = util.get_structured_pv_info(info_dict, prefix=motors)
-    rows = list(util.format_structured_pv_info(
-        motor_info, column_headers=[''] + list(motors)))
-    util.print_table(rows, first_column_format=u'{:<%d}',)
 
+    format_ = u'%%.%df' % plugin.precision
+    rows = list(util.format_structured_pv_info(
+        motor_info, column_headers=[''] + list(motors), format_=format_))
+
+    util.print_table(rows, first_column_format=u'{:<%d}')
 
 @magic_arguments()
 @argument('motors', type=AliasedPV, nargs='+',

@@ -11,3 +11,16 @@
 class ECLIError(Exception): pass
 class ExtensionNotLoadedError(ECLIError): pass
 class TimeoutError(ECLIError): pass
+
+class AlarmError(ECLIError): pass
+class MinorAlarmError(ECLIError): pass
+class MajorAlarmError(ECLIError): pass
+
+# Alarm severities
+SEV_MINOR = 1
+SEV_MAJOR = 2
+
+severity_error_class = {
+    SEV_MINOR: MinorAlarmError,
+    SEV_MAJOR: MajorAlarmError,
+}

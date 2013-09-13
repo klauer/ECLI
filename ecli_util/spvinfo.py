@@ -103,7 +103,7 @@ def structured_pv_info_to_list(d, level=0):
             yield level, key, value
 
 
-def format_structured_pv_info(d, level_indent=u' ', format_=u'%.4g',
+def format_structured_pv_info(d, level_indent=u' ', format_=u'%.8g',
                               value_delimiter=u' ', column_headers=[]):
     '''
     Format the pv info from get_structured_pv_info(), for usage with print_table

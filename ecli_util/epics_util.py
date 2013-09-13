@@ -13,7 +13,7 @@ import re
 import epics
 
 from . import get_core_plugin
-
+import errors
 
 RE_FIELD = re.compile('^([^.a-z]{0,5})$')
 MOTOR_RBV_PV = "%s.RBV"
@@ -133,3 +133,37 @@ def get_motor_limits(motor_rec):
         return None, None
     else:
         return motor.low_limit, motor.high_limit
+
+
+def check_alarm(base_pv, stat_field='STAT', severity_field='SEVR',
+                reason_field=None, reason_pv=None,
+                min_severity=errors.SEV_MINOR):
+    """
+    Raise an exception if an alarm is set
+    """
+    stat_pv = '%s.%s' % (base_pv, stat_field)
+    severity_pv = '%s.%s' % (base_pv, severity_field)
+    if reason_field is not None:
+        reason_pv = '%s.%s' % (base_pv, reason_field)
+    reason = None
+
+    severity = epics.caget(severity_pv)
+
+    if severity >= min_severity:
+        try:
+            error_class = errors.severity_error_class[severity]
+        except KeyError:
+            pass
+        else:
+            severity = epics.caget(severity_pv, as_string=True)
+            alarm = epics.caget(stat_pv, as_string=True)
+            if reason_pv is not None:
+                reason = epics.caget(reason_pv, as_string=True)
+
+            message = 'Alarm status %s [severity %s]' % (alarm, severity)
+            if reason is not None:
+                message = '%s: %s' % (message, reason)
+
+            raise error_class(message)
+
+    return True
