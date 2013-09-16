@@ -10,7 +10,6 @@
 
 """
 from __future__ import print_function
-import sys
 import logging
 
 # IPython
@@ -22,7 +21,7 @@ from IPython.core.magic_arguments import (argument, magic_arguments,
 from ecli_core import AliasedPV
 from ecli_plugin import ECLIPlugin
 import ecli_util as util
-from ecli_util import (get_plugin, get_core_plugin)
+from ecli_util import get_plugin
 from ecli_util.epics_device import (get_records_from_devices, )
 from ecli_util.decorators import ECLIExport
 
@@ -35,6 +34,7 @@ motor_field_info = util.get_record_fields('motor')
 # Loading of this extension
 def load_ipython_extension(ipython):
     return util.generic_load_ext(ipython, ECLIMotor, logger=logger, globals_=globals())
+
 
 def unload_ipython_extension(ipython):
     return util.generic_unload_ext(ipython, ECLIMotor)
@@ -146,6 +146,7 @@ def print_motor_info(motors):
 
     util.print_table(rows, first_column_format=u'{:<%d}')
 
+
 @magic_arguments()
 @argument('motors', type=AliasedPV, nargs='+',
           help='Motor(s) to query')
@@ -154,7 +155,8 @@ def wm(self, arg):
     Show motor status
     """
     args = parse_argstring(wm, arg)
-    print_motor_info(args.motors)
+    if args:
+        print_motor_info(args.motors)
 
 
 @ECLIExport
@@ -265,8 +267,9 @@ def mvr(self, arg):
     Move motor by offset, in user coordinates
     """
     args = parse_argstring(mvr, arg)
-    user_move_motor(args.motor, args.offset, relative=True,
-                    verbose=args.verbose)
+    if args:
+        user_move_motor(args.motor, args.offset, relative=True,
+                        verbose=args.verbose)
 
 
 @magic_arguments()
@@ -279,7 +282,8 @@ def umvr(self, arg):
     Verbosely move motor by offset, in user coordinates
     """
     args = parse_argstring(mvr, arg)
-    user_move_motor(args.motor, args.offset, relative=True, verbose=True)
+    if args:
+        user_move_motor(args.motor, args.offset, relative=True, verbose=True)
 
 
 @magic_arguments()
@@ -293,8 +297,9 @@ def mv(self, arg):
     Move motor to absolute position, in user coordinates
     """
     args = parse_argstring(mv, arg)
-    user_move_motor(args.motor, args.position, relative=False,
-                    verbose=args.verbose)
+    if args:
+        user_move_motor(args.motor, args.position, relative=False,
+                        verbose=args.verbose)
 
 
 @magic_arguments()
@@ -305,8 +310,9 @@ def umv(self, arg):
     """
     Verbosely move motor to absolute position, in user coordinates
     """
-    args = parse_argstring(mv, arg)
-    user_move_motor(args.motor, args.position, relative=False, verbose=True)
+    args = parse_argstring(umv, arg)
+    if args:
+        user_move_motor(args.motor, args.position, relative=False, verbose=True)
 
 
 @magic_arguments()
@@ -316,7 +322,7 @@ def mstop(self, arg):
     """
     Stop motor
     """
-    args = parse_argstring(mv, arg)
-
-    device = epics.motor.Motor(args.motor)
-    device.stop()
+    args = parse_argstring(mstop, arg)
+    if args:
+        device = epics.motor.Motor(args.motor)
+        device.stop()
