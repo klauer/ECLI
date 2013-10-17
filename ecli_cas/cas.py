@@ -30,8 +30,10 @@ import pcaspy
 
 from . import (PCAS_TYPES, PCAS_SEVERITY)
 from . import (PVManager, )
+from record import CASRecord
+from soft_motor import SoftMotor
 
-logger = logging.getLogger('ECLIcas')
+logger = logging.getLogger('ECLI.cas')
 
 
 # Loading of this extension
@@ -118,7 +120,7 @@ def create_pv(pvname, write_callback=None, **kwargs):
     :param write_callback: a function (callable) to call when the PV is written to via caput
             Callbacks are called with cb(pv=CAPV instance, pvname=name, value=value, ...)
 
-    :param kwargs: See below for possible kwargs (pcaspy documentation for more)
+    :param kwargs: Possible kwargs:
 
     ======   =================================   ==========  ===================================================
     Field    Option                              Default     Description
@@ -140,6 +142,8 @@ def create_pv(pvname, write_callback=None, **kwargs):
     asg      string                                          Access security group name
     value    python builtin data type            0           Initial value
     ======   =================================   ==========  ===================================================
+
+    (see pcaspy documentation for more information)
     '''
 
     pvmanager = ECLIcas.get_pv_manager()
@@ -198,3 +202,32 @@ def _create_pv(self, arg):
                             for state in kwargs['states']]
 
     pvmanager.add_pv(args.name, **kwargs)
+
+
+@ECLIExport
+def remove_pv(pvname):
+    '''
+    Remove a previously created PCASpy PV
+
+    :param pvname: the name of the PV to remove
+    '''
+
+    pvmanager = ECLIcas.get_pv_manager()
+    return pvmanager.remove_pv(pvname, **kwargs)
+
+
+@magic_arguments()
+@argument('name', type=str,
+          help='PV name (added onto prefix)')
+def _remove_pv(self, arg):
+    """
+    Remove a PV from pcaspy
+    """
+    args = parse_argstring(_remove_pv, arg)
+    if args is None:
+        return
+
+    pvmanager = ECLIcas.get_pv_manager()
+    return pvmanager.remove_pv(args.name)
+
+

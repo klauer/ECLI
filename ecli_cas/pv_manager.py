@@ -18,7 +18,7 @@ from pcaspy.tools import ServerThread
 
 from . import CAPVBadValue
 
-logger = logging.getLogger('ECLIcas')
+logger = logging.getLogger('ECLI.cas')
 
 
 class CAPV(pcaspy.SimplePV):
@@ -31,15 +31,16 @@ class CAPV(pcaspy.SimplePV):
         name = '%s%s' % (prefix, basename)
         self.prefix = prefix
         self.basename = basename
+        self.full_name = '%s%s' % (prefix, basename)
 
-        super(CAPV, self).__init__(name, pvinfo, **kwargs)
+        pcaspy.SimplePV.__init__(self, name, pvinfo, **kwargs)
         self._write_callbacks = set([])
 
     def add_write_callback(self, fcn):
         assert(hasattr(fcn, '__call__'))
         self._write_callbacks.add(fcn)
 
-    def written_to(self, value):
+    def written_to(self, value, raise_exception=False):
         """
         Callback from CAS Driver -- runs all callbacks, accepting
         the new value only if CAPVBadValue is not raised during
@@ -49,17 +50,53 @@ class CAPV(pcaspy.SimplePV):
             try:
                 cb(pv=self, pvname=self.name, value=value)
             except CAPVBadValue:
+                if raise_exception:
+                    raise
                 return False
-            except:
-                pass
+            except Exception as ex:
+                logger.debug('Unhandled exception during PV=%s write' % self.basename,
+                             exc_info=True)
+                if raise_exception:
+                    raise
 
         return True
 
-    def write_value(self, value):
+    def get_value(self):
+        driver = self.driver
+        reason = self.basename
+        return driver.pvDB[reason].value
+
+    def set_value(self, value, check=True):
         """
         Update the PV to have a new value
         """
-        self.driver.setParam(self.basename, value)
+        if check:
+            try:
+                self.written_to(value, raise_exception=True)
+            except Exception as ex:
+                raise ValueError('Value=%s rejected: (%s) %s' %
+                                 (value, ex.__class__.__name__, ex))
+
+        self.post_update(value)
+        return True
+
+    # properties aren't working with SWIG for some reason?
+    value = property(get_value, set_value, doc='PV value')
+
+    def post_update(self, value=None):
+        driver = self.driver
+        reason = self.basename
+        entry = driver.pvDB[reason]
+
+        if value is not None:
+            if pcaspy.__version__ <= (0, 4, 1):
+                # pcaspy issue #5 -> alarm/value may not be updated
+                entry.value = None
+            driver.setParam(self.basename, value)
+
+        if driver.pvDB[reason].flag and self.info.scan == 0:
+            self.updateValue(entry)
+            entry.flag = False
 
 
 class CAServer(pcaspy.SimpleServer):
@@ -92,19 +129,37 @@ class CAServer(pcaspy.SimpleServer):
         :param pvinfo: contains PV information (see PCASpy docs)
         :type pvinfo: dict
         """
-        logger.debug('create pv', basename, pvinfo)
+        logger.debug('create pv %s %s' % (basename, pvinfo))
         pvinfo = pcaspy.PVInfo(pvinfo)
         pvinfo.reason = basename
         pvinfo.name = '%s%s' % (prefix, basename)
 
-        pv = CAPV(prefix, basename, pvinfo)
         if pvinfo.port not in self.pcas_manager.pvs:
             self.pcas_manager.pvs[pvinfo.port] = {}
 
         self.pvs = self.pcas_manager.pvs[pvinfo.port]
+
+        if basename in self.pvs or pvinfo.name in self.pcas_manager.pvf:
+            raise ValueError('PV %s already exists' % pvinfo.name)
+
+        pv = CAPV(prefix, basename, pvinfo)
+
         self.pcas_manager.pvf[pvinfo.name] = pv
-        self.pcas_manager.pvs[pvinfo.port][basename] = pv
+        self.pvs[basename] = pv
         return pv
+
+    def _remove_pv(self, basename):
+        """
+        :param basename: basename, not including prefix
+        :type basename: str
+        """
+        logger.debug('remove pv %s' % (basename, ))
+
+        pvi = self.pvs[basename]
+        pvinfo = pvi.info
+
+        del self.pvs[basename]
+        del self.pcas_manager.pvf[pvinfo.name]
 
     def initAccessSecurityFile(self, filename, **subst):
         """
@@ -168,8 +223,10 @@ class PVManager(object):
     def pvs(self):
         return self.server.pvs
 
-    def add_pv(self, pvname, write_callback=None, **kwargs):
+    def remove_pv(self, pvname):
+        return self.server._remove_pv(pvname)
 
+    def add_pv(self, pvname, write_callback=None, **kwargs):
         kwargs['port'] = CADriver.port
 
         pv = self.server._create_pv(self.prefix, pvname, kwargs)
@@ -177,6 +234,10 @@ class PVManager(object):
             self.driver = CADriver(self, self.server.pvs)
         else:
             self.driver.check_pvs()
+
+        if write_callback is not None:
+            assert(hasattr(write_callback, '__call__'))
+            pv._write_callbacks.add(write_callback)
 
         pv.driver = self.driver
         return pv
@@ -186,3 +247,11 @@ class PVManager(object):
             self.thread = ServerThread(self.server)
             self.thread.setDaemon(True)
             self.thread.start()
+
+    def stop(self, join=True):
+        if self.thread is not None:
+            self.thread.stop()
+            if join:
+                self.thread.join()
+
+            print('CAS thread finished')
