@@ -39,7 +39,7 @@ import PyMca.PyMcaMain
 import epics
 import numpy as np
 
-logger = logging.getLogger('ECLIpymca')
+logger = logging.getLogger('ECLI.pymca')
 
 
 # Loading of this extension

@@ -33,7 +33,7 @@ from ecli_util.decorators import ShowElapsed
 from ecli_util.decorators import ECLIExport
 
 
-logger = logging.getLogger('ECLIScaler')
+logger = logging.getLogger('ECLI.Scaler')
 
 
 # Loading of this extension

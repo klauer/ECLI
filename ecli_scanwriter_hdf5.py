@@ -26,7 +26,7 @@ from ecli_util import (get_plugin, get_core_plugin)
 
 import h5py
 
-logger = logging.getLogger('ECLIScanWriterHDF5')
+logger = logging.getLogger('ECLI.ScanWriterHDF5')
 SCAN_PLUGIN = 'Scans'
 
 

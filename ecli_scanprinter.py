@@ -28,7 +28,7 @@ from ecli_util import (get_plugin, get_core_plugin)
 from ecli_plugin import ECLIPlugin
 
 SCAN_PLUGIN = 'ECLIScans'
-logger = logging.getLogger('ECLIScanPrinter')
+logger = logging.getLogger('ECLI.ScanPrinter')
 
 
 # Loading of this extension

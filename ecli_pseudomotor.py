@@ -32,7 +32,7 @@ from ecli_util import (get_plugin, get_core_plugin)
 from ecli_util import ECLIError
 from ecli_util.decorators import ECLIExport
 
-logger = logging.getLogger('ECLIPseudomotor')
+logger = logging.getLogger('ECLI.Pseudomotor')
 
 # Loading of this extension
 def load_ipython_extension(ipython):

@@ -27,7 +27,7 @@ from ecli_util.decorators import ECLIExport
 
 import epics
 
-logger = logging.getLogger('ECLIMotor')
+logger = logging.getLogger('ECLI.Motor')
 motor_field_info = util.get_record_fields('motor')
 
 

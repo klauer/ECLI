@@ -28,7 +28,7 @@ from ecli_util import (get_plugin, get_core_plugin)
 from ecli_util import ECLIError
 from ecli_util.decorators import ECLIExport
 
-logger = logging.getLogger('ECLITemplate')
+logger = logging.getLogger('ECLI.Template')
 
 
 # Loading of this extension

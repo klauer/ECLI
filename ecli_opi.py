@@ -31,7 +31,7 @@ import ecli_util as util
 from ecli_util import (get_plugin, get_core_plugin)
 from ecli_util.decorators import ECLIExport
 
-logger = logging.getLogger('ECLIopi')
+logger = logging.getLogger('ECLI.opi')
 
 # Loading of this extension
 def load_ipython_extension(ipython):

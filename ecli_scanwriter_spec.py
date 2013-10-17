@@ -24,7 +24,7 @@ from ecli_util import (get_plugin, get_core_plugin)
 
 from pyspecfile import SPECFileWriter
 
-logger = logging.getLogger('ECLIScanWriterSPEC')
+logger = logging.getLogger('ECLI.ScanWriterSPEC')
 
 # Loading of this extension
 def load_ipython_extension(ipython):
