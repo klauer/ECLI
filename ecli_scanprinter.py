@@ -56,6 +56,7 @@ class ECLIScanPrinter(ECLIPlugin):
     blank_before_headers = traitlets.Bool(True, config=True)
     show_overhead = traitlets.Bool(True, config=True)
     show_elapsed = traitlets.Bool(True, config=True)
+    pv_header = traitlets.Bool(False, config=True)
     show_grid_point = traitlets.Bool(True, config=True)
 
     def __init__(self, shell, config):
@@ -67,13 +68,12 @@ class ECLIScanPrinter(ECLIPlugin):
         self._scan_number = 0
         self._last_point = None
 
-        base = get_core_plugin()
         scan_plugin = get_plugin(SCAN_PLUGIN)
-        base.add_callback(scan_plugin.CB_PRE_SCAN, self.pre_scan,
+        self.add_callback(scan_plugin.CB_PRE_SCAN, self.pre_scan,
                           extension=SCAN_PLUGIN)
-        base.add_callback(scan_plugin.CB_POST_SCAN, self.post_scan,
+        self.add_callback(scan_plugin.CB_POST_SCAN, self.post_scan,
                           extension=SCAN_PLUGIN)
-        base.add_callback(scan_plugin.CB_SCAN_STEP, self.single_step,
+        self.add_callback(scan_plugin.CB_SCAN_STEP, self.single_step,
                           extension=SCAN_PLUGIN)
 
     @property
@@ -90,7 +90,11 @@ class ECLIScanPrinter(ECLIPlugin):
         counters = [c for c in scan.counters
                     if c not in mca_detectors]
         self._headers = ['Point', 'Timestamp']
-        self._headers += [c.label for c in counters]
+
+        if self.pv_header:
+            self._headers += [c.pv.pvname for c in counters]
+        else:
+            self._headers += [c.label for c in counters]
 
         self._header_widths = [max(self.min_col_width, len(header))
                                for header in self._headers]
