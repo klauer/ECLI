@@ -28,7 +28,7 @@ from ecli_util import (get_core_plugin)
 from ecli_util import (AliasedPV, SimpleTable)
 from ecli_util.decorators import ECLIExport
 
-logger = logging.getLogger('ECLICore')
+logger = logging.getLogger('ECLI.Core')
 
 # Extension Initialization #
 
@@ -99,9 +99,9 @@ class ECLICore(ECLIPlugin):
     ca_show_errors = traitlets.Bool(False, config=True)
     ca_logfile = traitlets.Unicode(u'', config=True)
 
-    find_field_columns = traitlets.List(traitlets.Unicode,
-        default_value=[u'Field', u'Prompt', u'Pp'], config=True)
-    find_field_timeout = traitlets.Float(0.01, config=True)
+    fields_columns = traitlets.List(traitlets.Unicode,
+                        default_value=[u'Field', u'Prompt', u'Pp'], config=True)
+    fields_timeout = traitlets.Float(0.01, config=True)
 
     date_format = traitlets.Unicode(u'%y-%m-%d %I:%M:%S %p', config=True)
 
@@ -437,7 +437,7 @@ class ECLICore(ECLIPlugin):
         msg = msg.rstrip()
         if self._ca_logfile is not None:
             try:
-                print(args, file=self._calogfile)
+                print(msg, file=self._calogfile)
             except Exception as ex:
                 logger.debug('ca error', ex)
 
@@ -532,7 +532,7 @@ class ECLICore(ECLIPlugin):
                                       (ext_name, name,
                                        ex.__class__.__name__, ex))
 
-                        logging.debug('Configuration file load failed %s.%s' %
+                        logging.debug('Configuration file load failed %s.%s=%s' %
                                       (ext_name, name, value),
                                       ext_info=True)
         return True
@@ -674,7 +674,7 @@ def showcaerrors(self, arg):
 
 # TODO name change
 @ECLIExport
-def find_field(pv, string):
+def fields(pv, string):
     '''
     Search the field information database for 'text'. If the first
     argument is a PV it will detect its record type, otherwise use a
@@ -708,22 +708,22 @@ def find_field(pv, string):
           help='Display current value of the field')
 @argument('-a', '--all', action='store_const', const=True,
           help='Show all columns')
-def _find_field(self, magic_args):
+def _fields(self, magic_args):
     """
-    $ find_field [record_type/pv] [string] [--values]
+    $ fields [record_type/pv] [string] [--values]
     Examples:
-        $ find_field IOC:m1 value
-        $ find_field IOC:m1 user --values --all
-        $ find_field scaler time
+        $ fields IOC:m1 value
+        $ fields IOC:m1 user --values --all
+        $ fields scaler time
 
-    If -a is unspecified, %config ECLICore.find_field_columns will determine
+    If -a is unspecified, %config ECLICore.fields_columns will determine
     the columns to display.
     """
-    args = parse_argstring(_find_field, magic_args)
+    args = parse_argstring(_fields, magic_args)
     if not args:
         return
 
-    rtype, table = find_field(args.pv, args.string)
+    rtype, table = fields(args.pv, args.string)
     print('* Record type: %s' % rtype)
     print()
 
@@ -737,7 +737,7 @@ def _find_field(self, magic_args):
             else:
                 field = row[0]
                 value = epics.caget('%s.%s' % (args.pv, field),
-                                    connection_timeout=core.find_field_timeout,
+                                    connection_timeout=core.fields_timeout,
                                     verbose=False)
                 if value is None:
                     value = ''
@@ -749,7 +749,7 @@ def _find_field(self, magic_args):
             return (col in show_fields or
                     col == u'Field' or col == u'Value')
 
-        show_fields = core.find_field_columns
+        show_fields = core.fields_columns
 
         remove_columns = [i for i, col in enumerate(table.headers)
                           if not check_col(col)]
