@@ -111,7 +111,7 @@ class CASRecord(object):
             try:
                 field_cb = getattr(self, '%s_updated' % name.lower())
                 pvi.add_write_callback(self._wrap_cb(field_cb))
-                print('adding callback', name)
+                #print('adding callback', name)
             except AttributeError:
                 pass
 

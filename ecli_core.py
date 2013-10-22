@@ -226,8 +226,8 @@ class ECLICore(ECLIPlugin):
                 fcn(**kwargs)
             except Exception as ex:
                 if handle_exceptions:
-                    logging.error('Callback %s failed: (%s) %s' %
-                                  (name, ex.__class__.__name__, ex))
+                    logger.error('Callback %s failed: (%s) %s' %
+                                 (name, ex.__class__.__name__, ex))
                     if show_traceback is not None:
                         util.print_traceback(ex, f=show_traceback)
 
@@ -250,14 +250,14 @@ class ECLICore(ECLIPlugin):
                 req_str = req
 
             if req not in self._extensions:
-                logging.error('Required extension not loaded (%s)' %
-                              (req_str, ))
+                logger.error('Required extension not loaded (%s)' %
+                             (req_str, ))
                 ret = False
             else:
                 if self._extensions[req].VERSION < version:
                     err = 'Old version of required extension (requires %s)' % \
                           (req_str, )
-                    logging.error(err)
+                    logger.error(err)
                     ret = False
 
         return ret
@@ -418,8 +418,8 @@ class ECLICore(ECLIPlugin):
             try:
                 self._ca_logfile = open(self.ca_logfile, 'at')
             except Exception as ex:
-                logging.error('Unable to open log file %s: (%s) %s' %
-                              (self.ca_logfile, ex.__class__.__name__, ex))
+                logger.error('Unable to open log file %s: (%s) %s' %
+                             (self.ca_logfile, ex.__class__.__name__, ex))
                 self._ca_logfile = None
         else:
             self._ca_logfile = None
@@ -523,18 +523,18 @@ class ECLICore(ECLIPlugin):
         for extension in self._extensions.values():
             ext_name = extension.__class__.__name__
             if ext_name in c.config:
-                logging.debug('Updating configuration for %s' % ext_name)
+                logger.debug('Updating configuration for %s' % ext_name)
                 for name, value in c.config[ext_name].items():
                     try:
                         setattr(extension, name, value)
                     except Exception as ex:
-                        logging.error('Failed %s.%s (%s) %s' %
-                                      (ext_name, name,
-                                       ex.__class__.__name__, ex))
+                        logger.error('Failed %s.%s (%s) %s' %
+                                     (ext_name, name,
+                                      ex.__class__.__name__, ex))
 
-                        logging.debug('Configuration file load failed %s.%s=%s' %
-                                      (ext_name, name, value),
-                                      ext_info=True)
+                        logger.debug('Configuration file load failed %s.%s=%s' %
+                                     (ext_name, name, value),
+                                     ext_info=True)
         return True
 
 

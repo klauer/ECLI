@@ -11,7 +11,6 @@
 """
 # TODO callback option on add_pv (specify cb name, then core.add_callback?)
 # TODO create simple Python calc-style record
-# TODO add pseudomotor functionality through this
 from __future__ import print_function
 import logging
 
@@ -30,8 +29,6 @@ import pcaspy
 
 from . import (PCAS_TYPES, PCAS_SEVERITY)
 from . import (PVManager, )
-from record import CASRecord
-from soft_motor import SoftMotor
 
 logger = logging.getLogger('ECLI.cas')
 
@@ -205,7 +202,7 @@ def _create_pv(self, arg):
 
 
 @ECLIExport
-def remove_pv(pvname):
+def remove_pv(pvname, **kwargs):
     '''
     Remove a previously created PCASpy PV
 
@@ -229,5 +226,3 @@ def _remove_pv(self, arg):
 
     pvmanager = ECLIcas.get_pv_manager()
     return pvmanager.remove_pv(args.name)
-
-

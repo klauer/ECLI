@@ -127,6 +127,13 @@ class ECLIMotor(ECLIPlugin):
             if util.is_valid_python_identifier(motor):
                 shell.user_ns[motor] = motor_inst
 
+    def get_motor(self, motor):
+        try:
+            return self.motors[motor]
+        except:
+            self.motors[motor] = epics.Motor(motor)
+            return self.motors[motor]
+
     def __iter__(self):
         for name, motor in self.motors.items():
             yield name, motor

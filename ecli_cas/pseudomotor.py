@@ -8,6 +8,7 @@
    :synopsis: ECLI pseudomotor support
 .. moduleauthor:: Ken Lauer <klauer@bnl.gov>
 """
+# TODO: option for using normal PVs in expressions (how did I overlook this?)
 
 from __future__ import print_function
 import logging
@@ -134,9 +135,9 @@ class MotorGroup(object):
 
         try:
             ret = eval(eq, self._globals, locals_)
-        except Exception as ex:
-            logger.debug('Unable to calculate new position', exc_info=True)
-            logger.debug('* Expression: %s' % eq)
+        except:
+            logger.debug('Unable to calculate new position (expression= %s)' % eq,
+                         exc_info=True)
         else:
             record = entry['record']
             if isinstance(record, PseudoMotor) and record._rotary:
@@ -157,6 +158,7 @@ class MotorGroup(object):
 
 class PseudoMotor(SoftMotor):
     _globals = None
+
     def __init__(self, manager, group, alias, record_name,
                  readback_calc=None, rotary=False):
         """
@@ -303,6 +305,7 @@ class PseudoMotor(SoftMotor):
             logger.debug('Setting %s.VAL %g' % (record, new_pos))
             user_pv = '%sVAL' % (record._prefix, )
 
+            # TODO shouldn't be re-creating PV instances
             pvi = epics.PV(user_pv)
             self._waiting.add(pvi)
 
