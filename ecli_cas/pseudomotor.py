@@ -24,14 +24,11 @@ from . import motor_info as mi
 logger = logging.getLogger('ECLI.pseudomotor')
 
 
-class EquationSet(object):
+class MotorGroup(object):
     """
     Holds a set of inter-related equations and their
     corresponding motor/pseudomotor records
     """
-    # TODO: this should really just be a PseudomotorGroup like before --
-    #       it makes much more sense to monitor all the motors in a group only
-    #       once
     def __init__(self, globals=None):
         self.variables = {}
         self._globals = globals
@@ -160,7 +157,7 @@ class EquationSet(object):
 
 class PseudoMotor(SoftMotor):
     _globals = None
-    def __init__(self, manager, equations, alias, record_name,
+    def __init__(self, manager, group, alias, record_name,
                  readback_calc=None, rotary=False):
         """
         :param manager: the CAS PV manager
@@ -173,16 +170,16 @@ class PseudoMotor(SoftMotor):
         """
         logger.debug('Pseudo motor: %s = %s' % (record_name, readback_calc))
 
-        self.equations = equations
-        if not self.equations.validated:
-            self.equations.check_equations()
+        self.group = group
+        if not self.group.validated:
+            self.group.check_equations()
 
-        self.equations.set_record(alias, self)
+        self.group.set_record(alias, self)
 
         SoftMotor.__init__(self, manager, record_name)
 
         self._related_motors = None
-        self._readback_calc = self.equations.get_equation(alias)
+        self._readback_calc = self.group.get_equation(alias)
         self._waiting = set()
         self._rotary = rotary
         self._alias = alias
@@ -232,7 +229,7 @@ class PseudoMotor(SoftMotor):
 
                 j *= 2
 
-            readback = self.equations.evaluate(self._alias, locals_=real_positions)
+            readback = self.group.evaluate(self._alias, locals_=real_positions)
             if alias not in mins or mins[alias] > readback:
                 mins[alias] = readback
 
@@ -259,7 +256,7 @@ class PseudoMotor(SoftMotor):
                     }
 
         if self._related_motors is None:
-            records = self.equations.get_related_records(self._alias)
+            records = self.group.get_related_records(self._alias)
             motors = dict([(name, make_entry(name, record)) for name, record in records
                            if isinstance(record, epics.Motor)])
 
@@ -299,9 +296,9 @@ class PseudoMotor(SoftMotor):
 
         self.done_moving = False
 
-        new_positions = self.equations.evaluate_related(self._alias)
+        new_positions = self.group.evaluate_related(self._alias)
         for motor, new_pos in new_positions.items():
-            record = self.equations.get_record(motor)
+            record = self.group.get_record(motor)
 
             logger.debug('Setting %s.VAL %g' % (record, new_pos))
             user_pv = '%sVAL' % (record._prefix, )
@@ -316,7 +313,7 @@ class PseudoMotor(SoftMotor):
             self.done_moving = True
 
     def update_readback(self):
-        readback = self.equations.evaluate(self._alias)
+        readback = self.group.evaluate(self._alias)
         self._set_readback(readback)
 
     def related_finished(self, motor_name, value=None, **kwargs):
@@ -328,11 +325,11 @@ class PseudoMotor(SoftMotor):
 
 
 def _test():
-    eq_set = EquationSet()
-    eq_set.add_motor('m1', 'IOC:m1', '0.5 * pseudo1')
-    eq_set.add_motor('m2', 'IOC:m2', '0.6 * pseudo1')
-    eq_set.add_motor('pseudo1', 'ECLI:test', '2.0 * m1')
-    #eq_set.check_equations()
+    group = MotorGroup()
+    group.add_motor('m1', 'IOC:m1', '0.5 * pseudo1')
+    group.add_motor('m2', 'IOC:m2', '0.6 * pseudo1')
+    group.add_motor('pseudo1', 'ECLI:test', '2.0 * m1')
+    #group.check_equations()
 
     from . import PVManager
     import epics
@@ -340,11 +337,11 @@ def _test():
     manager = PVManager('ECLI:')
     manager.run()
 
-    eq_set.set_record('m1', epics.Motor('IOC:m1'))
-    eq_set.set_record('m2', epics.Motor('IOC:m2'))
-    pseudo = PseudoMotor(manager, eq_set, 'pseudo1', 'test')
+    group.set_record('m1', epics.Motor('IOC:m1'))
+    group.set_record('m2', epics.Motor('IOC:m2'))
+    pseudo = PseudoMotor(manager, group, 'pseudo1', 'test')
 
-    eq_set.start()
+    group.start()
 
     pseudo.update_readback()
     print('calculated rbv is', epics.caget('ECLI:test.RBV'))
