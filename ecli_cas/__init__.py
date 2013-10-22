@@ -35,3 +35,4 @@ class CAPVBadValue(ECLIError):
 
 from .pv_manager import (CAPV, CAServer, CADriver, PVManager, )
 from .cas import (load_ipython_extension, unload_ipython_extension, ECLIcas)
+from .soft_motor import SoftMotor

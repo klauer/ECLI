@@ -34,7 +34,7 @@ from ecli_util import (get_plugin, get_core_plugin)
 from SimpleXMLRPCServer import SimpleXMLRPCServer
 from SimpleXMLRPCServer import SimpleXMLRPCRequestHandler
 
-logger = logging.getLogger('ECLIxmlrpc')
+logger = logging.getLogger('ECLI.xmlrpc')
 
 # Loading of this extension
 def load_ipython_extension(ipython):
@@ -118,8 +118,8 @@ class ECLIxmlrpc(ECLIPlugin):
         return logger
 
     def _reset(self):
-        # self.detectors = [EpicsMCA('DXP', 'MLL:DXP:mca1'), ]
-        self.detectors = []
+        self.detectors = [EpicsMCA('DXP', 'MLL:DXP:mca1'), ]
+        #self.detectors = []
 
     def _find_functions(self, prefix=''):
         matches = [attr for attr in dir(self)

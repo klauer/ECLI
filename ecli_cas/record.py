@@ -34,23 +34,34 @@ def create_field_info(type_, defaults):
         default, lolim, hilim = defaults
         info['lolim'] = lolim
         info['hilim'] = hilim
+        info['prec'] = 6
 
     info['value'] = default
     return info
 
+
 class NoCallbacks(object):
+    """
+    Context manager that disables PV updated callbacks for a block
+    """
     def __init__(self, record):
         self.record = record
+
     def __enter__(self):
         self.record._callbacks = False
+
     def __exit__(self, type_, value, traceback):
         self.record._callbacks = True
+
 
 class CASRecord(object):
     def __init__(self, manager, name, rtype='ai', dtype='Soft Channel',
                  **fields):
         self.name = name
         self.manager = manager
+
+        # Mimic epics.Device:
+        self._prefix = '%s%s.'% (manager.prefix, name)
 
         self.aliases = {}
         self.fields = {}
@@ -126,10 +137,6 @@ class CASRecord(object):
             key = self.aliases[key]
 
         return self.fields[key]
-
-    def update_pvinfo(self, field, setting, value):
-        pvi = self[field]
-        setattr(pvi, setting, value)
 
     def set_field(self, field, value):
         pvi = self[field]

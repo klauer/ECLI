@@ -168,7 +168,7 @@ def export_magic_by_decorator(ipython, obj,
         if matches:
             if is_instance:
                 fcn = getattr(obj, name)
-                print('-->', fcn)
+                #print('-->', fcn)
             else:
                 fcn = o
 

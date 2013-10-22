@@ -87,7 +87,7 @@ def log_exception(command=None, limit=100, filename='exceptions.log'):
 
     print(file=f)
     print(file=f)
-    exc_typename = exc_type.__class__.__name__
+    exc_typename = exc_type.__name__
     print('-- %s (%s) --' % (exc_typename, time.ctime()), file=f)
     if command is not None:
         print('Command: %s' % command, file=f)

@@ -31,6 +31,7 @@ import ecli_util as util
 from ecli_util import (get_plugin, get_core_plugin)
 from ecli_util import ECLIError
 from ecli_util.decorators import ECLIExport
+from ecli_cas import SoftMotor
 
 logger = logging.getLogger('ECLI.Pseudomotor')
 
@@ -72,20 +73,8 @@ class ECLIPseudomotor(ECLIPlugin):
         return logger
 
 
-@ECLIExport
-def export_function():
-    pass
+def readback_dict_to_string(readbacks):
+    return ' '.join('%s=%g' % (motor, readback) for
+                    motor, readback in readbacks.items())
 
 
-@magic_arguments()
-@argument('pv', type=AliasedPV, nargs='+',
-          help='PV')
-def command(self, arg):
-    """
-    $ command pv
-
-    Desc
-    """
-    args = parse_argstring(command, arg)
-    if args is None:
-        return

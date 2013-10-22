@@ -81,6 +81,7 @@ class ECLIMotor(ECLIPlugin):
         self._info_dict = DEFAULT_MOTOR_INFO
         super(ECLIMotor, self).__init__(shell=shell, config=config)
         logger.debug('Initializing ECLI motor plugin')
+        self.motors = {}
 
     @staticmethod
     def get_plugin():
@@ -112,17 +113,26 @@ class ECLIMotor(ECLIPlugin):
                       if motor not in shell.user_ns]
 
         for motor in new_motors:
-            if util.is_valid_python_identifier(motor):
+            try:
                 expanded = util.expand_alias(motor)
-                try:
-                    shell.user_ns[motor] = epics.Motor(expanded)
-                except Exception as ex:
-                    logger.error('Bad motor "%s" (%s) %s'
-                                 % (motor, ex.__class__.__name__, ex))
-                except KeyboardInterrupt:
-                    logger.warning('Skipping motor list entry "%s"' % motor)
+                motor_inst = epics.Motor(expanded)
+            except Exception as ex:
+                logger.error('Bad motor "%s" (%s) %s'
+                             % (motor, ex.__class__.__name__, ex))
+            except KeyboardInterrupt:
+                logger.warning('Skipping motor list entry "%s"' % motor)
+            else:
+                self.motors[motor] = motor_inst
 
-        # TODO remove old motors or just leave them in the user namespace?
+            if util.is_valid_python_identifier(motor):
+                shell.user_ns[motor] = motor_inst
+
+    def __iter__(self):
+        for name, motor in self.motors.items():
+            yield name, motor
+
+    def __getitem__(self, name):
+        return self.motors[name]
 
 
 def print_motor_info(motors):

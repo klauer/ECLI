@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*-# coding: utf-8 -*-
 # vi:sw=4 ts=4
 """
 :mod:`ecli_stepscan` -- PyEpics StepScan extension
@@ -28,10 +28,11 @@ from ecli_util import (get_plugin, get_core_plugin)
 from ecli_util import ECLIError
 from ecli_util.decorators import ECLIExport
 
+import epics
 import stepscan
 import numpy as np
 
-logger = logging.getLogger('ECLIStepScan')
+logger = logging.getLogger('ECLI.StepScan')
 
 
 # Loading of this extension
@@ -125,10 +126,10 @@ class ECLIScans(ECLIPlugin):
                   ]
     # scan_time_pv = traitlets.Unicode(u'E1:Scans:scan1.DDLY', config=True) #
     # TODO
-    #detectors = traitlets.List(traitlets.Unicode,
-    #                           default_value=[u'mca:mca1', u'IOC:m1'], config=True)
     detectors = traitlets.List(traitlets.Unicode,
                                default_value=[u'IOC:m1'], config=True)
+    trigger_detectors = traitlets.Dict({'MLL:Scaler:scaler1': 1},
+                                       config=True)
 
     def __init__(self, shell, config):
         super(ECLIScans, self).__init__(shell=shell, config=config)
@@ -248,7 +249,6 @@ class ECLIScans(ECLIPlugin):
 
         if scan.abort:
             self.run_callback(self.CB_SCAN_ABORT, scan=scan)
-            # print('abort scan detected')
         else:
             # It's possible for the messenger to miss a point at the end
             # of the scan:
@@ -316,8 +316,20 @@ def scan(positioners, dwell_time, move_back=True, command='', dimensions=None,
             return None
         logger.debug('Added detector: %s' % det)
         sc.add_detector(det)
-        logger.debug('Added detector trigger: %s' % det.trigger)
-        sc.add_trigger(det.trigger)
+
+        # TODO bug report - hardware triggered detectors
+        if det.trigger is not None:
+            sc.triggers.remove(det.trigger)
+            if det_pv in plugin.trigger_detectors:
+                trigger_value = plugin.trigger_detectors[det_pv]
+                print('adding trigger', det_pv, trigger_value)
+                logger.debug('Added detector trigger: %s = %s' %
+                             (det.trigger, trigger_value))
+                sc.add_trigger(det.trigger, value=trigger_value)
+
+    # TODO add_trigger needs to check for None (SimpleDetector)
+    sc.triggers = [trigger for trigger in sc.triggers
+                   if trigger is not None]
 
     for positioner in positioners:
         sc.add_positioner(positioner)
@@ -422,12 +434,13 @@ def scan_1d(motor='', start=0.0, end=0.0, data_points=0, dwell_time=0.0, relativ
 
     positioners = [pos0]
     # additional counters TODO remove
-    counters = (stepscan.MotorCounter('IOC:m1', label='m1'),
-                stepscan.MotorCounter('IOC:m2', label='m2'),
-                stepscan.MotorCounter('IOC:m3', label='m3'),
-                stepscan.MotorCounter('IOC:m4', label='m4'),
-                stepscan.MotorCounter('IOC:m5', label='m5'),
-                stepscan.MotorCounter('IOC:m6', label='m6'))
+    counters = [stepscan.MotorCounter(motor)]
+    #counters.extend([stepscan.MotorCounter('IOC:m1', label='m1'),
+    #               stepscan.MotorCounter('IOC:m2', label='m2'),
+    #               stepscan.MotorCounter('IOC:m3', label='m3'),
+    #               stepscan.MotorCounter('IOC:m4', label='m4'),
+    #               stepscan.MotorCounter('IOC:m5', label='m5'),
+    #               stepscan.MotorCounter('IOC:m6', label='m6'))
 
     return scan(positioners, dwell_time, command=command,
                 counters=counters, detectors=[], dimensions=(data_points, ),
@@ -598,13 +611,15 @@ def scan_2d(motor1='', start1=0.0, end1=0.0, points1=0,
 
     positioners = (pos1, pos2)
 
-    # additional counters TODO remove
-    counters = (stepscan.MotorCounter('IOC:m1', label='m1'),
-                stepscan.MotorCounter('IOC:m2', label='m2'),
-                stepscan.MotorCounter('IOC:m3', label='m3'),
-                stepscan.MotorCounter('IOC:m4', label='m4'),
-                stepscan.MotorCounter('IOC:m5', label='m5'),
-                stepscan.MotorCounter('IOC:m6', label='m6'))
+    counters = [stepscan.MotorCounter(motor1),
+                stepscan.MotorCounter(motor2),
+                ]
+    #counters.extend([stepscan.MotorCounter('IOC:m1', label='m1'),
+    #               stepscan.MotorCounter('IOC:m2', label='m2'),
+    #               stepscan.MotorCounter('IOC:m3', label='m3'),
+    #               stepscan.MotorCounter('IOC:m4', label='m4'),
+    #               stepscan.MotorCounter('IOC:m5', label='m5'),
+    #               stepscan.MotorCounter('IOC:m6', label='m6'))
 
     return scan(positioners, dwell_time, command=command,
                 counters=counters, detectors=[], dimensions=dimensions,

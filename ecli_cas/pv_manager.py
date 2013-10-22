@@ -98,6 +98,14 @@ class CAPV(pcaspy.SimplePV):
             self.updateValue(entry)
             entry.flag = False
 
+    def asyn_completed(self):
+        """
+        Notify the driver that, as an asyn record,
+        processing has completed
+        """
+        if self.info.asyn:
+            driver = self.driver
+            driver.callbackPV(self.basename)
 
 class CAServer(pcaspy.SimpleServer):
     def __init__(self):

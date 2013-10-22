@@ -76,7 +76,10 @@ class SoftMotor(CASRecord):
         self._tweak_value = self.get_field_default(mi.MOTOR_TWEAK_VALUE)
         self._status = 0
         self._done_moving = True
-        self._updating = False
+
+        self.set_field(mi.MOTOR_DONE_MOVE, self._done_moving)
+        self.update_status(enc_present=True)
+        self.set_field('STAT', 0)
 
     def get_field_default(self, field):
         average, min_, max_ = mi.get_field_defaults(field)
@@ -92,17 +95,11 @@ class SoftMotor(CASRecord):
             self.move(self._paused_position, relative=False)
             self._paused_position = None
 
-    def startup(self, driver):
-        CASRecord.startup(self, driver)
-
-        self.set_field(mi.MOTOR_DONE_MOVE, self._done_moving)
-        self.update_status(enc_present=True)
-
     def _positions(self, value, type_):
         """for a given position, returns the (user, dial, raw) positions"""
         res = self._motor_res
         if res == 0.0:
-            raise ValueError('Resolution unset')
+            return 0.0, 0.0, 0
 
         if type_ == mi.POSITION_RAW:
             dial = res * value
@@ -130,12 +127,9 @@ class SoftMotor(CASRecord):
             else:
                 self.set_field(mi.MOTOR_DIAL_HIGH_LIMIT, dial)
 
-        for field in ('', 'VAL'):
-            self.update_pvinfo(field, 'hilim', user)
-        for field in ('DVAL', ):
-            self.update_pvinfo(field, 'hilim', dial)
-        for field in ('RVAL', ):
-            self.update_pvinfo(field, 'hilim', raw)
+        for field, value in zip(('', 'VAL', 'DVAL', 'RVAL'),
+                                (user, user, dial, raw)):
+            self[field].info.hilim = value
 
     def _update_low_limit(self, limit, position_type=mi.POSITION_DIAL):
         user, dial, raw = self._positions(limit, position_type)
@@ -146,12 +140,9 @@ class SoftMotor(CASRecord):
             else:
                 self.set_field(mi.MOTOR_DIAL_LOW_LIMIT, dial)
 
-        for field in ('', 'VAL'):
-            self.update_pvinfo(field, 'lolim', user)
-        for field in ('DVAL', ):
-            self.update_pvinfo(field, 'lolim', dial)
-        for field in ('RVAL', ):
-            self.update_pvinfo(field, 'lolim', raw)
+        for field, value in zip(('', 'VAL', 'DVAL', 'RVAL'),
+                                (user, user, dial, raw)):
+            self[field].info.lolim = value
 
     def user_high_limit_updated(self, value=None, **kwargs):
         self._update_high_limit(value, mi.POSITION_USER)
@@ -227,12 +218,9 @@ class SoftMotor(CASRecord):
         self.set_field(mi.MOTOR_LIMIT_VIOLATION, 0)
         self.set_field(mi.MOTOR_AT_LOW_LIMIT, 0)
         self.set_field(mi.MOTOR_AT_HIGH_LIMIT, 0)
+        self.done_moving = False
 
-        user, dial, raw = self._positions(pos, mi.POSITION_DIAL)
-        with self._no_callbacks():
-            self.set_field(mi.MOTOR_DIAL_VALUE, dial)
-            self.set_field(mi.MOTOR_USER_VALUE, user)
-            self.set_field(mi.MOTOR_RAW_VALUE, raw)
+        user, dial, raw = self._update_request_pos(dial=pos)
 
         if self._go != mi.MOTOR_GO_GO:
             logger.debug('Move requested; motor stopped')
@@ -240,8 +228,24 @@ class SoftMotor(CASRecord):
         else:
             self._request_position = pos
 
-        logger.debug('Move() done')
-        self._set_readback(pos)
+        if 0:
+            logger.debug('Move() done')
+            self._set_readback(pos)
+            self.done_moving = True
+
+    def _update_request_pos(self, dial=None):
+        if dial is None:
+            dial = self._request_position
+
+        user, dial, raw = self._positions(dial, mi.POSITION_DIAL)
+        with self._no_callbacks():
+            self.set_field(mi.MOTOR_DIAL_VALUE, dial)
+            self.set_field(mi.MOTOR_USER_VALUE, user)
+            self.set_field(mi.MOTOR_RAW_VALUE, raw)
+            self.set_field('raw_encoder_position', raw)
+            self.set_field('raw_motor_position', raw)
+
+        return user, dial, raw
 
     def _set_readback(self, dial_position, direction=None):
         logger.debug('%s: Set readback (dial=%s dir=%s)' % (self, dial_position, direction))
@@ -252,41 +256,37 @@ class SoftMotor(CASRecord):
             self.set_field(mi.MOTOR_MOVE_DIRECTION, direction)
 
         if self._request_position is None:
-            self._request_position = dial
-            self.set_field(mi.MOTOR_DIAL_VALUE, dial, update_callback=False)
-            self.set_field(mi.MOTOR_USER_VALUE, user, update_callback=False)
-            self.set_field(mi.MOTOR_RAW_VALUE, raw, update_callback=False)
+            self._update_request_pos(dial)
 
         self.set_field(mi.MOTOR_USER_READBACK, user)
         self.set_field(mi.MOTOR_DIAL_READBACK, dial)
         self.set_field(mi.MOTOR_RAW_READBACK, raw)
-        #self._update()
 
         plus_lim = (dial_position >= self._high_limit)
         minus_lim = (dial_position <= self._low_limit)
         self.update_status(plus_ls=plus_lim, minus_ls=minus_lim)
 
-    def dial_value_updated(self, value=None, **kwargs):
-        if self._updating:
-            return
+        if self._request_position is not None:
+            req_pos = self._positions(self._request_position, mi.POSITION_DIAL)
+            req_user, req_dial, req_raw = req_pos
 
+            self.set_field('difference_raw', req_raw - raw)
+            self.set_field('difference_dial', req_dial - dial)
+
+    def dial_value_updated(self, value=None, **kwargs):
         return self.move(value, relative=False)
 
     def raw_value_updated(self, value=None, **kwargs):
-        if self._updating:
-            return
-
         user, dial, raw = self._positions(value, mi.POSITION_RAW)
-        return self.move(value, relative=False)
+        return self.dial_value_updated(value=dial)
 
     def user_value_updated(self, value=None, **kwargs):
-        if self._updating:
-            return
-
         user, dial, raw = self._positions(value, mi.POSITION_USER)
-        return self.move(value, relative=False)
+        return self.dial_value_updated(value=dial)
 
     def update_status(self, **kwargs):
+        old_status = self._status
+
         for arg, value in kwargs.iteritems():
             bit = STATUS_BITS[arg]
             if value:
@@ -294,7 +294,16 @@ class SoftMotor(CASRecord):
             else:
                 self._status &= ~(1 << bit)
 
-        self.set_field(mi.MOTOR_STATUS, self._status)
+        if old_status != self._status:
+            self.set_field(mi.MOTOR_STATUS, self._status)
+
+        other_args = set(kwargs.keys()) - set(STATUS_BITS.keys())
+        if other_args:
+            raise Exception('Unrecognized status arguments: %s' % list(other_args))
+
+        moving = kwargs.get('moving', None)
+        if moving is not None:
+            self.set_field(mi.MOTOR_MOVING, moving)
 
     def _get_done_moving(self):
         return self._done_moving
@@ -308,8 +317,10 @@ class SoftMotor(CASRecord):
             if done_moving:
                 # here's where the response to the putCallback happens
                 # that is, the message to the client that the put has complete
+                logger.debug('%s Move completed (pos = %s)' % (self, self._readback))
                 for field in mi.MOTOR_ASYN_FIELDS:
-                    self._driver.callbackPV(self._get_full_pv(field))
+                    pvi = self[field]
+                    pvi.asyn_completed()
 
     done_moving = property(_get_done_moving, _set_done_moving)
 
