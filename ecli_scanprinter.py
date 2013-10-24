@@ -40,7 +40,18 @@ def unload_ipython_extension(ipython):
     return util.generic_unload_ext(ipython, ECLIScanPrinter)
 
 
+def format_header(header, width):
+    """
+    Fix labels (replacing spaces with underscores, for example)
+    and right-justify to the specified width
+    """
+    return util.fix_label(header).rjust(width)
+
+
 class ECLIScanPrinter(ECLIPlugin):
+    """
+    Prints scan information as it comes in from :mod:`ecli_stepscan`.
+    """
     VERSION = 1
     REQUIRES = [('ECLICore', 1), (SCAN_PLUGIN, 1)]
 
@@ -77,10 +88,10 @@ class ECLIScanPrinter(ECLIPlugin):
     def logger(self):
         return logger
 
-    def _format_header(self, header, width):
-        return util.fix_label(header).rjust(width)
-
     def pre_scan(self, scan=None, scan_number=0, mca_detectors=[], **kwargs):
+        """
+        Callback: called before a scan starts
+        """
         self.t_start = time.time()
 
         print('--- Scan %d ---' % (scan_number, ), file=self.outfile)
@@ -97,14 +108,20 @@ class ECLIScanPrinter(ECLIPlugin):
                                for header in self._headers]
 
     def _print_headers(self, column_widths=[]):
+        """
+        Print out the labels for each column
+        """
         if not column_widths:
             column_widths = [self.min_col_width] * len(self._headers)
 
-        cols = ' '.join([self._format_header(s, w)
+        cols = ' '.join([format_header(s, w)
                          for s, w in zip(self._headers, column_widths)])
         print(cols, file=self.outfile)
 
     def post_scan(self, scan=None, abort=False, **kwargs):
+        """
+        Callback: called after a scan finishes
+        """
         self.t_finished = time.time()
         self.t_elapsed = self.t_finished - self.t_start
 
@@ -135,6 +152,9 @@ class ECLIScanPrinter(ECLIPlugin):
 
     def single_step(self, scan=None, grid_point=(), point=0, array_idx=0,
                     **kwargs):
+        """
+        Callback: called after every single point in a stepscan
+        """
         self._last_point = point
         data = [c.buff[array_idx] for c in scan.counters]
 

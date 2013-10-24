@@ -7,7 +7,7 @@
 .. module:: ecli_scanwriter_hdf5
     :synopsis: ECLI HDF5 file writer for scans (:mod:`ecli_stepscan`)
 .. moduleauthor:: Ken Lauer <klauer@bnl.gov>
-.. note:: requires h5py <http://www.h5py.org>
+.. note:: requires h5py <http://www.h5py.org> >= 2.2.0
 """
 
 from __future__ import print_function
@@ -49,6 +49,9 @@ def parse_scan_key(key):
 
 
 class ECLIScanWriterHDF5(ECLIPlugin):
+    """
+    ECLI HDF5 file writer for scans
+    """
     VERSION = 1
     SCAN_PLUGIN = 'ECLIScans'
     REQUIRES = [('ECLICore', 1), (SCAN_PLUGIN, 1)]
@@ -80,7 +83,10 @@ class ECLIScanWriterHDF5(ECLIPlugin):
     def logger(self):
         return logger
 
-    def _new_scan(self, scan_number, overwrite=True):
+    def _new_scan(self, scan_number, overwrite=False):
+        """
+        Setup the HDF5 scan group for the new scan number
+        """
         group_name = 'Scan_%.4d' % (scan_number, )
         logger.debug('New group name', group_name)
         try:
@@ -88,7 +94,7 @@ class ECLIScanWriterHDF5(ECLIPlugin):
         except ValueError:
             if overwrite:
                 group = self._scans_group[group_name]
-                logger.debug('Existing group', group)
+                logger.debug('Existing group: %s' % group)
                 return group
             else:
                 return None
@@ -98,6 +104,9 @@ class ECLIScanWriterHDF5(ECLIPlugin):
 
     @property
     def last_scan_number(self):
+        """
+        If a file is loaded, return the last (integral) scan ID
+        """
         if self._scan_group is None:
             return None
 
@@ -137,6 +146,9 @@ class ECLIScanWriterHDF5(ECLIPlugin):
             return True
 
     def pre_scan(self, scan=None, scan_number=0, command='', dimensions=(), **kwargs):
+        """
+        Callback: called before a scan starts
+        """
         if self._file is None:
             logger.error('HDF5 file not set; scan will not be saved. (See: `scan_save` or %%config %s)' %
                          (self.__class__.__name__, ))
@@ -171,6 +183,9 @@ class ECLIScanWriterHDF5(ECLIPlugin):
             pv_info.attrs[label] = c.pv.pvname
 
     def post_scan(self, scan=None, abort=False, **kwargs):
+        """
+        Callback: called after a scan finishes
+        """
         if self._scan_group is None:
             return
 
@@ -181,6 +196,9 @@ class ECLIScanWriterHDF5(ECLIPlugin):
 
     def single_step(self, scan=None, grid_point=(), point=0, array_idx=0,
                     **kwargs):
+        """
+        Callback: called after every single point in a stepscan
+        """
         if self._file is None or self._scan_group is None:
             return
 
@@ -192,6 +210,9 @@ class ECLIScanWriterHDF5(ECLIPlugin):
 
         for counter in scan.counters:
             data = counter.buff[array_idx]
+            if data is None:
+                continue
+
             label = util.fix_label(counter.label)
 
             # Create the array in the data group if it doesn't already exist
@@ -218,4 +239,7 @@ class ECLIScanWriterHDF5(ECLIPlugin):
         self._open_file(new)
 
     def save_path_set(self, path=None):
+        """
+        Callback: global save file path has changed
+        """
         self.filename = u'%s.hdf5' % path

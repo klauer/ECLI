@@ -37,6 +37,9 @@ def unload_ipython_extension(ipython):
 
 
 class ECLIScanWriterSPEC(ECLIPlugin):
+    """
+    ECLI SPEC file writer for scans
+    """
     VERSION = 1
     SCAN_PLUGIN = 'ECLIScans'
     REQUIRES = [('ECLICore', 1), (SCAN_PLUGIN, 1)]
@@ -72,6 +75,9 @@ class ECLIScanWriterSPEC(ECLIPlugin):
         return logger
 
     def pre_scan(self, scan=None, scan_number=0, command='', **kwargs):
+        """
+        Callback: called before a scan starts
+        """
         if self._file is None:
             logger.error('SPEC file not set; scan will not be saved. (See: `scan_save` or %%config %s)' %
                          self.__class__.__name__)
@@ -89,6 +95,9 @@ class ECLIScanWriterSPEC(ECLIPlugin):
                                           in extra_pv_info))
 
     def post_scan(self, scan=None, abort=False, **kwargs):
+        """
+        Callback: called after a scan finishes
+        """
         if self._file is None:
             return
 
@@ -96,6 +105,9 @@ class ECLIScanWriterSPEC(ECLIPlugin):
 
     def single_step(self, scan=None, grid_point=(), point=0, array_idx=0,
                     **kwargs):
+        """
+        Callback: called after every single point in a stepscan
+        """
         if self._file is None:
             return
 
@@ -125,4 +137,7 @@ class ECLIScanWriterSPEC(ECLIPlugin):
             return True
 
     def save_path_set(self, path=None):
+        """
+        Callback: global save file path has changed
+        """
         self.filename = u'%s.spec' % path
