@@ -62,7 +62,7 @@ class ECLIScanWriterHDF5(ECLIPlugin):
         self.scan_plugin = scan_plugin
 
         for cb_name, fcn in callbacks:
-            self.core.add_callback(cb_name, fcn, extension=scan_plugin)
+            scan_plugin.add_callback(cb_name, fcn)
 
     @property
     def logger(self):

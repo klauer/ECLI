@@ -69,12 +69,9 @@ class ECLIScanPrinter(ECLIPlugin):
         self._last_point = None
 
         scan_plugin = get_plugin(SCAN_PLUGIN)
-        self.add_callback(scan_plugin.CB_PRE_SCAN, self.pre_scan,
-                          extension=SCAN_PLUGIN)
-        self.add_callback(scan_plugin.CB_POST_SCAN, self.post_scan,
-                          extension=SCAN_PLUGIN)
-        self.add_callback(scan_plugin.CB_SCAN_STEP, self.single_step,
-                          extension=SCAN_PLUGIN)
+        scan_plugin.add_callback(scan_plugin.CB_PRE_SCAN, self.pre_scan)
+        scan_plugin.add_callback(scan_plugin.CB_POST_SCAN, self.post_scan)
+        scan_plugin.add_callback(scan_plugin.CB_SCAN_STEP, self.single_step)
 
     @property
     def logger(self):

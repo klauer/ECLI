@@ -61,7 +61,7 @@ class ECLIScanWriterSPEC(ECLIPlugin):
                      (scan_plugin.CB_SCAN_STEP, self.single_step)]
 
         for cb_name, fcn in callbacks:
-            self.core.add_callback(cb_name, fcn, extension=scan_plugin)
+            scan_plugin.add_callback(cb_name, fcn)
 
     @property
     def logger(self):

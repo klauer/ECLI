@@ -11,16 +11,19 @@
 from __future__ import print_function
 
 import logging
+
+logger = logging.getLogger('ECLI.core')
+
 try:
     import guidata
     import guidata.dataset.datatypes as dt
     import guidata.dataset.dataitems as di
     from guidata.dataset.datatypes import DataSetGroup
 except Exception as ex:
-    logging.warning('guidata not installed/functioning; GUI configuration dialogs disabled.')
-    ex_str = 'guidata import failure (%s) %s' % (ex.__class__.__name__, ex)
-    logging.debug(ex_str)
-    raise ImportError(ex_str)
+    logger.warning('guidata not installed/functioning; GUI configuration dialogs disabled.')
+    logger.debug('guidata import', exc_info=True)
+    raise ImportError('guidata import failure (%s) %s' %
+                      (ex.__class__.__name__, ex))
 
 import IPython.utils.traitlets as traitlets
 

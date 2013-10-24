@@ -87,8 +87,9 @@ class ECLICore(ECLIPlugin):
     CB_EXTENSION_LOADED = 'ExtensionLoaded'
     CB_EXTENSION_UNLOADED = 'ExtensionUnloaded'
     CB_EXIT = 'Exit'
-    CB_CONFIG_CHANGE = 'ConfigurationChanged'
+    CB_CONFIG_LOADED = 'ConfigurationLoaded'
     core_callbacks = [CB_EXTENSION_LOADED, CB_EXTENSION_UNLOADED, CB_EXIT,
+                      CB_CONFIG_LOADED,
                       ]
 
     shell = traitlets.Instance(
@@ -124,6 +125,10 @@ class ECLICore(ECLIPlugin):
 
         util.__ecli_core__ = self
 
+        self._cb_dict = {}
+        for cb in self.core_callbacks:
+            self.register_callback(cb)
+
         super(ECLICore, self).__init__(shell=shell, config=config)
         logger.info('Initializing ECLICore plugin')
 
@@ -152,10 +157,6 @@ class ECLICore(ECLIPlugin):
         # ECLI extensions
         self._extensions = {self.__class__.__name__: self}
         self._callbacks = {}
-        self._extension_callbacks = {self.__class__.__name__: []}
-
-        for cb in self.core_callbacks:
-            self.register_callback(cb, extension=self.__class__.__name__)
 
         # Over-ride the exit request (TODO: custom shell might be a good idea?)
         self._shell_exit = self.shell.ask_exit
@@ -165,73 +166,6 @@ class ECLICore(ECLIPlugin):
 
     def get_extension(self, name):
         return self._extensions[name]
-
-    def register_callback(self, name, extension='ECLICore'):
-        """
-        Define a callback for an extension, allowing other extensions
-        to be notified when it is triggered
-        """
-        # TODO: why aren't plugins just in control of their own callbacks
-        #       through a standard interface?
-        name = '%s.%s' % (extension, name)
-
-        assert(name not in self._callbacks)
-        self._callbacks[name] = []
-        self._extension_callbacks[extension].append(name)
-
-        logger.debug('Callback registered: %s' % name)
-
-    def unregister_callback(self, name, extension='ECLICore'):
-        """
-        Unregister a previously defined callback
-        """
-        name = '%s.%s' % (extension, name)
-
-        if name not in self._callbacks:
-            return
-
-        del self._callbacks[name]
-        self._extension_callbacks[extension].remove(name)
-
-        logger.debug('Callback unregistered: %s' % name)
-
-    def add_callback(self, name, fcn, extension='ECLICore'):
-        """
-        Calls `fcn` when the named callback is triggered
-        """
-        if isinstance(extension, ECLIPlugin):
-            extension = extension.__class__.__name__
-        if extension not in self._extensions:
-            raise util.ECLIExtensionNotLoadedError(extension)
-
-        name = '%s.%s' % (extension, name)
-        if name not in self._callbacks:
-            raise ValueError('Callback does not exist: %s' % name)
-
-        cb_list = self._callbacks[name]
-        if fcn not in cb_list:
-            cb_list.append(fcn)
-
-    def run_callback(self, name, extension, handle_exceptions=True,
-                     show_traceback=None,
-                     **kwargs):
-        """
-        Trigger a previously registered callback
-        """
-        name = '%s.%s' % (extension, name)
-
-        for fcn in self._callbacks[name]:
-            try:
-                fcn(**kwargs)
-            except Exception as ex:
-                if handle_exceptions:
-                    logger.error('Callback %s failed: (%s) %s' %
-                                 (name, ex.__class__.__name__, ex))
-                    if show_traceback is not None:
-                        util.print_traceback(ex, f=show_traceback)
-
-                else:
-                    raise
 
     def check_requirements(self, requirements):
         """
@@ -305,7 +239,6 @@ class ECLICore(ECLIPlugin):
             util.export_class_magic(self.shell, instance)
 
         self._extensions[name] = instance
-        self._extension_callbacks[name] = []
         logger.info('* Extension %s loaded' % name)
 
         self.run_callback(self.CB_EXTENSION_LOADED, self.__class__.__name__,
@@ -318,9 +251,6 @@ class ECLICore(ECLIPlugin):
         '''
         if name in self._extensions:
             #self.shell.plugin_manager.unregister_plugin(name)
-
-            for cb in self._extension_callbacks[name]:
-                self.unregister_callback(cb, name)
 
             del self._extensions[name]
             logger.info('* Extension %s unloaded' % name)
@@ -534,6 +464,8 @@ class ECLICore(ECLIPlugin):
                         logger.debug('Configuration file load failed %s.%s=%s' %
                                      (ext_name, name, value),
                                      ext_info=True)
+
+        self.run_callback(self.CB_CONFIG_LOADED, self.__class__.__name__)
         return True
 
 

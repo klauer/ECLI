@@ -1,15 +1,14 @@
 *TODO*
 
-* configuration persistence? <-- biggest issue right now
-	IPython profile config or separate file?
+Important:
+    import ecli_plugin vs get_plugin('ECLIPlugin') is messy -- not clear
+    when to use which without looking at the code.
 
-config_gui started -- need to actually save it, also
+    Similarly, there has to be a better way to have both magicargs calls 
+    and functions without so much boilerplate reimplementation
 
-pseudomotor stuff
+    Configuration saving/loading is _very_ primitive
+    (and config_gui started -- but changes not saved)
 
 callbacks for when aliases/core traits are updated
 
-clear up 'get-records-from-devices' and make opposite function
-simple 'get-device' function (expected rtyp, ...)
-
-%autocall 2

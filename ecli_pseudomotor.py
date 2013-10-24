@@ -150,3 +150,12 @@ def create_motor(pseudo_name, readback_expr, aliases={},
     plugin.groups.append(([pseudomotor], group))
 
     pseudomotor.update_readback()
+
+@ECLIExport
+def delete_pseudomotor(pseudo_name):
+    """
+    Delete a pseudomotor by name
+    """
+
+    # TODO
+    raise NotImplementedError
