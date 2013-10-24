@@ -70,8 +70,23 @@ class ECLIpymca(ECLIPlugin):
     def logger(self):
         return logger
 
+    def get_save_files(self):
+        files = []
+        base = 'ECLIScanWriter'
+        plugins = ('HDF5', 'SPEC')
+        for plugin_name in plugins:
+            plugin_name = '%s%s' % (base, plugin_name)
+            try:
+                plugin = get_plugin(plugin_name)
+            except:
+                pass
+            else:
+                files.append(plugin.filename)
+
+        return files
+
     @ECLIExport
-    def pymca(self):
+    def pymca(self, *other_args):
         """
         Start PyMca
         """
@@ -79,18 +94,18 @@ class ECLIpymca(ECLIPlugin):
         xmlrpc_plugin = get_plugin('ECLIxmlrpc')
         url = xmlrpc_plugin.server_url
 
-        #print('pre launch', epics.caget('MLL:DXP:mca1.ERTM'))
-        #print('pid %d context %s' % (os.getpid(), epics.ca.current_context()))
+        args = [url] + self.get_save_files()
 
         try:
             if self.use_subprocess:
-                args = [sys.executable, __file__, url]
+                args = [sys.executable, __file__] + args
                 self.pymca_process = subprocess.Popen(args)
             else:
                 context = epics.ca.current_context()
                 epics.ca.detach_context()
                 self.pymca_process = mp.Process(target=start_pymca,
-                                                args=(url, ))
+                                                args=args,
+                                                )
                 self.pymca_process.start()
 
         except Exception as ex:
@@ -380,11 +395,10 @@ class EpicsBridge(object):
 
     def getdata(self, name):
         ret = self._getdata(name)
-        print('getdata %s = %s' % (name, ret))
+        #print('getdata %s = %s' % (name, ret))
         return ret
 
     def getkeylist(self, shmenv):
-        #print('shmenv is', shmenv)
         if shmenv == SCAN_ENV_TAG:
             return self.scan_info.keys()
         else:
@@ -394,24 +408,23 @@ class EpicsBridge(object):
         return 1
 
     def getspeclist(self):
-        import traceback
-        traceback.print_stack()
+        #import traceback; traceback.print_stack()
         return [EPICS_TAG] + sps._getspeclist()
 
     # unused functions:
     def updatedone(self, shmenv):
-        print('updatedone', shmenv)
-        return 0
-
-    def getdatacol(self, shm,idx):
         raise NotImplementedError
         # unused in current PyMca code
 
-    def getdatarow(self, shm,idx):
+    def getdatacol(self, shm, idx):
         raise NotImplementedError
         # unused in current PyMca code
 
-    def putenv(self, shmenv,cmd,outp):
+    def getdatarow(self, shm, idx):
+        raise NotImplementedError
+        # unused in current PyMca code
+
+    def putenv(self, shmenv, cmd, outp):
         raise NotImplementedError
         # unused in current PyMca code
 
@@ -469,6 +482,7 @@ def wrap_pymca(xmlrpc_url):
         inst = EpicsBridge.instance
         inst.url = xmlrpc_url
 
+
 def pymca_print(s, end=''):
     if 1:
         with open('pymca_log.txt', 'at') as f:
@@ -476,7 +490,8 @@ def pymca_print(s, end=''):
     else:
        print(s, end=end, file=sys.__stdout__)
 
-def start_pymca(xmlrpc_url):
+
+def start_pymca(xmlrpc_url, *files):
     """
     .. note:: this runs in a separate process from ECLI
     """
@@ -514,6 +529,9 @@ def start_pymca(xmlrpc_url):
 
     try:
         source_sel = main.sourceWidget.sourceSelector
+        for fn in files:
+            source_sel.openFile(fn)
+
         source_sel.openFile(EPICS_TAG, specsession=True)
     except:
         pass
@@ -521,4 +539,4 @@ def start_pymca(xmlrpc_url):
     app.exec_()
 
 if __name__ == '__main__':
-    start_pymca(sys.argv[1])
+    start_pymca(*sys.argv[1:])
