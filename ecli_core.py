@@ -13,6 +13,7 @@ from __future__ import print_function
 import logging
 import os
 import time
+import functools
 
 import epics
 
@@ -100,7 +101,8 @@ class ECLICore(ECLIPlugin):
     ca_logfile = traitlets.Unicode(u'', config=True)
 
     fields_columns = traitlets.List(traitlets.Unicode,
-                        default_value=[u'Field', u'Prompt', u'Pp'], config=True)
+                                    default_value=[u'Field', u'Prompt', u'Pp'],
+                                    config=True)
     fields_timeout = traitlets.Float(0.01, config=True)
 
     date_format = traitlets.Unicode(u'%y-%m-%d %I:%M:%S %p', config=True)
@@ -180,7 +182,6 @@ class ECLICore(ECLIPlugin):
         if not hasattr(fcn, 'plugin_class'):
             return fcn
 
-        import functools
         @functools.wraps(fcn)
         def wrapped(arg):
             plugin = fcn.plugin_class.get_plugin()
@@ -589,18 +590,6 @@ def caput(mself, self, args):
         print('caput failed: (%s) %s' % (ex.__class__.__name__, ex))
 
 
-@ECLIExport
-def showcaerrors(mself, self, args):
-    """
-    $ showcaerrors
-    Toggle display of CA errors / warnings
-    """
-    # TODO
-
-    pass
-
-
-# TODO name change
 @ECLIExport
 def fields(pv, string):
     '''
