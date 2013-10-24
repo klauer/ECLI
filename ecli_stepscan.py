@@ -17,8 +17,6 @@ import threading
 
 # IPython
 import IPython.utils.traitlets as traitlets
-from IPython.core.magic_arguments import (argument, magic_arguments,
-                                          parse_argstring)
 
 # ECLI
 from ecli_core import AliasedPV
@@ -27,6 +25,7 @@ import ecli_util as util
 from ecli_util import (get_plugin, get_core_plugin)
 from ecli_util import ECLIError
 from ecli_util.decorators import ECLIExport
+from ecli_util.magic_args import (ecli_magic_args, argument)
 
 import epics
 import stepscan
@@ -93,7 +92,7 @@ def fix_dimensions(d):
     Strips off any final 1s in a dimension array
     """
     d = list(d)
-    while d[-1] == 1:
+    while d and d[-1] == 1:
         d = d[:-1]
     return d
 
@@ -475,7 +474,8 @@ def dscan(motor='', start='', end='', data_points=0, dwell_time=0.0):
                    dwell_time=dwell_time, relative=True)
 
 
-@magic_arguments()
+
+@ecli_magic_args(ECLIScans)
 @argument('motor', type=AliasedPV,
           help='Motor to scan')
 @argument('start', type=float,
@@ -487,7 +487,7 @@ def dscan(motor='', start='', end='', data_points=0, dwell_time=0.0):
 @argument('time', type=util.arg_value_range(min_=0, inclusive=False,
                                             type_=float),
           help='Seconds at each point')
-def _dscan(self, arg):
+def _dscan(margs, self, args):
     """
     $ dscan motor relative_start relative_end data_points time
     $ ascan motor start end data_points time
@@ -496,15 +496,11 @@ def _dscan(self, arg):
     positions (ascan). The positions are automatically calculated by EPICS
     from the amount of data points that are requested.
     """
-    args = parse_argstring(_dscan, arg)
-    if args is None:
-        return
-
     dscan(motor=args.motor, start=args.start, end=args.end,
            data_points=args.data_points, dwell_time=args.time)
 
 
-@magic_arguments()
+@ecli_magic_args(ECLIScans)
 @argument('motor', type=AliasedPV,
           help='Motor to scan')
 @argument('start', type=float,
@@ -516,11 +512,7 @@ def _dscan(self, arg):
 @argument('time', type=util.arg_value_range(min_=0, inclusive=False,
                                             type_=float),
           help='Seconds at each point')
-def _ascan(self, arg):
-    args = parse_argstring(_ascan, arg)
-    if args is None:
-        return
-
+def _ascan(margs, self, args):
     ascan(motor=args.motor, start=args.start, end=args.end,
            data_points=args.data_points, dwell_time=args.time)
 
@@ -625,7 +617,7 @@ def scan_2d(motor1='', start1=0.0, end1=0.0, points1=0,
                 counters=counters, detectors=[], dimensions=dimensions,
                 )
 
-@magic_arguments()
+@ecli_magic_args(ECLIScans)
 @argument('motor1', type=AliasedPV,
           help='Motor to scan (1)')
 @argument('start1', type=float,
@@ -645,7 +637,7 @@ def scan_2d(motor1='', start1=0.0, end1=0.0, points1=0,
 @argument('time', type=util.arg_value_range(min_=0, inclusive=False,
                                             type_=float),
           help='Seconds at each point')
-def _mesh(self, arg):
+def _mesh(margs, self, args):
     """Perform a 2D scan of dimension (points1, points2):
         motor1 in [start1, end1], with points1 data points (inner loop, fast)
         motor2 in [start2, end2], with points2 data points (outer loop, slow)
@@ -658,17 +650,13 @@ def _mesh(self, arg):
                 take data point
 
     """
-    args = parse_argstring(_mesh, arg)
-    if args is None:
-        return
-
     return amesh(motor1=args.motor1, start1=args.start1, end1=args.end1, points1=args.points1,
                  motor2=args.motor2, start2=args.start2, end2=args.end2, points2=args.points2,
                  dwell_time=args.time)
 
 _amesh = _mesh
 
-@magic_arguments()
+@ecli_magic_args(ECLIScans)
 @argument('motor1', type=AliasedPV,
           help='Motor to scan (1)')
 @argument('start1', type=float,
@@ -688,7 +676,7 @@ _amesh = _mesh
 @argument('time', type=util.arg_value_range(min_=0, inclusive=False,
                                             type_=float),
           help='Seconds at each point')
-def _dmesh(self, arg):
+def _dmesh(margs, self, args):
     """Perform a 2D scan of dimension (points1, points2):
         motor1 in [start1, end1], with points1 data points (inner loop, fast)
         motor2 in [start2, end2], with points2 data points (outer loop, slow)
@@ -701,10 +689,6 @@ def _dmesh(self, arg):
                 take data point
 
     """
-    args = parse_argstring(_mesh, arg)
-    if args is None:
-        return
-
     return dmesh(motor1=args.motor1, start1=args.start1, end1=args.end1, points1=args.points1,
                  motor2=args.motor2, start2=args.start2, end2=args.end2, points2=args.points2,
                  dwell_time=args.time)

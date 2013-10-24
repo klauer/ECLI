@@ -21,8 +21,6 @@ import threading
 
 # IPython
 import IPython.utils.traitlets as traitlets
-from IPython.core.magic_arguments import (argument, magic_arguments,
-                                          parse_argstring)
 
 # ECLI
 from ecli_core import AliasedPV
@@ -30,12 +28,15 @@ from ecli_plugin import ECLIPlugin
 import ecli_util as util
 from ecli_util import (get_plugin, get_core_plugin)
 from ecli_util.decorators import ECLIExport
+from ecli_util.magic_args import (ecli_magic_args, argument)
 
 logger = logging.getLogger('ECLI.opi')
+
 
 # Loading of this extension
 def load_ipython_extension(ipython):
     return util.generic_load_ext(ipython, ECLIopi, logger=logger, globals_=globals())
+
 
 def unload_ipython_extension(ipython):
     return util.generic_unload_ext(ipython, ECLIopi)
@@ -206,7 +207,7 @@ class ProcessManager(object):
                 th.join()
 
 
-@magic_arguments()
+@ecli_magic_args(ECLIopi)
 @argument('pv', type=AliasedPV,
           help='PV')
 @argument('display', type=str, nargs='?',
@@ -215,14 +216,10 @@ class ProcessManager(object):
           help='Edit instead of execute the display')
 @argument('-b', '--background', action='store_const', const=True,
           help='Run in the background')
-def edm(self, arg):
+def edm(margs, self, args):
     """
     $ edm pv [display] [-e] [-b]
     """
-    args = parse_argstring(edm, arg)
-    if args is None:
-        return
-
     macros = macros_from_pv(args.pv, allow_partial=False)
 
     if args.display is not None:

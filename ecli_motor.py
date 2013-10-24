@@ -14,8 +14,6 @@ import logging
 
 # IPython
 import IPython.utils.traitlets as traitlets
-from IPython.core.magic_arguments import (argument, magic_arguments,
-                                          parse_argstring)
 
 # ECLI
 from ecli_core import AliasedPV
@@ -24,6 +22,7 @@ import ecli_util as util
 from ecli_util import get_plugin
 from ecli_util.epics_device import (get_records_from_devices, )
 from ecli_util.decorators import ECLIExport
+from ecli_util.magic_args import (ecli_magic_args, argument)
 
 import epics
 
@@ -164,16 +163,14 @@ def print_motor_info(motors):
     util.print_table(rows, first_column_format=u'{:<%d}')
 
 
-@magic_arguments()
+@ecli_magic_args(ECLIMotor)
 @argument('motors', type=AliasedPV, nargs='+',
           help='Motor(s) to query')
-def wm(self, arg):
+def wm(mself, self, args):
     """
     Show motor status
     """
-    args = parse_argstring(wm, arg)
-    if args:
-        print_motor_info(args.motors)
+    print_motor_info(args.motors)
 
 
 @ECLIExport
@@ -272,74 +269,64 @@ def user_move_motor(motor, offset_or_position, verbose=True, **kwargs):
         print('Failed: (%s) %s' % (ex.__class__.__name__, ex))
 
 
-@magic_arguments()
+@ecli_magic_args(ECLIMotor)
 @argument('motor', type=AliasedPV,
           help='Motor to move')
 @argument('offset', type=float,
           help='Position offset to move')
 @argument('-v', '--verbose', action='store_const', const=True,
           help='Move verbosely')
-def mvr(self, arg):
+def mvr(mself, self, args):
     """
     Move motor by offset, in user coordinates
     """
-    args = parse_argstring(mvr, arg)
-    if args:
-        user_move_motor(args.motor, args.offset, relative=True,
-                        verbose=args.verbose)
+    user_move_motor(args.motor, args.offset, relative=True,
+                    verbose=args.verbose)
 
 
-@magic_arguments()
+@ecli_magic_args(ECLIMotor)
 @argument('motor', type=AliasedPV,
           help='Motor to move')
 @argument('offset', type=float,
           help='Position offset to move')
-def umvr(self, arg):
+def umvr(mself, self, args):
     """
     Verbosely move motor by offset, in user coordinates
     """
-    args = parse_argstring(mvr, arg)
-    if args:
-        user_move_motor(args.motor, args.offset, relative=True, verbose=True)
+    user_move_motor(args.motor, args.offset, relative=True, verbose=True)
 
 
-@magic_arguments()
+@ecli_magic_args(ECLIMotor)
 @argument('motor', type=AliasedPV,
           help='Motor to move')
 @argument('position', type=float)
 @argument('-v', '--verbose', action='store_const', const=True,
           help='Move verbosely')
-def mv(self, arg):
+def mv(mself, self, args):
     """
     Move motor to absolute position, in user coordinates
     """
-    args = parse_argstring(mv, arg)
-    if args:
-        user_move_motor(args.motor, args.position, relative=False,
-                        verbose=args.verbose)
+    user_move_motor(args.motor, args.position, relative=False,
+                    verbose=args.verbose)
 
 
-@magic_arguments()
+@ecli_magic_args(ECLIMotor)
 @argument('motor', type=AliasedPV,
           help='Motor to move')
 @argument('position', type=float)
-def umv(self, arg):
+def umv(mself, self, args):
     """
     Verbosely move motor to absolute position, in user coordinates
     """
-    args = parse_argstring(umv, arg)
-    if args:
-        user_move_motor(args.motor, args.position, relative=False, verbose=True)
+    user_move_motor(args.motor, args.position, relative=False, verbose=True)
 
 
-@magic_arguments()
+@ecli_magic_args(ECLIMotor)
 @argument('motor', type=AliasedPV,
           help='Motor to stop')
-def mstop(self, arg):
+def mstop(mself, self, args):
     """
     Stop motor
     """
-    args = parse_argstring(mstop, arg)
-    if args:
-        device = epics.motor.Motor(args.motor)
-        device.stop()
+    device = epics.motor.Motor(args.motor)
+    device.stop()

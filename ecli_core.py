@@ -18,8 +18,7 @@ import epics
 
 # IPython
 import IPython.utils.traitlets as traitlets
-from IPython.core.magic_arguments import (argument, magic_arguments,
-                                          parse_argstring)
+from IPython.core.magic_arguments import parse_argstring
 
 # ECLI
 import ecli_util as util
@@ -27,6 +26,7 @@ from ecli_plugin import ECLIPlugin
 from ecli_util import (get_core_plugin)
 from ecli_util import (AliasedPV, SimpleTable)
 from ecli_util.decorators import ECLIExport
+from ecli_util.magic_args import (ecli_magic_args, argument)
 
 logger = logging.getLogger('ECLI.Core')
 
@@ -163,6 +163,32 @@ class ECLICore(ECLIPlugin):
         self.shell.ask_exit = self.exit
         # atexit, shutdown_hook, etc did not work -- look into reasons?
         #  atexit - occurs after ipython shutdown
+
+        self.shell._find_line_magic = self.shell.find_line_magic
+        self.shell.find_line_magic = self._find_line_magic
+
+    def _find_line_magic(self, magic_name, *args):
+        """
+        Normal IPython magic functions set 'self' to be the magic args instance,
+        which is not very useful for ECLI plugins. Instead, this wraps that
+        functionality, replacing the 'self' argument with the plugin instance.
+
+        This works in conjunction with ecli_magic_args, which indicates the
+        plugin class for the line magic.
+        """
+        fcn = self.shell._find_line_magic(magic_name, *args)
+        if not hasattr(fcn, 'plugin_class'):
+            return fcn
+
+        import functools
+        @functools.wraps(fcn)
+        def wrapped(arg):
+            plugin = fcn.plugin_class.get_plugin()
+            args = parse_argstring(fcn, arg)
+            if args is not None:
+                return fcn(plugin, args)
+
+        return wrapped
 
     def get_extension(self, name):
         return self._extensions[name]
@@ -469,30 +495,24 @@ class ECLICore(ECLIPlugin):
         return True
 
 
-@magic_arguments()
+@ecli_magic_args(ECLICore)
 @argument('filename', type=unicode, help='Configuration filename',
           nargs='?', default=u'ecli_config.py')
-def save_config(magic_self, arg):
+def save_config(margs, self, args):
     """
     Save ECLI-related configuration to `filename`.
 
     Output file should be readable by
     IPython.config.loader.PyFileConfigLoader
     """
-
-    args = parse_argstring(save_config, arg)
-
-    if args is None:
-        return
-
     core = get_core_plugin()
     core._save_config(args.filename)
 
 
-@magic_arguments()
+@ecli_magic_args(ECLICore)
 @argument('filename', type=unicode, help='Configuration filename',
           nargs='?', default=u'ecli_config.py')
-def load_config(magic_self, arg):
+def load_config(margs, self, args):
     """
     Load ECLI-related configuration from `filename`.
 
@@ -500,27 +520,17 @@ def load_config(magic_self, arg):
     IPython.config.loader.PyFileConfigLoader
     """
 
-    args = parse_argstring(save_config, arg)
-
-    if args is None:
-        return
-
     core = get_core_plugin()
     core._load_ecli_config(args.filename)
 
 
-@magic_arguments()
+@ecli_magic_args(ECLICore)
 @argument('pvs', type=AliasedPV, nargs='+', help='PV(s) to monitor')
-def camonitor(self, arg):
+def camonitor(mself, self, args):
     """
     $ monitor pv1 [[pv2] [pv3]...]
     Monitor until Ctrl-C is pressed
     """
-    args = parse_argstring(camonitor, arg)
-
-    if not args:
-        return
-
     pvs = args.pvs
     print('Monitoring PVs:', ', '.join(pvs))
 
@@ -542,17 +552,12 @@ def camonitor(self, arg):
             epics.camonitor_clear(pv)
 
 
-@magic_arguments()
+@ecli_magic_args(ECLICore)
 @argument('pv', type=AliasedPV, nargs='+', help='PV(s) to get')
-def caget(self, arg):
+def caget(mself, self, args):
     """
     Get one or more PV's values over channel access
     """
-    args = parse_argstring(caget, arg)
-
-    if not args:
-        return
-
     for pv in args.pv:
         try:
             print(pv, end='\t')
@@ -563,18 +568,13 @@ def caget(self, arg):
             print('caget failed: (%s) %s' % (ex.__class__.__name__, ex))
 
 
-@magic_arguments()
+@ecli_magic_args(ECLICore)
 @argument('pv', type=AliasedPV, help='PV to set')
 @argument('value', type=str)
-def caput(self, arg):
+def caput(mself, self, args):
     """
     Put (set) a process variable's (PV) value over channel access
     """
-    args = parse_argstring(caput, arg)
-
-    if not args:
-        return
-
     print('Old: ', end='')
     caget(self, args.pv)
 
@@ -590,17 +590,14 @@ def caput(self, arg):
 
 
 @ECLIExport
-def showcaerrors(self, arg):
+def showcaerrors(mself, self, args):
     """
     $ showcaerrors
     Toggle display of CA errors / warnings
     """
-    args = parse_argstring(showcaerrors, arg)
-
-    if not args:
-        return
-
     # TODO
+
+    pass
 
 
 # TODO name change
@@ -632,14 +629,14 @@ def fields(pv, string):
     return rtype, table
 
 
-@magic_arguments()
+@ecli_magic_args(ECLICore)
 @argument('pv', type=AliasedPV, help='PV or record type')
 @argument('string', nargs='+', type=str)
 @argument('-v', '--values', action='store_const', const=True,
           help='Display current value of the field')
 @argument('-a', '--all', action='store_const', const=True,
           help='Show all columns')
-def _fields(self, magic_args):
+def _fields(magic_args, self, args):
     """
     $ fields [record_type/pv] [string] [--values]
     Examples:
@@ -650,9 +647,6 @@ def _fields(self, magic_args):
     If -a is unspecified, %config ECLICore.fields_columns will determine
     the columns to display.
     """
-    args = parse_argstring(_fields, magic_args)
-    if not args:
-        return
 
     rtype, table = fields(args.pv, args.string)
     print('* Record type: %s' % rtype)

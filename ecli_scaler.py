@@ -18,8 +18,6 @@ import epics
 
 # IPython
 import IPython.utils.traitlets as traitlets
-from IPython.core.magic_arguments import (argument,
-                                          magic_arguments, parse_argstring)
 from IPython.core.error import UsageError
 
 # ECLI
@@ -31,6 +29,7 @@ from ecli_util import (ECLIError, SimpleTable)
 from ecli_util.epics_device import get_records_from_devices
 from ecli_util.decorators import ShowElapsed
 from ecli_util.decorators import ECLIExport
+from ecli_util.magic_args import (ecli_magic_args, argument)
 
 
 logger = logging.getLogger('ECLI.Scaler')
@@ -179,19 +178,15 @@ show_elapsed = ShowElapsed(lambda: get_plugin('ECLIScaler').show_elapsed)
 
 
 @show_elapsed.wrapper
-@magic_arguments()
+@ecli_magic_args(ECLIScaler)
 @argument('seconds', type=float, nargs='?',
           help='PV')
 @argument('-r', '--record', type=AliasedPV,
           help='Record to use')
-def ct(self, arg):
+def ct(margs, self, args):
     """
     $ ct [seconds] [-r/--record record]
     """
-    args = parse_argstring(ct, arg)
-    if args is None:
-        return
-
     plugin = get_plugin('ECLIScaler')
 
     if args.record is not None:

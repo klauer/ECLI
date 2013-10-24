@@ -13,7 +13,8 @@ import argparse
 import functools
 
 from IPython.core.error import UsageError
-from IPython.core.magic_arguments import argument as MagicArgument
+from IPython.core.magic_arguments import argument
+from IPython.core.magic_arguments import magic_arguments
 
 from . import expand_alias
 from .decorators import ECLIExported
@@ -145,7 +146,7 @@ def export_magic_by_decorator(ipython, obj,
     """
     all_decorators = set([ECLIExported])
     if magic_arguments:
-        all_decorators.add(MagicArgument)
+        all_decorators.add(argument)
 
     is_instance = not isinstance(obj, dict)
     if is_instance:
@@ -202,3 +203,17 @@ def export_class_magic(ipython, instance):
         return wrapped
 
     return export_magic_by_decorator(ipython, instance, wrap_fcn=wrap)
+
+
+class ecli_magic_args(object):
+    """
+
+    """
+    def __init__(self, plugin_class):
+        self.plugin_class = plugin_class
+        self.magic_args = magic_arguments()
+
+    def __call__(self, fcn):
+        ret = self.magic_args(fcn)
+        ret.plugin_class = self.plugin_class
+        return ret

@@ -16,8 +16,6 @@ import logging
 
 # IPython
 import IPython.utils.traitlets as traitlets
-from IPython.core.magic_arguments import (
-    argument, magic_arguments, parse_argstring)
 from IPython.core.error import UsageError
 
 # ECLI
@@ -27,6 +25,7 @@ import ecli_util as util
 from ecli_util import (get_plugin, get_core_plugin)
 from ecli_util import ECLIError
 from ecli_util.decorators import ECLIExport
+from ecli_util.magic_args import (ecli_magic_args, argument)
 
 logger = logging.getLogger('ECLI.Template')
 
@@ -34,6 +33,7 @@ logger = logging.getLogger('ECLI.Template')
 # Loading of this extension
 def load_ipython_extension(ipython):
     return util.generic_load_ext(ipython, ECLITemplate, logger=logger, globals_=globals())
+
 
 def unload_ipython_extension(ipython):
     return util.generic_unload_ext(ipython, ECLITemplate)
@@ -76,15 +76,13 @@ def export_function():
     pass
 
 
-@magic_arguments()
+@ecli_magic_args(ECLITemplate)
 @argument('pv', type=AliasedPV, nargs='+',
           help='PV')
-def command(self, arg):
+def command(margs, self, args):
     """
     $ command pv
 
     Desc
     """
-    args = parse_argstring(command, arg)
-    if args is None:
-        return
+    pass
