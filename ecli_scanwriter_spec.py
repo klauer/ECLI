@@ -73,7 +73,7 @@ class ECLIScanWriterSPEC(ECLIPlugin):
 
     def pre_scan(self, scan=None, scan_number=0, command='', **kwargs):
         if self._file is None:
-            logger.error('SPEC file not set; scan will not be saved. (See: %%config %s)' %
+            logger.error('SPEC file not set; scan will not be saved. (See: `scan_save` or %%config %s)' %
                          self.__class__.__name__)
             return
 
@@ -92,7 +92,7 @@ class ECLIScanWriterSPEC(ECLIPlugin):
         if self._file is None:
             return
 
-        pass
+        self._file.finish_scan()
 
     def single_step(self, scan=None, grid_point=(), point=0, array_idx=0,
                     **kwargs):

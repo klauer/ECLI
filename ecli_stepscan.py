@@ -318,12 +318,21 @@ def scan(positioners, dwell_time, move_back=True, command='', dimensions=None,
     if dimensions is None or not isinstance(dimensions, (list, tuple)):
         dimensions = (data_points, )
 
-    for det_pv in plugin.detectors:
+    for positioner in positioners:
+        sc.add_positioner(positioner)
+
+    for counter in counters:
+        sc.add_counter(counter)
+
+    for trigger in triggers:
+        sc.add_trigger(trigger)
+
+    for det_pv in plugin.detectors + list(detectors):
         det = stepscan.get_detector(util.expand_alias(det_pv), label=det_pv)
         if det is None:
-            logger.error('Invalid detector: %s' % det_pv)
+            logger.error('Scan %s invalid detector: %s' % (sc, det_pv))
             return None
-        logger.debug('Added detector: %s' % det)
+        logger.debug('Scan %s added detector: %s' % (sc, det))
         sc.add_detector(det)
 
         # TODO bug report - hardware triggered detectors
@@ -336,21 +345,10 @@ def scan(positioners, dwell_time, move_back=True, command='', dimensions=None,
                              (det.trigger, trigger_value))
                 sc.add_trigger(det.trigger, value=trigger_value)
 
-    # TODO add_trigger needs to check for None (SimpleDetector)
+    # TODO StepScan bug report:
+    #   add_trigger needs to check for None (as in SimpleDetector)
     sc.triggers = [trigger for trigger in sc.triggers
                    if trigger is not None]
-
-    for positioner in positioners:
-        sc.add_positioner(positioner)
-
-    for counter in counters:
-        sc.add_counter(counter)
-
-    for detector in detectors:
-        sc.add_detector(detector)
-
-    for trigger in triggers:
-        sc.add_trigger(trigger)
 
     sc.set_dwelltime(dwell_time)
 
@@ -438,15 +436,8 @@ def scan_1d(motor='', start=0.0, end=0.0, data_points=0, dwell_time=0.0, relativ
          (motor, start, end, data_points))
 
     positioners = [pos0]
-    # additional counters TODO remove
-    counters = [stepscan.MotorCounter(motor)]
-    #counters.extend([stepscan.MotorCounter('IOC:m1', label='m1'),
-    #               stepscan.MotorCounter('IOC:m2', label='m2'),
-    #               stepscan.MotorCounter('IOC:m3', label='m3'),
-    #               stepscan.MotorCounter('IOC:m4', label='m4'),
-    #               stepscan.MotorCounter('IOC:m5', label='m5'),
-    #               stepscan.MotorCounter('IOC:m6', label='m6'))
 
+    counters = [stepscan.MotorCounter(motor)]
     return scan(positioners, dwell_time, command=command,
                 counters=counters, detectors=[], dimensions=(data_points, ),
                 )
@@ -611,12 +602,6 @@ def scan_2d(motor1='', start1=0.0, end1=0.0, points1=0,
     counters = [stepscan.MotorCounter(motor1),
                 stepscan.MotorCounter(motor2),
                 ]
-    #counters.extend([stepscan.MotorCounter('IOC:m1', label='m1'),
-    #               stepscan.MotorCounter('IOC:m2', label='m2'),
-    #               stepscan.MotorCounter('IOC:m3', label='m3'),
-    #               stepscan.MotorCounter('IOC:m4', label='m4'),
-    #               stepscan.MotorCounter('IOC:m5', label='m5'),
-    #               stepscan.MotorCounter('IOC:m6', label='m6'))
 
     return scan(positioners, dwell_time, command=command,
                 counters=counters, detectors=[], dimensions=dimensions,

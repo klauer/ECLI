@@ -17,16 +17,19 @@ import numpy as np
 
 # IPython
 import IPython.utils.traitlets as traitlets
-from IPython.core.error import UsageError
 
 # ECLI
 import ecli_util as util
 from ecli_plugin import ECLIPlugin
-from ecli_util import (get_plugin, get_core_plugin)
+from ecli_util import get_plugin
 
 import h5py
 
 logger = logging.getLogger('ECLI.ScanWriterHDF5')
+
+if h5py.version.version < '2.2.0':
+    logger.warning('h5py version may be incompatible (recommended version is 2.2.0+)')
+
 SCAN_PLUGIN = 'Scans'
 
 
@@ -34,8 +37,15 @@ SCAN_PLUGIN = 'Scans'
 def load_ipython_extension(ipython):
     return util.generic_load_ext(ipython, ECLIScanWriterHDF5, logger=logger, globals_=globals())
 
+
 def unload_ipython_extension(ipython):
     return util.generic_unload_ext(ipython, ECLIScanWriterHDF5)
+
+
+def parse_scan_key(key):
+    # 'Scan_0005' -> 5
+    scan, number = key.split('_', 1)
+    return int(number)
 
 
 class ECLIScanWriterHDF5(ECLIPlugin):
@@ -86,9 +96,19 @@ class ECLIScanWriterHDF5(ECLIPlugin):
         logger.debug('Created group', group)
         return group
 
+    @property
+    def last_scan_number(self):
+        if self._scan_group is None:
+            return None
+
+        keys = [parse_scan_key(key) for key in self._scans_group]
+        return max(keys)
+
     def _open_file(self, filename):
+        self._file = None
+        self._scan_group = None
+        self._scans_group = None
         if not filename:
-            self._file = None
             return
 
         new_file = not os.path.exists(filename)
@@ -102,25 +122,24 @@ class ECLIScanWriterHDF5(ECLIPlugin):
         except Exception as ex:
             logger.error('Unable to use HDF5 file "%s": (%s) %s' %
                          (self.filename, ex.__class__.__name__, ex))
+            logger.debug('HDF5 open error "%s"' % (self.filename, ),
+                         exc_info=True)
+
             self.filename = None
             self._file = None
-            self._scan_group = None
-            self._scans_group = None
             return False
+
         else:
             logger.info('Opened %s' % self._file)
             self.filename = filename
             self._scans_group = self._file.require_group('Scans')
-            if not new_file:
-                # TODO find the last scan number **
-                self.scan_plugin.set_min_scan_number(0)
-
+            self.scan_plugin.set_min_scan_number(self.last_scan_number + 1)
             return True
 
     def pre_scan(self, scan=None, scan_number=0, command='', dimensions=(), **kwargs):
         if self._file is None:
-            logger.error('HDF5 file not set; scan will not be saved. (See: %%config %s)' %
-                         self.__class__.__name__)
+            logger.error('HDF5 file not set; scan will not be saved. (See: `scan_save` or %%config %s)' %
+                         (self.__class__.__name__, ))
             return
 
         self._scan_number = scan_number
@@ -155,10 +174,10 @@ class ECLIScanWriterHDF5(ECLIPlugin):
         if self._scan_group is None:
             return
 
-        scan = self._scan_group
-        scan.attrs['end_timestamp'] = util.get_timestamp()
-        scan.attrs['elapsed'] = scan.attrs[
-            'end_timestamp'] - scan.attrs['start_timestamp']
+        scan_group = self._scan_group
+        scan_group.attrs['end_timestamp'] = util.get_timestamp()
+        scan_group.attrs['elapsed'] = (scan_group.attrs['end_timestamp'] -
+                                       scan_group.attrs['start_timestamp'])
 
     def single_step(self, scan=None, grid_point=(), point=0, array_idx=0,
                     **kwargs):
@@ -170,13 +189,14 @@ class ECLIScanWriterHDF5(ECLIPlugin):
 
         # Create the data group if necessary
         data_group = scan_group.require_group('Data')
+
         for counter in scan.counters:
             data = counter.buff[array_idx]
             label = util.fix_label(counter.label)
 
             # Create the array in the data group if it doesn't already exist
             if label not in data_group:
-                shape = dimensions + list(np.shape(data))
+                shape = list(dimensions) + list(np.shape(data))
                 try:
                     dtype = np.dtype(data)
                 except TypeError:
@@ -189,11 +209,8 @@ class ECLIScanWriterHDF5(ECLIPlugin):
             # And update the HDF5 dataset with the new data
             try:
                 dataset[array_idx] = data
-            except IOError as ex:
-                # TODO flag writing error and notify user somehow
-                logger.error(u'%s (%s) %s' % (self.__class__.__name__,
-                                              ex.__class__.__name__, ex))
-                dataset[array_idx] = 0
+            except:
+                logger.error(u'Error updating dataset', exc_info=True)
 
         # TODO link to external files for additional detectors
 
