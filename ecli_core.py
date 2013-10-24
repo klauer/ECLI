@@ -30,9 +30,8 @@ from ecli_util.decorators import ECLIExport
 
 logger = logging.getLogger('ECLI.Core')
 
+
 # Extension Initialization #
-
-
 def load_ipython_extension(ipython):
     if ECLICore.instance is not None:
         print('ECLICore already loaded')

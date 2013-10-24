@@ -121,11 +121,10 @@ class SoftMotor(CASRecord):
         user, dial, raw = self._positions(limit, position_type)
         self._high_limit = dial
 
+        logger.debug('%s: high limit: %g' % (self, dial))
         with self._no_callbacks():
-            if position_type == mi.POSITION_DIAL:
-                self.set_field(mi.MOTOR_USER_HIGH_LIMIT, user)
-            else:
-                self.set_field(mi.MOTOR_DIAL_HIGH_LIMIT, dial)
+            self.set_field(mi.MOTOR_USER_HIGH_LIMIT, user)
+            self.set_field(mi.MOTOR_DIAL_HIGH_LIMIT, dial)
 
         for field, value in zip(('', 'VAL', 'DVAL', 'RVAL'),
                                 (user, user, dial, raw)):
@@ -134,11 +133,11 @@ class SoftMotor(CASRecord):
     def _update_low_limit(self, limit, position_type=mi.POSITION_DIAL):
         user, dial, raw = self._positions(limit, position_type)
         self._low_limit = dial
+
+        logger.debug('%s: low limit: %g' % (self, dial))
         with self._no_callbacks():
-            if position_type == mi.POSITION_DIAL:
-                self.set_field(mi.MOTOR_USER_LOW_LIMIT, user)
-            else:
-                self.set_field(mi.MOTOR_DIAL_LOW_LIMIT, dial)
+            self.set_field(mi.MOTOR_USER_LOW_LIMIT, user)
+            self.set_field(mi.MOTOR_DIAL_LOW_LIMIT, dial)
 
         for field, value in zip(('', 'VAL', 'DVAL', 'RVAL'),
                                 (user, user, dial, raw)):

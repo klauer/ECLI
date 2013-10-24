@@ -53,9 +53,12 @@ class MotorGroup(object):
         return dict((module, globals()[module]) for module in allowed_modules
                     if module in globals())
 
-    def add_motor(self, variable, record, equation):
+    def add_motor(self, variable, record, equation=None):
         if variable in self.variables:
             raise KeyError('Variable already exists: %s' % variable)
+
+        if equation is None:
+            equation = variable
 
         self.variables[variable] = {'full_pv': record,
                                     'equation': equation,
@@ -153,6 +156,7 @@ class MotorGroup(object):
         ret = {}
         for related in info['related']:
             ret[related] = self.evaluate(related)
+
         return ret
 
 

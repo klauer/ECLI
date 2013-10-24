@@ -38,7 +38,7 @@ def unload_ipython_extension(ipython):
 
 class ECLIPseudomotor(ECLIPlugin):
     """
-    DESCRIPTION
+    ECLI pseudomotor extension, for creating virtual axes on demand
     """
     VERSION = 1
     REQUIRES = [('ECLICore', 1), ('ECLIMotor', 1), ('ECLIcas', 1)]
@@ -62,7 +62,9 @@ class ECLIPseudomotor(ECLIPlugin):
 
 
 @ECLIExport
-def create_motor(pseudo_name, readback_expr, aliases={}, **kwargs):
+def create_motor(pseudo_name, readback_expr, aliases={},
+                 rotary=False,
+                 **kwargs):
     """
     Create a pseudomotor that mimics an EPICS motor record
 
@@ -92,6 +94,9 @@ def create_motor(pseudo_name, readback_expr, aliases={}, **kwargs):
     :param aliases: Define aliases for motors
                     e.g., {'m1': 'IOC:m1'}
     :type aliases: dict
+    :param rotary: If rotary is set, motor values will be displayed in degrees,
+                   but automatically converted to radians when doing calculations.
+    :type rotary: bool
     :param kwargs: Each time the pseudomotor is commanded to move, all related
                    motors specified in the kwargs will be commanded to move.
 
@@ -137,7 +142,7 @@ def create_motor(pseudo_name, readback_expr, aliases={}, **kwargs):
 
     # Create and add the pseudomotor itself
     pseudomotor = pseudo.PseudoMotor(cas_plugin.manager, group,
-                                     pseudo_full, pseudo_name)
+                                     pseudo_full, pseudo_name, rotary=rotary)
 
     pseudomotor.startup()
     group.set_record(pseudo_name, pseudomotor)
