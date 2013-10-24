@@ -52,10 +52,6 @@ class ECLIPseudomotor(ECLIPlugin):
 
         self.groups = []
 
-    @staticmethod
-    def get_plugin():
-        return get_plugin('ECLIPseudomotor')
-
     @property
     def logger(self):
         return logger

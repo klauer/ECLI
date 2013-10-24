@@ -26,9 +26,11 @@ from pyspecfile import SPECFileWriter
 
 logger = logging.getLogger('ECLI.ScanWriterSPEC')
 
+
 # Loading of this extension
 def load_ipython_extension(ipython):
     return util.generic_load_ext(ipython, ECLIScanWriterSPEC, logger=logger, globals_=globals())
+
 
 def unload_ipython_extension(ipython):
     return util.generic_unload_ext(ipython, ECLIScanWriterSPEC)
@@ -56,9 +58,11 @@ class ECLIScanWriterSPEC(ECLIPlugin):
         else:
             self._file = None
 
-        callbacks = [(scan_plugin.CB_PRE_SCAN,  self.pre_scan),
+        callbacks = [(scan_plugin.CB_PRE_SCAN, self.pre_scan),
                      (scan_plugin.CB_POST_SCAN, self.post_scan),
-                     (scan_plugin.CB_SCAN_STEP, self.single_step)]
+                     (scan_plugin.CB_SCAN_STEP, self.single_step),
+                     (scan_plugin.CB_SAVE_PATH, self.save_path_set),
+                     ]
 
         for cb_name, fcn in callbacks:
             scan_plugin.add_callback(cb_name, fcn)
@@ -105,11 +109,11 @@ class ECLIScanWriterSPEC(ECLIPlugin):
             self._file.write_scan_data_start([util.fix_label(c.label) for c, d in data
                                               if not isinstance(d, np.ndarray)])
             self._new_scan = False
-        set_min_scan_number
+
         self._file.write_scan_data(scaler_data)
         self._file.write_mca_data(array_data)
 
-    def _filename_changed(self, name, old, new):
+    def _filename_changed(self, name=None, old=None, new=None):
         try:
             self._file = SPECFileWriter(self.filename)
         except Exception as ex:
@@ -119,3 +123,6 @@ class ECLIScanWriterSPEC(ECLIPlugin):
         else:
             self.scan_plugin.set_min_scan_number(self._file.scan_number)
             return True
+
+    def save_path_set(self, path=None):
+        self.filename = u'%s.spec' % path

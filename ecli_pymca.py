@@ -66,10 +66,6 @@ class ECLIpymca(ECLIPlugin):
         logger.debug('Initializing ECLI plugin ECLIpymca')
         self.pymca_process = None
 
-    @staticmethod
-    def get_plugin():
-        return get_plugin('ECLIpymca')
-
     @property
     def logger(self):
         return logger

@@ -57,7 +57,9 @@ class ECLIScanWriterHDF5(ECLIPlugin):
         scan_plugin = get_plugin(self.SCAN_PLUGIN)
         callbacks = [(scan_plugin.CB_PRE_SCAN,  self.pre_scan),
                      (scan_plugin.CB_POST_SCAN, self.post_scan),
-                     (scan_plugin.CB_SCAN_STEP, self.single_step)]
+                     (scan_plugin.CB_SCAN_STEP, self.single_step),
+                     (scan_plugin.CB_SAVE_PATH, self.save_path_set),
+                     ]
 
         self.scan_plugin = scan_plugin
 
@@ -106,6 +108,7 @@ class ECLIScanWriterHDF5(ECLIPlugin):
             self._scans_group = None
             return False
         else:
+            logger.info('Opened %s' % self._file)
             self.filename = filename
             self._scans_group = self._file.require_group('Scans')
             if not new_file:
@@ -196,3 +199,6 @@ class ECLIScanWriterHDF5(ECLIPlugin):
 
     def _filename_changed(self, name, old, new):
         self._open_file(new)
+
+    def save_path_set(self, path=None):
+        self.filename = u'%s.hdf5' % path

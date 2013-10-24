@@ -68,10 +68,6 @@ class ECLIopi(ECLIPlugin):
         self.managers = dict((opi, ProcessManager(opi))
                              for opi in self.opis)
 
-    @staticmethod
-    def get_plugin():
-        return get_plugin('ECLIopi')
-
     @property
     def logger(self):
         return logger

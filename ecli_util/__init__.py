@@ -78,7 +78,8 @@ from .magic_args import (
     AliasedPV, export_magic_by_prefix, export_magic_by_decorator,
     export_class_magic)
 
-from .decorators import (expand_aliases, evaluate_arguments, wrap_command)
+from .decorators import (expand_aliases, evaluate_arguments, wrap_command,
+                         ECLIExport)
 from .epics_util import (split_record_field, is_valid_field_name, caget,
                          get_record_type, is_motor_record, is_scan_record,
                          get_motor_rbv_pv, get_motor_limits,

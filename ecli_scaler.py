@@ -66,10 +66,6 @@ class ECLIScaler(ECLIPlugin):
         super(ECLIScaler, self).__init__(shell=shell, config=config)
         logger.debug('Initializing ECLI plugin ECLIScaler')
 
-    @staticmethod
-    def get_plugin():
-        return get_plugin('ECLIScaler')
-
     @property
     def logger(self):
         return logger

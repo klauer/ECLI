@@ -23,11 +23,9 @@ from ecli_core import AliasedPV
 from ecli_plugin import ECLIPlugin
 import ecli_util as util
 from ecli_util import (get_plugin, get_core_plugin)
-from ecli_util import ECLIError
-from ecli_util.decorators import ECLIExport
+from ecli_util import ECLIExport
 from ecli_util.magic_args import (ecli_magic_args, argument)
 
-import epics
 import stepscan
 import numpy as np
 
@@ -38,16 +36,17 @@ logger = logging.getLogger('ECLI.StepScan')
 def load_ipython_extension(ipython):
     return util.generic_load_ext(ipython, ECLIScans, logger=logger, globals_=globals())
 
+
 def unload_ipython_extension(ipython):
     return util.generic_unload_ext(ipython, ECLIScans)
 
 
 class ECLIPositioner(stepscan.Positioner):
-
     '''
     Modification of the basic StepScan positioner to add movement
     time statistics
     '''
+
     def __init__(self, *args, **kwargs):
         super(ECLIPositioner, self).__init__(*args, **kwargs)
 
@@ -107,6 +106,13 @@ def calc_ndim(dim):
 class ECLIScans(ECLIPlugin):
     """
     PyEpics scan engine plugin for ECLI
+
+    This class doubles as the scan's scan messenger, which
+    monitors a PyEpics stepscan and runs callbacks in a
+    separate thread at
+        1. pre-scan
+        2. during each point of the scan
+        3. abort/post-scan
     """
     VERSION = 1
     REQUIRES = [('ECLICore', 1)]
@@ -117,11 +123,14 @@ class ECLIScans(ECLIPlugin):
     CB_SCAN_STEP = 'STEP'
     CB_SCAN_ABORT = 'ABORT'
     CB_POST_SCAN = 'POST_SCAN'
+    CB_SAVE_PATH = 'SAVE_PATH'
     _callbacks = [CB_PRE_SCAN,
                   CB_SCAN_PAUSE,
                   CB_SCAN_STEP,
                   CB_SCAN_ABORT,
                   CB_POST_SCAN,
+
+                  CB_SAVE_PATH,
                   ]
     # scan_time_pv = traitlets.Unicode(u'E1:Scans:scan1.DDLY', config=True) #
     # TODO
@@ -138,21 +147,10 @@ class ECLIScans(ECLIPlugin):
         self._scan_number = 0
         self._update_lock = threading.Lock()
 
-    @staticmethod
-    def get_plugin():
-        return get_plugin('ECLIScans')
-
     @property
     def logger(self):
         return logger
 
-    """
-    Monitors a PyEpics stepscan and runs callbacks in a separate thread
-    at
-        1. pre-scan
-        2. during each point of the scan
-        3. abort/post-scan
-    """
     def _set_scan(self, scan):
         old_scan = self._scan
         if old_scan == scan:
@@ -271,9 +269,21 @@ class ECLIScans(ECLIPlugin):
 
     def _detectors_changed(self, *args):
         print('Detector list updated: %s' % self.detectors)
-        self._detectors = [stepscan.get_detector(d) for d in self.detectors]
+        self._detectors = [stepscan.get_detector(util.expand_alias(d), label=d)
+                           for d in self.detectors]
+
 
 # Commands #
+
+@ECLIExport
+def scan_save(path):
+    """
+    Notifies all scan file writers where to write the data
+
+    .. note:: file extensions will be added by the plugin
+    """
+    plugin = ECLIScans.get_plugin()
+    plugin.run_callback(plugin.CB_SAVE_PATH, path=path)
 
 
 @ECLIExport
@@ -427,10 +437,6 @@ def scan_1d(motor='', start=0.0, end=0.0, data_points=0, dwell_time=0.0, relativ
     print('Scan: %s from %g to %g (%d data points)' %
          (motor, start, end, data_points))
 
-    # TODO invalid PVs are not ignored **
-    # scan.add_detector(stepscan.detectors.McaDetector('MLL:DXP:mca1',
-    # use_full=True))
-
     positioners = [pos0]
     # additional counters TODO remove
     counters = [stepscan.MotorCounter(motor)]
@@ -474,7 +480,6 @@ def dscan(motor='', start='', end='', data_points=0, dwell_time=0.0):
                    dwell_time=dwell_time, relative=True)
 
 
-
 @ecli_magic_args(ECLIScans)
 @argument('motor', type=AliasedPV,
           help='Motor to scan')
@@ -497,7 +502,7 @@ def _dscan(margs, self, args):
     from the amount of data points that are requested.
     """
     dscan(motor=args.motor, start=args.start, end=args.end,
-           data_points=args.data_points, dwell_time=args.time)
+          data_points=args.data_points, dwell_time=args.time)
 
 
 @ecli_magic_args(ECLIScans)
@@ -514,7 +519,7 @@ def _dscan(margs, self, args):
           help='Seconds at each point')
 def _ascan(margs, self, args):
     ascan(motor=args.motor, start=args.start, end=args.end,
-           data_points=args.data_points, dwell_time=args.time)
+          data_points=args.data_points, dwell_time=args.time)
 
 ascan.__doc__ = dscan.__doc__
 
@@ -617,6 +622,7 @@ def scan_2d(motor1='', start1=0.0, end1=0.0, points1=0,
                 counters=counters, detectors=[], dimensions=dimensions,
                 )
 
+
 @ecli_magic_args(ECLIScans)
 @argument('motor1', type=AliasedPV,
           help='Motor to scan (1)')
@@ -655,6 +661,7 @@ def _mesh(margs, self, args):
                  dwell_time=args.time)
 
 _amesh = _mesh
+
 
 @ecli_magic_args(ECLIScans)
 @argument('motor1', type=AliasedPV,
@@ -698,22 +705,22 @@ def _dmesh(margs, self, args):
 def amesh(motor1='', start1=0.0, end1=0.0, points1=0,
           motor2='', start2=0.0, end2=0.0, points2=0,
           dwell_time=0.0):
-    # Convenience function
+    # Convenience function -- absolute 2D scan
     return scan_2d(relative=False,
-            motor1=motor1, start1=start1, end1=end1, points1=points1,
-            motor2=motor2, start2=start2, end2=end2, points2=points2,
-            dwell_time=dwell_time)
+                   motor1=motor1, start1=start1, end1=end1, points1=points1,
+                   motor2=motor2, start2=start2, end2=end2, points2=points2,
+                   dwell_time=dwell_time)
 
 
 @ECLIExport
 def dmesh(motor1='', start1=0.0, end1=0.0, points1=0,
           motor2='', start2=0.0, end2=0.0, points2=0,
           dwell_time=0.0):
-    # Convenience function
+    # Convenience function -- relative 2D scan
     return scan_2d(relative=True,
-            motor1=motor1, start1=start1, end1=end1, points1=points1,
-            motor2=motor2, start2=start2, end2=end2, points2=points2,
-            dwell_time=dwell_time)
+                   motor1=motor1, start1=start1, end1=end1, points1=points1,
+                   motor2=motor2, start2=start2, end2=end2, points2=points2,
+                   dwell_time=dwell_time)
 
 
 mesh = amesh

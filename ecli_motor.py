@@ -82,10 +82,6 @@ class ECLIMotor(ECLIPlugin):
         logger.debug('Initializing ECLI motor plugin')
         self.motors = {}
 
-    @staticmethod
-    def get_plugin():
-        return get_plugin('ECLIMotor')
-
     @property
     def logger(self):
         return logger
@@ -150,7 +146,7 @@ def print_motor_info(motors):
 
     motors = get_records_from_devices(motors)
 
-    plugin = get_plugin('ECLIMotor')
+    plugin = ECLIMotor.get_plugin()
     info_dict = plugin._info_dict
 
     # TODO convert this to the SimpleTable thing eventually
@@ -178,7 +174,7 @@ def wa():
     """
     Show status of all motors in ECLIMotor.motor_list
     """
-    plugin = get_plugin('ECLIMotor')
+    plugin = ECLIMotor.get_plugin()
     motors = plugin.motor_list
     if motors:
         print_motor_info(motors)

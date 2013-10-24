@@ -23,8 +23,7 @@ from ecli_core import AliasedPV
 from ecli_plugin import ECLIPlugin
 import ecli_util as util
 from ecli_util import (get_plugin, get_core_plugin)
-from ecli_util import ECLIError
-from ecli_util.decorators import ECLIExport
+from ecli_util import (ECLIError, ECLIExport)
 from ecli_util.magic_args import (ecli_magic_args, argument)
 
 logger = logging.getLogger('ECLI.Template')
@@ -58,10 +57,6 @@ class ECLITemplate(ECLIPlugin):
 
         super(ECLITemplate, self).__init__(shell=shell, config=config)
         logger.debug('Initializing ECLI plugin ECLITemplate')
-
-    @staticmethod
-    def get_plugin():
-        return get_plugin('ECLITemplate')
 
     def _param_changed(self, *args):
         pass
