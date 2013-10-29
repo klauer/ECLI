@@ -8,6 +8,16 @@
    :synopsis: ECLI pseudomotor support
 .. moduleauthor:: Ken Lauer <klauer@bnl.gov>
 """
+# TODO: important:
+#  Pseudomotor move request finishes in same callback before startAsyncWrite
+#  is called if no motors are required to move. Quickly fixed CAPV to complete
+#  the async write immediately if the desired value hasn't changed.
+#  options I see:
+#   1. add timeout for same value validity (set fairly small, 0.05s?) -- but
+#      then additional handling needed if timeout occurs
+#   2. monkey-patch startAsyncWrite in pseudomotor.py to check if the motor is
+#      still in position, if not, move again
+#
 # TODO: option for using normal PVs in expressions (how did I overlook this?)
 
 from __future__ import print_function
