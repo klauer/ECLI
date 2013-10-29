@@ -12,8 +12,10 @@
 from __future__ import print_function
 import logging
 import os
+import sys
 import time
 import functools
+import threading
 
 import epics
 
@@ -576,14 +578,14 @@ def caput(mself, self, args):
     """
     Put (set) a process variable's (PV) value over channel access
     """
-    print('Old: ', end='')
-    caget(self, args.pv)
+    print('Old: ', args.pv, end='\t')
+    print(epics.caget(args.pv))
 
     try:
         epics.caput(args.pv, args.value, wait=True)
 
-        print('New: ', end='')
-        caget(self, args.pv)
+        print('New: ', args.pv, end='\t')
+        print(epics.caget(args.pv))
     except KeyboardInterrupt:
         pass
     except Exception as ex:
@@ -672,6 +674,54 @@ def _fields(magic_args, self, args):
 
     table.print_(format_str=u'{:<%d}', delimiter=' | ')
 
+
+@ECLIExport
+def debug_trace(fn='trace.txt', trace_threads=False):
+    import linecache
+
+    def trace_lines(frame, event, arg):
+        if event != 'line':
+            return
+        co = frame.f_code
+        func_name = co.co_name
+        line_no = frame.f_lineno
+        filename = co.co_filename
+        if not ('cas' in filename or 'pv_manager' in filename):
+            return
+
+        with lock:
+            print('  %s:%s [%d] %s' % (filename, func_name, line_no,
+                                       linecache.getline(filename, line_no)),
+                  file=f)
+
+        f.flush()
+
+    def trace_calls(frame, event, arg):
+        if event != 'call':
+            return
+
+        co = frame.f_code
+        func_name = co.co_name
+        if func_name == 'write':
+            return
+
+        line_no = frame.f_lineno
+        filename = co.co_filename
+        print('[%s:%s] call %s' % (filename, line_no, func_name),
+              file=f)
+
+        f.flush()
+        return trace_lines
+
+    f = open(fn, 'wt')
+    sys.settrace(trace_calls)
+
+    if trace_threads:
+        # TODO include thread id in filename/etc
+        lock = threading.Lock()
+        threading.settrace(trace_calls)
+
+#debug_trace()
 try:
     from gui_config import gui_config
 except ImportError:
