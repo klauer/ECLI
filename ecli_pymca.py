@@ -9,7 +9,6 @@
 .. moduleauthor:: Ken Lauer <klauer@bnl.gov>
 """
 from __future__ import print_function
-import os
 import sys
 import time
 import logging
@@ -20,13 +19,11 @@ import subprocess
 
 # IPython
 import IPython.utils.traitlets as traitlets
-from IPython.core.magic_arguments import (
-    argument, magic_arguments, parse_argstring)
 
 # ECLI
 import ecli_util as util
 from ecli_plugin import ECLIPlugin
-from ecli_util import (get_plugin, get_core_plugin)
+from ecli_util import get_plugin
 from ecli_util.decorators import ECLIExport
 
 # PyMca
@@ -46,6 +43,7 @@ logger = logging.getLogger('ECLI.pymca')
 def load_ipython_extension(ipython):
     return util.generic_load_ext(ipython, ECLIpymca, logger=logger, globals_=globals())
 
+
 def unload_ipython_extension(ipython):
     return util.generic_unload_ext(ipython, ECLIpymca)
 
@@ -61,6 +59,7 @@ class ECLIpymca(ECLIPlugin):
     _callbacks = []
 
     use_subprocess = traitlets.Bool(True, config=True)
+
     def __init__(self, shell, config):
         super(ECLIpymca, self).__init__(shell=shell, config=config)
         logger.debug('Initializing ECLI plugin ECLIpymca')
@@ -139,6 +138,7 @@ SCAN_ENV_TAG = '%s_ENV' % (SCAN_TAG, )
 class EpicsDetector(object):
     def __init__(self, name, pvs):
         print('--Detector %s--' % name)
+
         def update_array(arr, i, value=None, pvname=None, **kwargs):
             print('%s[%d]=%s (%s updated)' % (pvname, i, value, name))
             arr[i] = value
@@ -208,6 +208,7 @@ class EpicsBridge(object):
 
     def _get_url(self):
         return self._url
+
     def _set_url(self, url):
         if url != self._url:
             self.server = xmlrpclib.ServerProxy(url)
@@ -295,7 +296,7 @@ class EpicsBridge(object):
         # rows, cols, type, flag
         print('get array info', name)
         if name.startswith(SCAN_TAG):
-            info = self._update_scan_info()
+            self._update_scan_info()
             nopts, counters = self.scan_dim
             print('Scan points', nopts, 'Counters', counters)
             return [nopts, counters, sps.FLOAT, sps.TAG_SCAN | sps.TAG_ARRAY]

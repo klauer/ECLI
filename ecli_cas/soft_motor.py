@@ -77,9 +77,9 @@ class SoftMotor(CASRecord):
         self._status = 0
         self._done_moving = True
 
-        self.set_field(mi.MOTOR_DONE_MOVE, self._done_moving)
+        self.put(mi.MOTOR_DONE_MOVE, self._done_moving)
         self.update_status(enc_present=True)
-        self.set_field('STAT', 0)
+        self.put('STAT', 0)
 
     def get_field_default(self, field):
         average, min_, max_ = mi.get_field_defaults(field)
@@ -123,8 +123,8 @@ class SoftMotor(CASRecord):
 
         logger.debug('%s: high limit: %g' % (self, dial))
         with self._no_callbacks():
-            self.set_field(mi.MOTOR_USER_HIGH_LIMIT, user)
-            self.set_field(mi.MOTOR_DIAL_HIGH_LIMIT, dial)
+            self.put(mi.MOTOR_USER_HIGH_LIMIT, user)
+            self.put(mi.MOTOR_DIAL_HIGH_LIMIT, dial)
 
         for field, value in zip(('', 'VAL', 'DVAL', 'RVAL'),
                                 (user, user, dial, raw)):
@@ -136,8 +136,8 @@ class SoftMotor(CASRecord):
 
         logger.debug('%s: low limit: %g' % (self, dial))
         with self._no_callbacks():
-            self.set_field(mi.MOTOR_USER_LOW_LIMIT, user)
-            self.set_field(mi.MOTOR_DIAL_LOW_LIMIT, dial)
+            self.put(mi.MOTOR_USER_LOW_LIMIT, user)
+            self.put(mi.MOTOR_DIAL_LOW_LIMIT, dial)
 
         for field, value in zip(('', 'VAL', 'DVAL', 'RVAL'),
                                 (user, user, dial, raw)):
@@ -208,15 +208,15 @@ class SoftMotor(CASRecord):
             logger.debug('--> Move %s position: %g' % (self, pos))
 
         if pos > self._high_limit:
-            self.set_field(mi.MOTOR_LIMIT_VIOLATION, 1)
+            self.put(mi.MOTOR_LIMIT_VIOLATION, 1)
             raise SoftMotorLimitError()
         elif pos < self._low_limit:
-            self.set_field(mi.MOTOR_LIMIT_VIOLATION, 1)
+            self.put(mi.MOTOR_LIMIT_VIOLATION, 1)
             raise SoftMotorLimitError()
 
-        self.set_field(mi.MOTOR_LIMIT_VIOLATION, 0)
-        self.set_field(mi.MOTOR_AT_LOW_LIMIT, 0)
-        self.set_field(mi.MOTOR_AT_HIGH_LIMIT, 0)
+        self.put(mi.MOTOR_LIMIT_VIOLATION, 0)
+        self.put(mi.MOTOR_AT_LOW_LIMIT, 0)
+        self.put(mi.MOTOR_AT_HIGH_LIMIT, 0)
         self.done_moving = False
 
         user, dial, raw = self._update_request_pos(dial=pos)
@@ -227,22 +227,17 @@ class SoftMotor(CASRecord):
         else:
             self._request_position = pos
 
-        if 0:
-            logger.debug('Move() done')
-            self._set_readback(pos)
-            self.done_moving = True
-
     def _update_request_pos(self, dial=None):
         if dial is None:
             dial = self._request_position
 
         user, dial, raw = self._positions(dial, mi.POSITION_DIAL)
         with self._no_callbacks():
-            self.set_field(mi.MOTOR_DIAL_VALUE, dial)
-            self.set_field(mi.MOTOR_USER_VALUE, user)
-            self.set_field(mi.MOTOR_RAW_VALUE, raw)
-            self.set_field('raw_encoder_position', raw)
-            self.set_field('raw_motor_position', raw)
+            self.put(mi.MOTOR_DIAL_VALUE, dial)
+            self.put(mi.MOTOR_USER_VALUE, user)
+            self.put(mi.MOTOR_RAW_VALUE, raw)
+            self.put('raw_encoder_position', raw)
+            self.put('raw_motor_position', raw)
 
         return user, dial, raw
 
@@ -252,14 +247,14 @@ class SoftMotor(CASRecord):
 
         user, dial, raw = self._positions(dial_position, mi.POSITION_DIAL)
         if direction is not None:
-            self.set_field(mi.MOTOR_MOVE_DIRECTION, direction)
+            self.put(mi.MOTOR_MOVE_DIRECTION, direction)
 
         if self._request_position is None:
             self._update_request_pos(dial)
 
-        self.set_field(mi.MOTOR_USER_READBACK, user)
-        self.set_field(mi.MOTOR_DIAL_READBACK, dial)
-        self.set_field(mi.MOTOR_RAW_READBACK, raw)
+        self.put(mi.MOTOR_USER_READBACK, user)
+        self.put(mi.MOTOR_DIAL_READBACK, dial)
+        self.put(mi.MOTOR_RAW_READBACK, raw)
 
         plus_lim = (dial_position >= self._high_limit)
         minus_lim = (dial_position <= self._low_limit)
@@ -269,8 +264,8 @@ class SoftMotor(CASRecord):
             req_pos = self._positions(self._request_position, mi.POSITION_DIAL)
             req_user, req_dial, req_raw = req_pos
 
-            self.set_field('difference_raw', req_raw - raw)
-            self.set_field('difference_dial', req_dial - dial)
+            self.put('difference_raw', req_raw - raw)
+            self.put('difference_dial', req_dial - dial)
 
     def dial_value_updated(self, value=None, **kwargs):
         return self.move(value, relative=False)
@@ -294,7 +289,7 @@ class SoftMotor(CASRecord):
                 self._status &= ~(1 << bit)
 
         if old_status != self._status:
-            self.set_field(mi.MOTOR_STATUS, self._status)
+            self.put(mi.MOTOR_STATUS, self._status)
 
         other_args = set(kwargs.keys()) - set(STATUS_BITS.keys())
         if other_args:
@@ -302,7 +297,7 @@ class SoftMotor(CASRecord):
 
         moving = kwargs.get('moving', None)
         if moving is not None:
-            self.set_field(mi.MOTOR_MOVING, moving)
+            self.put(mi.MOTOR_MOVING, moving)
 
     def _get_done_moving(self):
         return self._done_moving
@@ -311,15 +306,19 @@ class SoftMotor(CASRecord):
         if done_moving != self._done_moving:
             self._done_moving = done_moving
             self.update_status(moving=not done_moving, done=done_moving)
-            self.set_field(mi.MOTOR_DONE_MOVE, done_moving)
+            self.put(mi.MOTOR_DONE_MOVE, done_moving)
 
             if done_moving:
                 # here's where the response to the putCallback happens
                 # that is, the message to the client that the put has complete
-                logger.debug('%s Move completed (pos = %s)' % (self, self._readback))
-                for field in mi.MOTOR_ASYN_FIELDS:
-                    pvi = self[field]
+                logger.debug('Move completed %s (pos = %s)' % (self, self._readback))
+                for pvi in self._asyn_fields:
                     pvi.asyn_completed()
+
+    @property
+    def _asyn_fields(self):
+        for field in mi.MOTOR_ASYN_FIELDS:
+            yield self[field]
 
     done_moving = property(_get_done_moving, _set_done_moving)
 

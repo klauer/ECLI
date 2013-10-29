@@ -9,11 +9,9 @@
 
 """
 from __future__ import print_function
-import logging
 import functools
 
 # ECLI
-from ecli_util import get_plugin
 from . import record_info
 
 
@@ -61,7 +59,7 @@ class CASRecord(object):
         self.manager = manager
 
         # Mimic epics.Device:
-        self._prefix = '%s%s.'% (manager.prefix, name)
+        self._prefix = '%s%s.' % (manager.prefix, name)
 
         self.aliases = {}
         self.fields = {}
@@ -73,8 +71,8 @@ class CASRecord(object):
         for field, info_dict in fields.iteritems():
             self.add_field(field, info_dict)
 
-        self.set_field('data_type', dtype)
-        self.set_field('record_type', rtype)
+        self.put('data_type', dtype)
+        self.put('record_type', rtype)
 
     def _no_callbacks(self):
         return NoCallbacks(self)
@@ -142,10 +140,13 @@ class CASRecord(object):
         pvi = self[field]
         pvi.set_value(value)
 
+    put = set_field
+
     def process_updated(self, value=None, **kwargs):
         if value is not None and value:
             print('Record processed', value, kwargs)
         pass
+
 
 def _test():
     from . import PVManager

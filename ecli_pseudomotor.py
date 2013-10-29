@@ -59,7 +59,7 @@ class ECLIPseudomotor(ECLIPlugin):
 
 @ECLIExport
 def create_motor(pseudo_name, readback_expr, aliases={},
-                 rotary=False,
+                 desc='', rotary=False,
                  **kwargs):
     """
     Create a pseudomotor that mimics an EPICS motor record
@@ -93,6 +93,7 @@ def create_motor(pseudo_name, readback_expr, aliases={},
     :param rotary: If rotary is set, motor values will be displayed in degrees,
                    but automatically converted to radians when doing calculations.
     :type rotary: bool
+    :param desc: Motor description (defaults to the motor alias)
     :param kwargs: Each time the pseudomotor is commanded to move, all related
                    motors specified in the kwargs will be commanded to move.
 
@@ -138,7 +139,8 @@ def create_motor(pseudo_name, readback_expr, aliases={},
 
     # Create and add the pseudomotor itself
     pseudomotor = pseudo.PseudoMotor(cas_plugin.manager, group,
-                                     pseudo_full, pseudo_name, rotary=rotary)
+                                     pseudo_full, pseudo_name,
+                                     desc=desc, rotary=rotary)
 
     pseudomotor.startup()
     group.set_record(pseudo_name, pseudomotor)

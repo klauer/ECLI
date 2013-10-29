@@ -11,6 +11,7 @@
 """
 from __future__ import print_function
 import logging
+import threading
 
 # pcaspy
 import pcaspy
@@ -33,6 +34,11 @@ class CAPV(pcaspy.SimplePV):
         self.basename = basename
         self.full_name = '%s%s' % (prefix, basename)
 
+        if pvinfo.asyn:
+            self.asyn_lock = threading.Lock()
+            self.asyn_request = False
+            self.asyn_value = None
+
         pcaspy.SimplePV.__init__(self, name, pvinfo, **kwargs)
         self._write_callbacks = set([])
 
@@ -53,7 +59,7 @@ class CAPV(pcaspy.SimplePV):
                 if raise_exception:
                     raise
                 return False
-            except Exception as ex:
+            except:
                 logger.debug('Unhandled exception during PV=%s write' % self.basename,
                              exc_info=True)
                 if raise_exception:
@@ -61,10 +67,20 @@ class CAPV(pcaspy.SimplePV):
 
         return True
 
+    def startAsyncWrite(self, context):
+        with self.asyn_lock:
+            pcaspy.SimplePV.startAsyncWrite(self, context)
+
+            cur_value = self.get_value()
+            if self.asyn_value is not None and self.asyn_value == cur_value:
+                self.endAsyncWrite(pcaspy.S_casApp_success)
+                self.asyn_request = False
+            else:
+                self.asyn_request = True
+
     def get_value(self):
-        driver = self.driver
         reason = self.basename
-        return driver.pvDB[reason].value
+        return self.driver.pvDB[reason].value
 
     def set_value(self, value, check=True):
         """
@@ -86,17 +102,17 @@ class CAPV(pcaspy.SimplePV):
     def post_update(self, value=None):
         driver = self.driver
         reason = self.basename
-        entry = driver.pvDB[reason]
+        db_entry = driver.pvDB[reason]
 
         if value is not None:
             if pcaspy.__version__ <= (0, 4, 1):
                 # pcaspy issue #5 -> alarm/value may not be updated
-                entry.value = None
+                db_entry.value = None
             driver.setParam(self.basename, value)
 
-        if driver.pvDB[reason].flag and self.info.scan == 0:
-            self.updateValue(entry)
-            entry.flag = False
+        if db_entry.flag and self.info.scan == 0:
+            self.updateValue(db_entry)
+            db_entry.flag = False
 
     def asyn_completed(self):
         """
@@ -104,8 +120,13 @@ class CAPV(pcaspy.SimplePV):
         processing has completed
         """
         if self.info.asyn:
-            driver = self.driver
-            driver.callbackPV(self.basename)
+            with self.asyn_lock:
+                if self.asyn_request:
+                    self.endAsyncWrite(pcaspy.S_casApp_success)
+
+                self.asyn_value = self.get_value()
+                self.asyn_request = False
+
 
 class CAServer(pcaspy.SimpleServer):
     def __init__(self):

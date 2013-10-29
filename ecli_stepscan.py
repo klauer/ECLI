@@ -64,12 +64,23 @@ class ECLIPositioner(stepscan.Positioner):
 
         start_move = time.time()
         self.done = False
+        if self.pv.get() == self.array[i]:
+            self.done = True
+            return not self.done
+
         self.pv.put(self.array[i], callback=move_completed)
         time.sleep(1.e-4)
         if wait:
-            t0 = time.time()
-            while not self.done and (time.time() - t0) < timeout:
-                time.sleep(1.e-4)
+            try:
+                t0 = time.time()
+                while not self.done and (time.time() - t0) < timeout:
+                    time.sleep(1.e-4)
+            except KeyboardInterrupt:
+                pass
+
+            # TODO for some reason, a value of True indicates failure
+            #      according to stepscan
+            return not self.done
 
 
 def get_grid_point(dim, cpt):
@@ -376,7 +387,7 @@ def scan(positioners, dwell_time, move_back=True, command='', dimensions=None,
     finally:
         # Wait for the message thread to catch up
         if sc.message_thread is not None:
-            sc.message_thread.join()
+            sc.message_thread.join(1.0)
 
     if move_back:
         # Move the positioners back to their starting positions
@@ -398,7 +409,8 @@ def scan(positioners, dwell_time, move_back=True, command='', dimensions=None,
 
 # -- 1D scans
 @ECLIExport
-def scan_1d(motor='', start=0.0, end=0.0, data_points=0, dwell_time=0.0, relative=True):
+def scan_1d(motor='', start=0.0, end=0.0, data_points=0, dwell_time=0.0, relative=True,
+            counters=[]):
     """Perform a 1D scan of motor in [start, end] of data_points
 
     :param motor: Motor to scan
@@ -437,14 +449,15 @@ def scan_1d(motor='', start=0.0, end=0.0, data_points=0, dwell_time=0.0, relativ
 
     positioners = [pos0]
 
-    counters = [stepscan.MotorCounter(motor)]
+    counters = list(counters)
+    counters.insert(0, stepscan.MotorCounter(motor))
     return scan(positioners, dwell_time, command=command,
                 counters=counters, detectors=[], dimensions=(data_points, ),
                 )
 
 
 @ECLIExport
-def ascan(motor='', start='', end='', data_points=0, dwell_time=0.0):
+def ascan(motor='', start='', end='', data_points=0, dwell_time=0.0, **kwargs):
     """Perform a 1D scan of motor in [start, end] of data_points
 
     :param motor: Motor to scan
@@ -454,11 +467,12 @@ def ascan(motor='', start='', end='', data_points=0, dwell_time=0.0):
     :param dwell_time: Seconds at each point
     """
     return scan_1d(motor=motor, start=start, end=end, data_points=data_points,
-                   dwell_time=dwell_time, relative=False)
+                   dwell_time=dwell_time, relative=False,
+                   **kwargs)
 
 
 @ECLIExport
-def dscan(motor='', start='', end='', data_points=0, dwell_time=0.0):
+def dscan(motor='', start='', end='', data_points=0, dwell_time=0.0, **kwargs):
     """Perform a 1D scan of motor in [start, end] of data_points
 
     :param motor: Motor to scan
@@ -468,7 +482,8 @@ def dscan(motor='', start='', end='', data_points=0, dwell_time=0.0):
     :param dwell_time: Seconds at each point
     """
     return scan_1d(motor=motor, start=start, end=end, data_points=data_points,
-                   dwell_time=dwell_time, relative=True)
+                   dwell_time=dwell_time, relative=True,
+                   **kwargs)
 
 
 @ecli_magic_args(ECLIScans)
@@ -483,6 +498,8 @@ def dscan(motor='', start='', end='', data_points=0, dwell_time=0.0):
 @argument('time', type=util.arg_value_range(min_=0, inclusive=False,
                                             type_=float),
           help='Seconds at each point')
+@argument('counters', type=AliasedPV, nargs='*',
+          help='Additional counters to monitor')
 def _dscan(margs, self, args):
     """
     $ dscan motor relative_start relative_end data_points time
@@ -493,7 +510,8 @@ def _dscan(margs, self, args):
     from the amount of data points that are requested.
     """
     dscan(motor=args.motor, start=args.start, end=args.end,
-          data_points=args.data_points, dwell_time=args.time)
+          data_points=args.data_points, dwell_time=args.time,
+          counters=args.counters)
 
 
 @ecli_magic_args(ECLIScans)
@@ -508,9 +526,12 @@ def _dscan(margs, self, args):
 @argument('time', type=util.arg_value_range(min_=0, inclusive=False,
                                             type_=float),
           help='Seconds at each point')
+@argument('counters', type=AliasedPV, nargs='*',
+          help='Additional counters to monitor')
 def _ascan(margs, self, args):
     ascan(motor=args.motor, start=args.start, end=args.end,
-          data_points=args.data_points, dwell_time=args.time)
+          data_points=args.data_points, dwell_time=args.time,
+          counters=args.counters)
 
 ascan.__doc__ = dscan.__doc__
 

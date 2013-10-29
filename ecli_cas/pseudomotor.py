@@ -13,7 +13,6 @@
 from __future__ import print_function
 import logging
 import math
-import sys
 
 import epics
 import ast
@@ -164,7 +163,7 @@ class PseudoMotor(SoftMotor):
     _globals = None
 
     def __init__(self, manager, group, alias, record_name,
-                 readback_calc=None, rotary=False):
+                 readback_calc=None, rotary=False, desc=''):
         """
         :param manager: the CAS PV manager
         :param alias: alias
@@ -190,6 +189,10 @@ class PseudoMotor(SoftMotor):
         self._rotary = rotary
         self._alias = alias
         self._records = {}
+
+        if not desc:
+            desc = alias
+            self.put('DESC', desc)
 
     def startup(self):
         for name, info in self.related_motors.items():
@@ -291,11 +294,10 @@ class PseudoMotor(SoftMotor):
         SoftMotor.move(self, pos, relative=False)
 
         def put_complete(motor):
+            logger.debug('Put complete: %s' % motor)
+
             if motor in self._waiting:
-                logger.debug('Put complete: %s' % motor)
                 self._waiting.remove(motor)
-            else:
-                logger.debug('Put complete: %s (not in list?)' % motor)
 
             if not self._waiting:
                 self.done_moving = True
@@ -306,8 +308,8 @@ class PseudoMotor(SoftMotor):
         for motor, new_pos in new_positions.items():
             record = self.group.get_record(motor)
 
-            logger.debug('Setting %s.VAL %g' % (record, new_pos))
-            user_pv = '%sVAL' % (record._prefix, )
+            logger.debug('Setting %s %g' % (record, new_pos))
+            user_pv = '%s' % (record._prefix, )
 
             # TODO shouldn't be re-creating PV instances
             pvi = epics.PV(user_pv)
@@ -316,7 +318,7 @@ class PseudoMotor(SoftMotor):
             pvi.put(new_pos, timeout=None,
                     callback=lambda motor=motor, pvi=pvi, **kwargs: put_complete(pvi))
 
-        if not self._waiting:
+        if not self._waiting and not self.done_moving:
             self.done_moving = True
 
     def update_readback(self):
@@ -328,7 +330,8 @@ class PseudoMotor(SoftMotor):
         entry['finished'] = (value != 0)
 
         done = all(entry['finished'] for name, entry in self.related_motors.items())
-        self.done_moving = done
+        if done != self.done_moving:
+            self.done_moving = done
 
 
 def _test():
