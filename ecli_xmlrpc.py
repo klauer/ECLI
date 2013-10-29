@@ -21,13 +21,11 @@ import numpy as np
 
 # IPython
 import IPython.utils.traitlets as traitlets
-from IPython.core.magic_arguments import (argument,
-                                          magic_arguments, parse_argstring)
 
 # ECLI
 import ecli_util as util
 from ecli_plugin import ECLIPlugin
-from ecli_util import (get_plugin, get_core_plugin)
+from ecli_util import get_plugin
 
 # XMLRPC -- TODO replace with a library that does faster serialization/etc
 #           this is only for a proof of concept
@@ -36,9 +34,11 @@ from SimpleXMLRPCServer import SimpleXMLRPCRequestHandler
 
 logger = logging.getLogger('ECLI.xmlrpc')
 
+
 # Loading of this extension
 def load_ipython_extension(ipython):
     return util.generic_load_ext(ipython, ECLIxmlrpc, logger=logger, globals_=globals())
+
 
 def unload_ipython_extension(ipython):
     return util.generic_unload_ext(ipython, ECLIxmlrpc)
@@ -83,6 +83,7 @@ class ECLIxmlrpc(ECLIPlugin):
     REQUIRES = [('ECLICore', 1), (SCAN_PLUGIN, 1)]
 
     _callbacks = []
+    interface = traitlets.Unicode(u'', config=True)
     rpc_path = traitlets.Unicode(u'/epics_sps', config=True)
     port = traitlets.Int(8988, config=True)
 
@@ -148,6 +149,16 @@ class ECLIxmlrpc(ECLIPlugin):
         self.stop_server()
         self.start_server()
 
+    def _interface_changed(self, name='', old=None, new=None):
+        interface = self.interface
+        if self.server is not None:
+            old_interf = self.server.server_address[0]
+            if old_interf == interface:
+                return
+
+        self.stop_server()
+        self.start_server()
+
     def _rpc_path_changed(self, name='', old=0, new=0):
         path = self.rpc_path
         if self.handler is not None:
@@ -175,10 +186,15 @@ class ECLIxmlrpc(ECLIPlugin):
         print('Starting XMLRPC server on port=%d...' % port, end=' ')
 
         req_handler = get_request_handler(self.rpc_path)
-        self.server = SimpleXMLRPCServer(("", port),
-                                         requestHandler=req_handler,
-                                         logRequests=False,
-                                         allow_none=True)
+        try:
+            self.server = SimpleXMLRPCServer((self.interface, port),
+                                             requestHandler=req_handler,
+                                             logRequests=False,
+                                             allow_none=True)
+        except Exception as ex:
+            logger.error('Unable to start XML rpc server: (%s) %s' %
+                         (ex.__class__.__name__, ex))
+            return
 
         self.handler = req_handler
 
@@ -256,7 +272,7 @@ class ECLIxmlrpc(ECLIPlugin):
     def pre_scan(self, scan=None, **kwargs):
         """Scan callback -- new scan started"""
         self._new_scan = kwargs
-        logger.debug('pre scan', self._new_scan)
+        logger.debug('pre scan: %s' % self._new_scan)
 
     def post_scan(self, scan=None, abort=False, **kwargs):
         """Scan callback -- scan finished"""
@@ -283,7 +299,7 @@ class ECLIxmlrpc(ECLIPlugin):
                                              self._new_scan['command'])
 
             labels = [util.fix_label(c.label) for c in scaler_counters]
-            logger.debug('labels', labels)
+            logger.debug('labels: %s' % labels)
             scan_info['nopts'] = num_points
             scan_info['_labels'] = labels
             scan_info['_dimensions'] = self._new_scan['dimensions']
@@ -293,7 +309,7 @@ class ECLIxmlrpc(ECLIPlugin):
             self._scan_data = np.zeros((num_points, len(labels)))
             self._new_scan = None
 
-        logger.debug('scan info', scan_info)
+        logger.debug('scan info: %s' % scan_info)
         #data = [(c, c.buff[array_idx]) for c in scan.counters]
         scaler_data = [c.buff[array_idx] for c in scaler_counters]
         array_data = [c.buff[array_idx] for c in array_counters]
