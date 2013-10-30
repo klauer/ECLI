@@ -13,12 +13,12 @@ import functools
 
 # ECLI
 from . import record_info
-
+import pcaspy
 
 def fix_type(type_):
     if type_ in ('ulong', 'long'):
         return 'int'
-    elif type_ in ('uchar', 'char'):
+    elif type_ in ('uchar', 'char', 'short'):
         return 'int'
     return type_
 

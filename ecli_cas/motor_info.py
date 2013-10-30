@@ -64,7 +64,7 @@ FIELD_INFO_ALIAS = 0
 FIELD_INFO_TYPE = 1
 FIELD_INFO_DEFAULTS = 2
 
-MOTOR_ASYN_FIELDS = ('VAL', 'DVAL', 'RVAL', '')
+MOTOR_ASYN_FIELDS = ('VAL', 'DVAL', 'RVAL', '', 'TWF', 'TWR')
 MOTOR_FIELDS = {
     # field               :  alias                     , type   ,            (default, min, max)
     MOTOR_DONE_MOVE       : ['done_move'               , 'short',            (    0,     0,   0)],

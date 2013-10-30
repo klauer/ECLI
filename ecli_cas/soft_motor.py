@@ -17,7 +17,7 @@ from .record import CASRecord
 from . import motor_info as mi
 from . import record
 
-from . import CAPVBadValue
+from . import (CAPVBadValue, CAPV)
 
 logger = logging.getLogger('ECLI.soft_motor')
 
@@ -51,8 +51,7 @@ class SoftMotor(CASRecord):
 
         for field, (alias, type_, defaults) in mi.MOTOR_FIELDS.items():
             info = record.create_field_info(type_, defaults)
-            if field.endswith('VAL'):
-                info['asyn'] = True
+            info['asyn'] = field in mi.MOTOR_ASYN_FIELDS
 
             self.add_field(field, info, alias=alias)
 
@@ -184,20 +183,27 @@ class SoftMotor(CASRecord):
     def tweak_size_updated(self, value=None, **kwargs):
         self._tweak_value = value
 
-    def tweak_reverse_updated(self, value=None, **kwargs):
-        if self._direction == mi.MOTOR_DIRECTION_POS:
-            pos = self.request_position - self._tweak_value
+    def tweak_reverse_updated(self, value=None, asyn=None, **kwargs):
+        if asyn == CAPV.ASYN_START:
+            pos = self.request_position
         else:
-            pos = self.request_position + self._tweak_value
-        return self.move(pos, relative=False)
+            if self._direction == mi.MOTOR_DIRECTION_POS:
+                pos = self.request_position - self._tweak_value
+            else:
+                pos = self.request_position + self._tweak_value
 
-    def tweak_forward_updated(self, value=None, **kwargs):
-        if self._direction == mi.MOTOR_DIRECTION_POS:
-            pos = self.request_position + self._tweak_value
+        return self.move(pos, relative=False, asyn=asyn, **kwargs)
+
+    def tweak_forward_updated(self, value=None, asyn=None, **kwargs):
+        if asyn == CAPV.ASYN_START:
+            pos = self.request_position
         else:
-            pos = self.request_position - self._tweak_value
+            if self._direction == mi.MOTOR_DIRECTION_POS:
+                pos = self.request_position + self._tweak_value
+            else:
+                pos = self.request_position - self._tweak_value
 
-        return self.move(pos, relative=False)
+        return self.move(pos, relative=False, asyn=asyn, **kwargs)
 
     def move(self, amount, relative=False, **kwargs):
         if relative:

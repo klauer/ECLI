@@ -19,6 +19,7 @@ import ast
 
 from . import SoftMotor
 from . import motor_info as mi
+from . import CAPV
 
 
 logger = logging.getLogger('ECLI.pseudomotor')
@@ -280,28 +281,32 @@ class PseudoMotor(SoftMotor):
             record = info['record']
             record.put(mi.MOTOR_GO, value)
 
-    def move(self, amount, relative=False, asyn=False, **kwargs):
-        if relative:
-            pos = self._readback + amount
-        else:
-            pos = amount
+    def move(self, amount, relative=False, asyn=None, **kwargs):
+        # Asyn PVs can get 2 callbacks when an asyn context is created (e.g.,
+        # with caput -c) -- one to check the value, then one when processing
+        # should start. This allows pcaspy to accept the value and start
+        # the asynchronous task on the context
+        if asyn in (CAPV.ASYN_OFF, CAPV.ASYN_CHECK):
+            if relative:
+                pos = self._readback + amount
+            else:
+                pos = amount
 
-        if not asyn:
-            # Asyn records get 2 callbacks -- one to check the value,
-            # then one when processing should start. This allows pcaspy
-            # to accept the value and start the asynchronous task on
-            # the context
             logger.debug('Pseudo move %s to %s' % (self, pos))
             try:
-                return SoftMotor.move(self, pos, relative=False)
+                ret = SoftMotor.move(self, pos, relative=False)
             except SoftMotor.SoftMotorError:
                 return False
             except:
                 logger.debug('Pseudo move %s failed' % (self, ),
                              exc_info=True)
                 return False
+            else:
+                if asyn == CAPV.ASYN_CHECK:
+                    return ret
 
         else:
+            pos = self.request_position
             logger.debug('Pseudo asyn move started (%s)' % (self, ))
 
         def put_complete(motor):

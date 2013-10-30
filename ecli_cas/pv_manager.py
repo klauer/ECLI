@@ -15,6 +15,7 @@ import threading
 
 # pcaspy
 import pcaspy
+from pcaspy import SimplePV as pcasPV
 from pcaspy.tools import ServerThread
 
 from . import CAPVBadValue
@@ -22,19 +23,23 @@ from . import CAPVBadValue
 logger = logging.getLogger('ECLI.cas')
 
 
-class CAPV(pcaspy.SimplePV):
+class CAPV(pcasPV):
     """
-    Simple wrapper around pcaspy.SimplePV to add write callback
+    Simple wrapper around pcasPV/SimplePV to add write callback
     functionality, and a simple way to update the value directly
-    from the PV instance (see write_value)
+    from the PV instance (see set_value)
     """
+    ASYN_OFF = 0
+    ASYN_CHECK = 1
+    ASYN_START = 2
+
     def __init__(self, prefix, basename, pvinfo, **kwargs):
         name = '%s%s' % (prefix, basename)
         self.prefix = prefix
         self.basename = basename
         self.full_name = '%s%s' % (prefix, basename)
 
-        pcaspy.SimplePV.__init__(self, name, pvinfo, **kwargs)
+        pcasPV.__init__(self, name, pvinfo, **kwargs)
         self._write_callbacks = {}
         self._asyn_callbacks = {}
 
@@ -60,7 +65,7 @@ class CAPV(pcaspy.SimplePV):
     def remove_asyn_callback(self, fcn):
         del self._asyn_callbacks[fcn]
 
-    def written_to(self, value, raise_exception=False):
+    def check_value(self, value, asyn=None, raise_exception=False):
         """
         Callback from CAS Driver -- runs all callbacks, accepting
         the new value only if CAPVBadValue is not raised during
@@ -68,7 +73,8 @@ class CAPV(pcaspy.SimplePV):
         """
         for cb, kwargs in self._write_callbacks.items():
             try:
-                cb(pv=self, pvname=self.name, value=value, **kwargs)
+                cb(pv=self, pvname=self.name, value=value, asyn=asyn,
+                   **kwargs)
             except CAPVBadValue:
                 if raise_exception:
                     raise
@@ -81,7 +87,7 @@ class CAPV(pcaspy.SimplePV):
 
         return True
 
-    def _run_asyn_callbacks(self, value):
+    def _run_asyn_callbacks(self, value, asyn_status):
         """
         Asyn callbacks
         """
@@ -89,7 +95,7 @@ class CAPV(pcaspy.SimplePV):
 
         for cb, kwargs in self._asyn_callbacks.items():
             try:
-                cb(pv=self, pvname=self.name, value=value, asyn=True,
+                cb(pv=self, pvname=self.name, value=value, asyn=asyn_status,
                    **kwargs)
             except:
                 logger.debug('Unhandled exception during PV=%s asyn processing' % self.basename,
@@ -104,15 +110,6 @@ class CAPV(pcaspy.SimplePV):
 
         return success
 
-    def startAsyncWrite(self, context):
-        """
-        Notify the CAS that asynchronous processing has started
-        """
-        ret = pcaspy.SimplePV.startAsyncWrite(self, context)
-
-        self._run_asyn_callbacks(self.get_value())
-        return ret
-
     def get_value(self):
         reason = self.basename
         return self.driver.pvDB[reason].value
@@ -123,7 +120,7 @@ class CAPV(pcaspy.SimplePV):
         """
         if check:
             try:
-                self.written_to(value, raise_exception=True)
+                self.check_value(value, raise_exception=True)
             except Exception as ex:
                 raise ValueError('Value=%s rejected: (%s) %s' %
                                  (value, ex.__class__.__name__, ex))
@@ -148,6 +145,52 @@ class CAPV(pcaspy.SimplePV):
         if db_entry.flag and self.info.scan == 0:
             self.updateValue(db_entry)
             db_entry.flag = False
+
+    def _write_value(self, gdd_value, asyn=None):
+        value = gdd_value.get()
+        success = self.check_value(value, asyn=asyn)
+        if success:
+            self.driver.setParam(self.basename, value)
+
+        value = self.driver.getParamDB(self.info.reason)
+
+        if not success:
+            value.severity = pcaspy.Severity.INVALID_ALARM
+            value.alarm = pcaspy.Alarm.WRITE_ALARM
+        else:
+            self.updateValue(value)
+
+        return success
+
+    def write(self, context, value):
+        """
+        Synchronous write of new value (or if CAS does not have
+        WRITENOTIFY support)
+        """
+        # delegate asynchronous write to python writeNotify method
+        # only if writeNotify not present in C++ library
+        if not pcaspy.EPICS_HAS_WRITENOTIFY and self.info.asyn:
+            return self.writeNotify(context, value)
+        else:
+            self._write_value(value, asyn=self.ASYN_OFF)
+            return pcaspy.S_casApp_success
+
+    def writeNotify(self, context, gdd_value):
+        """
+        Async write of new value with the context
+        """
+        success = self._write_value(gdd_value, self.ASYN_CHECK)
+        # do asynchronous only if PV supports
+        if success and self.info.asyn:
+            # async write will finish later
+            self.startAsyncWrite(context)
+
+            self._run_asyn_callbacks(gdd_value.get(), self.ASYN_START)
+            return pcaspy.S_casApp_asyncCompletion
+        elif self.hasAsyncWrite():
+            return pcaspy.S_casApp_postponeAsyncIO
+        else:
+            return pcaspy.S_casApp_success
 
     def asyn_completed(self):
         """
@@ -263,7 +306,7 @@ class CADriver(pcaspy.Driver):
         Return True to accept new value
         """
         capv = self.pvs[pv]
-        if capv.written_to(value):
+        if capv.check_value(value):
             self.setParam(pv, value)
             return True
         else:
