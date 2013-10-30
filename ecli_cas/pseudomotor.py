@@ -8,16 +8,6 @@
    :synopsis: ECLI pseudomotor support
 .. moduleauthor:: Ken Lauer <klauer@bnl.gov>
 """
-# TODO: important:
-#  Pseudomotor move request finishes in same callback before startAsyncWrite
-#  is called if no motors are required to move. Quickly fixed CAPV to complete
-#  the async write immediately if the desired value hasn't changed.
-#  options I see:
-#   1. add timeout for same value validity (set fairly small, 0.05s?) -- but
-#      then additional handling needed if timeout occurs
-#   2. monkey-patch startAsyncWrite in pseudomotor.py to check if the motor is
-#      still in position, if not, move again
-#
 # TODO: option for using normal PVs in expressions (how did I overlook this?)
 
 from __future__ import print_function
@@ -290,18 +280,29 @@ class PseudoMotor(SoftMotor):
             record = info['record']
             record.put(mi.MOTOR_GO, value)
 
-    def move(self, amount, relative=False):
-        if self._go != mi.MOTOR_GO_GO:
-            return
-
+    def move(self, amount, relative=False, asyn=False, **kwargs):
         if relative:
             pos = self._readback + amount
         else:
             pos = amount
 
-        logger.debug('-> Pseudo move %s to %s' % (self, pos))
+        if not asyn:
+            # Asyn records get 2 callbacks -- one to check the value,
+            # then one when processing should start. This allows pcaspy
+            # to accept the value and start the asynchronous task on
+            # the context
+            logger.debug('Pseudo move %s to %s' % (self, pos))
+            try:
+                return SoftMotor.move(self, pos, relative=False)
+            except SoftMotor.SoftMotorError:
+                return False
+            except:
+                logger.debug('Pseudo move %s failed' % (self, ),
+                             exc_info=True)
+                return False
 
-        SoftMotor.move(self, pos, relative=False)
+        else:
+            logger.debug('Pseudo asyn move started (%s)' % (self, ))
 
         def put_complete(motor):
             logger.debug('Put complete: %s' % motor)

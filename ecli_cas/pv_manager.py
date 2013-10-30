@@ -34,17 +34,31 @@ class CAPV(pcaspy.SimplePV):
         self.basename = basename
         self.full_name = '%s%s' % (prefix, basename)
 
-        if pvinfo.asyn:
-            self.asyn_lock = threading.Lock()
-            self.asyn_request = False
-            self.asyn_value = None
-
         pcaspy.SimplePV.__init__(self, name, pvinfo, **kwargs)
-        self._write_callbacks = set([])
+        self._write_callbacks = {}
+        self._asyn_callbacks = {}
 
-    def add_write_callback(self, fcn):
+    def add_write_callback(self, fcn, **kwargs):
+        """
+        Callback when value is written to
+        """
         assert(hasattr(fcn, '__call__'))
-        self._write_callbacks.add(fcn)
+        self._write_callbacks[fcn] = kwargs
+
+    def remove_write_callback(self, fcn):
+        del self._write_callbacks[fcn]
+
+    def add_asyn_callback(self, fcn, **kwargs):
+        """
+        With asynchronous PVs, the value is first checked
+        by the write callback, and then processing should
+        start when the asyn callback takes place.
+        """
+        assert(hasattr(fcn, '__call__'))
+        self._asyn_callbacks[fcn] = kwargs
+
+    def remove_asyn_callback(self, fcn):
+        del self._asyn_callbacks[fcn]
 
     def written_to(self, value, raise_exception=False):
         """
@@ -52,9 +66,9 @@ class CAPV(pcaspy.SimplePV):
         the new value only if CAPVBadValue is not raised during
         any of the callbacks
         """
-        for cb in self._write_callbacks:
+        for cb, kwargs in self._write_callbacks.items():
             try:
-                cb(pv=self, pvname=self.name, value=value)
+                cb(pv=self, pvname=self.name, value=value, **kwargs)
             except CAPVBadValue:
                 if raise_exception:
                     raise
@@ -67,16 +81,37 @@ class CAPV(pcaspy.SimplePV):
 
         return True
 
-    def startAsyncWrite(self, context):
-        with self.asyn_lock:
-            pcaspy.SimplePV.startAsyncWrite(self, context)
+    def _run_asyn_callbacks(self, value):
+        """
+        Asyn callbacks
+        """
+        success = False
 
-            cur_value = self.get_value()
-            if self.asyn_value is not None and self.asyn_value == cur_value:
-                self.endAsyncWrite(pcaspy.S_casApp_success)
-                self.asyn_request = False
+        for cb, kwargs in self._asyn_callbacks.items():
+            try:
+                cb(pv=self, pvname=self.name, value=value, asyn=True,
+                   **kwargs)
+            except:
+                logger.debug('Unhandled exception during PV=%s asyn processing' % self.basename,
+                             exc_info=True)
             else:
-                self.asyn_request = True
+                success = True
+
+        if self._asyn_callbacks and not success:
+            # If none of the callbacks completed properly, then just outright
+            # finish the asyn processing
+            self.asyn_completed()
+
+        return success
+
+    def startAsyncWrite(self, context):
+        """
+        Notify the CAS that asynchronous processing has started
+        """
+        ret = pcaspy.SimplePV.startAsyncWrite(self, context)
+
+        self._run_asyn_callbacks(self.get_value())
+        return ret
 
     def get_value(self):
         reason = self.basename
@@ -120,12 +155,7 @@ class CAPV(pcaspy.SimplePV):
         processing has completed
         """
         if self.info.asyn:
-            with self.asyn_lock:
-                if self.asyn_request:
-                    self.endAsyncWrite(pcaspy.S_casApp_success)
-
-                self.asyn_value = self.get_value()
-                self.asyn_request = False
+            self.endAsyncWrite(pcaspy.S_casApp_success)
 
 
 class CAServer(pcaspy.SimpleServer):

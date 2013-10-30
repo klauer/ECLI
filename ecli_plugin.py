@@ -158,7 +158,7 @@ class ECLIPlugin(Configurable):
             except Exception as ex:
                 if handle_exceptions:
                     self.logger.debug('Callback %s failed' % (name, ),
-                                      exc_info=(show_traceback is not None))
+                                      exc_info=True)
                     if show_traceback is not None:
                         print('Callback %s failed' % (name, ))
                         util.print_traceback(ex, f=show_traceback)

@@ -189,7 +189,7 @@ class SoftMotor(CASRecord):
             pos = self.request_position - self._tweak_value
         else:
             pos = self.request_position + self._tweak_value
-        self.move(pos, relative=False)
+        return self.move(pos, relative=False)
 
     def tweak_forward_updated(self, value=None, **kwargs):
         if self._direction == mi.MOTOR_DIRECTION_POS:
@@ -197,9 +197,9 @@ class SoftMotor(CASRecord):
         else:
             pos = self.request_position - self._tweak_value
 
-        self.move(pos, relative=False)
+        return self.move(pos, relative=False)
 
-    def move(self, amount, relative=False):
+    def move(self, amount, relative=False, **kwargs):
         if relative:
             pos = self._readback + amount
             logger.debug('--> Move %s rel: %g pos: %g' % (self, amount, pos))
@@ -226,6 +226,8 @@ class SoftMotor(CASRecord):
             self._paused_position = pos
         else:
             self._request_position = pos
+
+        return True
 
     def _update_request_pos(self, dial=None):
         if dial is None:
@@ -268,15 +270,15 @@ class SoftMotor(CASRecord):
             self.put('difference_dial', req_dial - dial)
 
     def dial_value_updated(self, value=None, **kwargs):
-        return self.move(value, relative=False)
+        return self.move(value, relative=False, **kwargs)
 
     def raw_value_updated(self, value=None, **kwargs):
         user, dial, raw = self._positions(value, mi.POSITION_RAW)
-        return self.dial_value_updated(value=dial)
+        return self.dial_value_updated(value=dial, **kwargs)
 
     def user_value_updated(self, value=None, **kwargs):
         user, dial, raw = self._positions(value, mi.POSITION_USER)
-        return self.dial_value_updated(value=dial)
+        return self.dial_value_updated(value=dial, **kwargs)
 
     def update_status(self, **kwargs):
         old_status = self._status

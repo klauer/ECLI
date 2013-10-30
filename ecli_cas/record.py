@@ -93,7 +93,7 @@ class CASRecord(object):
         return wrapped
 
     def add_field(self, field, info_dict, alias=None):
-        if field == 'VAL':
+        if field == 'VAL' and '' not in self.fields:
             # The record itself should point to .VAL
             self.add_field('', info_dict, alias=alias)
 
@@ -102,16 +102,21 @@ class CASRecord(object):
         if alias is not None:
             self.aliases[alias] = field
 
+        asyn = info_dict.get('asyn', False)
+
         for name in (field, alias):
             if name is None:
                 continue
 
             try:
                 field_cb = getattr(self, '%s_updated' % name.lower())
-                pvi.add_write_callback(self._wrap_cb(field_cb))
-                #print('adding callback', name)
             except AttributeError:
-                pass
+                continue
+
+            wrapped = self._wrap_cb(field_cb)
+            pvi.add_write_callback(wrapped)
+            if asyn:
+                pvi.add_asyn_callback(wrapped)
 
         return pvi
 
