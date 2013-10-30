@@ -335,6 +335,10 @@ class ECLICore(ECLIPlugin):
         self._reversed_aliases = rev
 
     @property
+    def logger(self):
+        return logger
+
+    @property
     def reversed_aliases(self):
         if not self.enable_aliasing:
             return {}
