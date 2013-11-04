@@ -10,7 +10,6 @@
 
 """
 from __future__ import print_function
-import sys
 import time
 import logging
 
@@ -18,15 +17,13 @@ import epics
 
 # IPython
 import IPython.utils.traitlets as traitlets
-from IPython.core.error import UsageError
 
 # ECLI
 from ecli_core import AliasedPV
 from ecli_plugin import ECLIPlugin
 import ecli_util as util
-from ecli_util import (get_plugin, get_core_plugin)
-from ecli_util import (ECLIError, SimpleTable)
-from ecli_util.epics_device import get_records_from_devices
+from ecli_util import get_plugin
+from ecli_util import SimpleTable
 from ecli_util.decorators import ShowElapsed
 from ecli_util.decorators import ECLIExport
 from ecli_util.magic_args import (ecli_magic_args, argument)
@@ -38,6 +35,7 @@ logger = logging.getLogger('ECLI.Scaler')
 # Loading of this extension
 def load_ipython_extension(ipython):
     return util.generic_load_ext(ipython, ECLIScaler, logger=logger, globals_=globals())
+
 
 def unload_ipython_extension(ipython):
     return util.generic_unload_ext(ipython, ECLIScaler)
@@ -132,6 +130,7 @@ def scaler_channel_names(scaler, default='ch%d'):
     return [name if name else default % i
             for i, name in enumerate(scaler.getNames())]
 
+
 @ECLIExport
 def scaler_counts_dict(scaler, seconds, **kwargs):
     """
@@ -183,12 +182,10 @@ def ct(margs, self, args):
     """
     $ ct [seconds] [-r/--record record]
     """
-    plugin = get_plugin('ECLIScaler')
-
     if args.record is not None:
         scalers = [args.record]
     else:
-        scalers = plugin.scalers
+        scalers = self.scalers
 
     if scalers is None or len(scalers) == 0:
         logging.error('Scaler list undefined (see config ECLIScaler.scalers)')
@@ -197,13 +194,13 @@ def ct(margs, self, args):
     if args.seconds is not None:
         seconds = args.seconds
     else:
-        seconds = plugin.default_count_time
+        seconds = self.default_count_time
 
     for scaler in scalers:
-        if plugin.show_timestamp:
+        if self.show_timestamp:
             print(' %s' % util.get_timestamp())
             print()
 
-        dev = plugin._get_device(scaler)
+        dev = self._get_device(scaler)
         table = scaler_counts_table(dev, seconds)
         table.print_()
