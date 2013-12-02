@@ -198,12 +198,32 @@ class PseudoMotor(SoftMotor):
     def startup(self):
         for name, info in self.related_motors.items():
             rec = info['record']
-            rec.set_callback(mi.MOTOR_USER_READBACK,
-                             lambda **kwargs: self.update_readback())
-            rec.set_callback(mi.MOTOR_DONE_MOVE,
-                             lambda motor=name, **kwargs: self.related_finished(motor, **kwargs))
+            if isinstance(rec, epics.Motor):
+                rec.set_callback(mi.MOTOR_USER_READBACK,
+                                 lambda **kwargs: self.update_readback())
+                rec.set_callback(mi.MOTOR_DONE_MOVE,
+                                 lambda motor=name, **kwargs:
+                                 self.related_finished(motor, **kwargs))
+            else:
+                # TODO test
+                rec.add_callback(callback=lambda **kwargs: self.update_readback())
 
         self.calculate_range()
+
+    def shutdown(self):
+        # TODO note that this just clears all callbacks for related
+        #      records. could easily remove the specific one if lambdas
+        #      aren't used.
+        for name, info in self.related_motors.items():
+            rec = info['record']
+            if isinstance(rec, epics.Motor):
+                rec.clear_callback(mi.MOTOR_USER_READBACK)
+                rec.clear_callback(mi.MOTOR_DONE_MOVE)
+            else:
+                rec.clear_callbacks()
+
+        # Remove all fields
+        self.remove_all()
 
     def calculate_range(self):
         """

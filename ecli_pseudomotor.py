@@ -7,9 +7,6 @@
 .. module:: ecli_pseudomotor
    :synopsis: ECLI pseudomotor extension, for creating virtual axes on demand
 .. moduleauthor:: Ken Lauer <klauer@bnl.gov>
-
-.. warning:: not yet implemented (placeholder)
-   (TODO fix up old pseudomotor IOC and make it suitable for this)
 """
 
 from __future__ import print_function
@@ -51,6 +48,7 @@ class ECLIPseudomotor(ECLIPlugin):
         logger.debug('Initializing ECLI plugin ECLIPseudomotor')
 
         self.groups = []
+        self.pseudo_to_group = {}
 
     @property
     def logger(self):
@@ -58,9 +56,136 @@ class ECLIPseudomotor(ECLIPlugin):
 
 
 @ECLIExport
+def create_motors(create=[], aliases={},
+                  desc='', rotary=False,
+                  **kwargs):
+    """
+    Create pseudomotors that mimic an EPICS motor records
+
+    For example,
+
+        >>> create_motors(create=['pseudo1', 'pseudo2'],
+        ...               m1='pseudo1 / 2.0',
+        ...               pseudo1='m1 * 2',
+        ...               pseudo2='(m1 * 2) + 0.1',
+        ...               aliases={'m1': 'IOC:m1'},
+        ...               )
+
+    Assuming the CAS prefix is set to ECLI:, this will create two pseudomotors
+    `ECLI:pseudo1` and `ECLI:pseudo2`. Their readback values will be updated
+    each time `m1` (which has a full record name of `IOC:m1`) is updated,
+    showing twice m1's readback value (and with a slight offset).
+
+        % caget IOC:m1.RBV ECLI:pseudo1.RBV ECLI:pseudo2.RBV
+        IOC:m1.RBV        1.0
+        ECLI:pseudo1.RBV   2.0
+        ECLI:pseudo2.RBV   2.1
+
+        % caput ECLI:pseudo 3.0
+        % caget IOC:m1.RBV ECLI:pseudo1.RBV ECLI:pseudo2.RBV
+        IOC:m1.RBV        1.5
+        ECLI:pseudo1.RBV   3.0
+        ECLI:pseudo2.RBV   3.1
+
+    :param create: The pseudo motor names (appended onto PCASpy prefix)
+                   The expression to be evaluated for the pseudomotor readback value
+                   should be set as a keyword argument.
+    :param aliases: Define aliases for motors
+                    e.g., {'m1': 'IOC:m1'}
+    :type aliases: dict
+    :param rotary: If a motor is the rotary list, motor values will be displayed in degrees,
+                   but automatically converted to radians when doing calculations.
+    :type rotary: list
+    :param kwargs: Each time the pseudomotor is commanded to move, all related
+                   motors specified in the kwargs will be commanded to move.
+
+    :returns: tuple containing (Pseudomotor instance list, MotorGroup instance)
+    .. note:: Expressions cannot have colons (:) in them -- that is, motors
+              must be valid Python identifiers. Prior to adding the
+              pseudomotor, either add aliases via the `aliases` parameter or
+              use normal ECLI aliasing.
+    """
+
+    if not create:
+        raise ValueError('No motors to create')
+
+    plugin = get_plugin('ECLIPseudomotor')
+    mplugin = get_plugin('ECLIMotor')
+    cas_plugin = get_plugin('ECLIcas')
+
+    core = get_core_plugin()
+
+    all_aliases = copy.deepcopy(core.aliases)
+    all_aliases.update(aliases)
+
+    group = pseudo.MotorGroup()
+
+    pseudo_names = list(create)
+
+    for pseudo_name in pseudo_names:
+        if pseudo_name in plugin.pseudo_to_group:
+            logger.info('Removing previously created pseudomotor of the same name (%s)' % pseudo_name)
+            delete_pseudomotor(pseudo_name)
+
+    pseudos_full = [all_aliases.get(pseudo_name, pseudo_name)
+                    for pseudo_name in pseudo_names]
+
+    for pseudo_name, pseudo_full in zip(pseudo_names, pseudos_full):
+
+        readback_expr = kwargs[pseudo_name]
+        logger.info('Pseudomotor: %s (%s) Readback expression: %s' %
+                    (pseudo_name, pseudo_full, readback_expr))
+
+        # Add the pseudomotor expressions
+        group.add_motor(pseudo_name, pseudo_full, readback_expr)
+
+    # And all of the related motor expressions
+    for motor, expression in kwargs.items():
+        if motor in pseudo_names:
+            continue
+
+        full_pv = all_aliases.get(motor, motor)
+        logger.info('Motor: %s (%s) Expression: %s' %
+                    (motor, full_pv, expression))
+
+        group.add_motor(motor, full_pv, expression)
+
+    # Check all of the equations first
+    group.start()
+    logger.debug('Equations checked')
+
+    for motor in kwargs.keys():
+        if motor in pseudo_names:
+            continue
+
+        logger.debug('Adding record %s' % motor)
+        group.set_record(motor, mplugin.get_motor(motor))
+
+    pseudos = []
+    # Create the pseudomotor instance itself
+    for pseudo_name, pseudo_full in zip(pseudo_names, pseudos_full):
+        p = pseudo.PseudoMotor(cas_plugin.manager, group,
+                               pseudo_full, pseudo_name,
+                               rotary=pseudo_name in rotary)
+        pseudos.append(p)
+        group.set_record(pseudo_name, p)
+
+    # And start them up
+    for pseudomotor in pseudos:
+        pseudomotor.startup()
+
+    for pseudo_name, pseudomotor in zip(pseudo_names, pseudos):
+        pseudomotor.update_readback()
+
+        plugin.pseudo_to_group[pseudo_name] = group
+
+    plugin.groups.append(group)
+    return pseudos, group
+
+
+@ECLIExport
 def create_motor(pseudo_name, readback_expr, aliases={},
-                 desc='', rotary=False,
-                 **kwargs):
+                 desc='', rotary=False, **kwargs):
     """
     Create a pseudomotor that mimics an EPICS motor record
 
@@ -97,63 +222,42 @@ def create_motor(pseudo_name, readback_expr, aliases={},
     :param kwargs: Each time the pseudomotor is commanded to move, all related
                    motors specified in the kwargs will be commanded to move.
 
+    :returns: tuple containing (Pseudomotor instance, MotorGroup instance)
+
     .. note:: Expressions cannot have colons (:) in them -- that is, motors
               must be valid Python identifiers. Prior to adding the
               pseudomotor, either add aliases via the `aliases` parameter or
               use normal ECLI aliasing.
     """
+    if rotary:
+        rotary_list = [pseudo_name]
+    else:
+        rotary_list = []
 
-    plugin = get_plugin('ECLIPseudomotor')
-    mplugin = get_plugin('ECLIMotor')
-    cas_plugin = get_plugin('ECLIcas')
+    all_motors = copy.deepcopy(kwargs)
+    all_motors[pseudo_name] = readback_expr
+    pseudos, group = create_motors(create=[pseudo_name],
+                                   aliases=aliases,
+                                   rotary=rotary_list,
+                                   **all_motors)
+    pseudo = pseudos[0]
+    pseudo.put('DESC', desc)
+    return pseudo, group
 
-    core = get_core_plugin()
-
-    all_aliases = copy.deepcopy(core.aliases)
-    all_aliases.update(aliases)
-
-    group = pseudo.MotorGroup()
-
-    pseudo_full = all_aliases.get(pseudo_name, pseudo_name)
-    logger.info('Pseudomotor: %s (%s) Readback expression: %s' %
-                (pseudo_name, pseudo_full, readback_expr))
-
-    # Add the pseudomotor expressions
-    group.add_motor(pseudo_name, pseudo_full, readback_expr)
-
-    # And all of the related motor expressions
-    for motor, expression in kwargs.items():
-        full_pv = all_aliases.get(motor, motor)
-        logger.info('Motor: %s (%s) Expression: %s' %
-                    (motor, full_pv, expression))
-
-        group.add_motor(motor, full_pv, expression)
-
-    # Check all of the equations first
-    group.start()
-    logger.debug('Equations checked')
-
-    for motor in kwargs.keys():
-        logger.debug('Adding record %s' % motor)
-        group.set_record(motor, mplugin.get_motor(motor))
-
-    # Create and add the pseudomotor itself
-    pseudomotor = pseudo.PseudoMotor(cas_plugin.manager, group,
-                                     pseudo_full, pseudo_name,
-                                     desc=desc, rotary=rotary)
-
-    pseudomotor.startup()
-    group.set_record(pseudo_name, pseudomotor)
-
-    plugin.groups.append(([pseudomotor], group))
-
-    pseudomotor.update_readback()
 
 @ECLIExport
 def delete_pseudomotor(pseudo_name):
     """
-    Delete a pseudomotor by name
+    Delete a pseudomotor by name (deletes the whole group currently)
     """
 
-    # TODO
-    raise NotImplementedError
+    plugin = get_plugin('ECLIPseudomotor')
+
+    group = plugin.pseudo_to_group[pseudo_name]
+    for name, record in group.records:
+        if isinstance(record, pseudo.PseudoMotor):
+            record.shutdown()
+        if name in plugin.pseudo_to_group:
+            del plugin.pseudo_to_group[name]
+
+    plugin.groups.remove(group)
