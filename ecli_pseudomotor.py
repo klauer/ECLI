@@ -57,7 +57,7 @@ class ECLIPseudomotor(ECLIPlugin):
 
 @ECLIExport
 def create_motors(create=[], aliases={},
-                  desc='', rotary=False,
+                  desc='', rotary=[],
                   **kwargs):
     """
     Create pseudomotors that mimic an EPICS motor records
