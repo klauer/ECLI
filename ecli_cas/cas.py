@@ -16,11 +16,10 @@ import logging
 
 # IPython
 import IPython.utils.traitlets as traitlets
-from IPython.core.magic_arguments import (
-    argument, magic_arguments, parse_argstring)
 
 # ECLI
 from ecli_plugin import ECLIPlugin
+from ecli_util.magic_args import (ecli_magic_args, argument)
 from ecli_util import (get_plugin, get_core_plugin)
 from ecli_util.decorators import ECLIExport
 
@@ -107,47 +106,55 @@ class ECLIcas(ECLIPlugin):
         if old is not None:
             logger.warning('Prefix will not be changed until next restart')
 
+    @ECLIExport
+    def create_pv(self, pvname, write_callback=None, **kwargs):
+        '''
+        Create a PV using PCASpy
 
-@ECLIExport
-def create_pv(pvname, write_callback=None, **kwargs):
-    '''
-    Create a PV using PCASpy
+        :param pvname: the name of the PV to create (not including the ECLIcas prefix)
+        :param write_callback: a function (callable) to call when the PV is written to via caput
+                Callbacks are called with cb(pv=CAPV instance, pvname=name, value=value, ...)
 
-    :param pvname: the name of the PV to create (not including the ECLIcas prefix)
-    :param write_callback: a function (callable) to call when the PV is written to via caput
-            Callbacks are called with cb(pv=CAPV instance, pvname=name, value=value, ...)
+        :param kwargs: Possible kwargs:
 
-    :param kwargs: Possible kwargs:
+        ======   =================================   ==========  ===================================================
+        Field    Option                              Default     Description
+        ======   =================================   ==========  ===================================================
+        type     enum, string, char, float or int    float       PV data type
+        count    positive integer number             1           Number of elements
+        enums    string list                         []          String representations when type is enum
+        states   list of severity state.             []          Severity states when type is enum [NO_ALARM, MINOR_ALARM, MAJOR_ALARM, INVALID_ALARM]
+        prec     positive integer number             0           Precision when type is 'float'
+        unit     string                                          Physical meaning of data
+        lolim    float number                        0.0         Data low limit for graphics display
+        hilim    float number                        0.0         Data high limit for graphics display
+        low      float number                        0.0         Data low limit for alarm
+        high     float number                        0.0         Dat high limit for alarm
+        lolo     float number                        0.0         Data low low limit for alarm
+        hihi     float number                        0.0         Data high high limit for alarm
+        scan     float number                        0.0         Data scan period. 0.0 means passive
+        asyn     boolean                             False       PV data process finishes asynchronously or not
+        asg      string                                          Access security group name
+        value    python builtin data type            0           Initial value
+        ======   =================================   ==========  ===================================================
 
-    ======   =================================   ==========  ===================================================
-    Field    Option                              Default     Description
-    ======   =================================   ==========  ===================================================
-    type     enum, string, char, float or int    float       PV data type
-    count    positive integer number             1           Number of elements
-    enums    string list                         []          String representations when type is enum
-    states   list of severity state.             []          Severity states when type is enum [NO_ALARM, MINOR_ALARM, MAJOR_ALARM, INVALID_ALARM]
-    prec     positive integer number             0           Precision when type is 'float'
-    unit     string                                          Physical meaning of data
-    lolim    float number                        0.0         Data low limit for graphics display
-    hilim    float number                        0.0         Data high limit for graphics display
-    low      float number                        0.0         Data low limit for alarm
-    high     float number                        0.0         Dat high limit for alarm
-    lolo     float number                        0.0         Data low low limit for alarm
-    hihi     float number                        0.0         Data high high limit for alarm
-    scan     float number                        0.0         Data scan period. 0.0 means passive
-    asyn     boolean                             False       PV data process finishes asynchronously or not
-    asg      string                                          Access security group name
-    value    python builtin data type            0           Initial value
-    ======   =================================   ==========  ===================================================
+        (see pcaspy documentation for more information)
+        '''
 
-    (see pcaspy documentation for more information)
-    '''
+        return self.manager.add_pv(pvname, **kwargs)
 
-    pvmanager = ECLIcas.get_pv_manager()
-    return pvmanager.add_pv(pvname, **kwargs)
+    @ECLIExport
+    def remove_pv(self, pvname, **kwargs):
+        '''
+        Remove a previously created PCASpy PV
+
+        :param pvname: the name of the PV to remove
+        '''
+
+        return self.manager.remove_pv(pvname, **kwargs)
 
 
-@magic_arguments()
+@ecli_magic_args(ECLIcas)
 @argument('name', type=str,
           help='PV name (added onto prefix)')
 @argument('type', choices=PCAS_TYPES, default='float', nargs='?',
@@ -182,15 +189,10 @@ def create_pv(pvname, write_callback=None, **kwargs):
           help='Access security group name')
 @argument('-v', '--value', type=str,  # pcaspy takes care of type conversion
           help='Initial value')
-def _create_pv(self, arg):
+def _create_pv(margs, self, args):
     """
     Create a PV through pcaspy
     """
-    args = parse_argstring(_create_pv, arg)
-    if args is None:
-        return
-
-    pvmanager = ECLIcas.get_pv_manager()
     kwargs = dict([(k, v) for k, v in args._get_kwargs()
                    if v is not None])
 
@@ -198,31 +200,14 @@ def _create_pv(self, arg):
         kwargs['states'] = [getattr(pcaspy.alarm.Severity, state)
                             for state in kwargs['states']]
 
-    pvmanager.add_pv(args.name, **kwargs)
+    return self.manager.add_pv(args.name, **kwargs)
 
 
-@ECLIExport
-def remove_pv(pvname, **kwargs):
-    '''
-    Remove a previously created PCASpy PV
-
-    :param pvname: the name of the PV to remove
-    '''
-
-    pvmanager = ECLIcas.get_pv_manager()
-    return pvmanager.remove_pv(pvname, **kwargs)
-
-
-@magic_arguments()
+@ecli_magic_args(ECLIcas)
 @argument('name', type=str,
           help='PV name (added onto prefix)')
-def _remove_pv(self, arg):
+def _remove_pv(margs, self, args):
     """
     Remove a PV from pcaspy
     """
-    args = parse_argstring(_remove_pv, arg)
-    if args is None:
-        return
-
-    pvmanager = ECLIcas.get_pv_manager()
-    return pvmanager.remove_pv(args.name)
+    return self.remove_pv(args.name)

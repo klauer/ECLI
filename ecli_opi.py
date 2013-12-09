@@ -26,7 +26,6 @@ import IPython.utils.traitlets as traitlets
 from ecli_core import AliasedPV
 from ecli_plugin import ECLIPlugin
 import ecli_util as util
-from ecli_util import (get_plugin, get_core_plugin)
 from ecli_util.decorators import ECLIExport
 from ecli_util.magic_args import (ecli_magic_args, argument)
 
@@ -81,31 +80,29 @@ class ECLIopi(ECLIPlugin):
         for manager in self.managers.values():
             manager.close()
 
+    @ECLIExport
+    def macros_from_pv(self, full_pv, allow_partial=True):
+        pv, field = util.split_record_field(full_pv)
 
-@ECLIExport
-def macros_from_pv(full_pv, allow_partial=True):
-    pv, field = util.split_record_field(full_pv)
+        pv_delimiter = self.pv_delimiter
 
-    plugin = ECLIopi.get_plugin()
-    pv_delimiter = plugin.pv_delimiter
+        info = {'field': field, 'full_pv': full_pv}
 
-    info = {'field': field, 'full_pv': full_pv}
+        # TODO this is not actually a standard, and there are cases
+        # when it's just not right depending on how the display was written
+        if pv_delimiter in pv:
+            i = pv.rindex(pv_delimiter)
+            info['prefix'], info['record'] = pv[:i + 1], pv[i + 1:]
+        elif allow_partial:
+            info['prefix'] = ''
+            info['record'] = pv
+        else:
+            # EDM won't allow for unspecified macros, so arbitrarily
+            # break up the pv (?)
+            info['prefix'] = pv[:5]
+            info['record'] = pv[5:]
 
-    # TODO this is not actually a standard, and there are cases
-    # when it's just not right depending on how the display was written
-    if pv_delimiter in pv:
-        i = pv.rindex(pv_delimiter)
-        info['prefix'], info['record'] = pv[:i + 1], pv[i + 1:]
-    elif allow_partial:
-        info['prefix'] = ''
-        info['record'] = pv
-    else:
-        # EDM won't allow for unspecified macros, so arbitrarily
-        # break up the pv (?)
-        info['prefix'] = pv[:5]
-        info['record'] = pv[5:]
-
-    return info
+        return info
 
 
 EDM_DEFAULT_DISPLAYS = {
@@ -216,7 +213,7 @@ def edm(margs, self, args):
     """
     $ edm pv [display] [-e] [-b]
     """
-    macros = macros_from_pv(args.pv, allow_partial=False)
+    macros = self.macros_from_pv(args.pv, allow_partial=False)
 
     if args.display is not None:
         display = args.display
@@ -249,5 +246,5 @@ def edm(margs, self, args):
     if args.background:
         plugin.managers[plugin.OPI_EDM].run(to_run)
     else:
-        shell = get_core_plugin().shell
+        shell = self.core.shell
         shell.system(to_run)

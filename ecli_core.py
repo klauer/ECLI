@@ -501,6 +501,36 @@ class ECLICore(ECLIPlugin):
         self.run_callback(self.CB_CONFIG_LOADED, self.__class__.__name__)
         return True
 
+    @ECLIExport
+    def fields(self, pv, string):
+        '''
+        Search the field information database for 'text'. If the first
+        argument is a PV it will detect its record type, otherwise use a
+        record type (.RTYP) to start with.
+        '''
+        try:
+            rf = util.get_record_fields(pv)
+        except IOError:
+            # not a record type, or not one we have information on
+            # try it as a PV instead:
+            rtype = util.get_record_type(pv)
+            rf = util.get_record_fields(rtype)
+        else:
+            rtype = pv
+
+        if isinstance(string, (list, tuple)):
+            text = ' '.join(string)
+        else:
+            text = string
+
+        headers = ['Field'] + [col.capitalize() for col in rf.columns]
+        table = SimpleTable(headers)
+        rows = list([name] + info for name, info in rf.find(text))
+        for row in rows:
+            table.add_row(row)
+
+        return rtype, table
+
 
 @ecli_magic_args(ECLICore)
 @argument('filename', type=unicode, help='Configuration filename',
@@ -512,23 +542,20 @@ def save_config(margs, self, args):
     Output file should be readable by
     IPython.config.loader.PyFileConfigLoader
     """
-    core = get_core_plugin()
-    core._save_config(args.filename)
+    self._save_config(args.filename)
 
 
 @ecli_magic_args(ECLICore)
 @argument('filename', type=unicode, help='Configuration filename',
           nargs='?', default=u'ecli_config.py')
-def load_config(margs, self, args):
+def load_ecli_config(margs, self, args):
     """
     Load ECLI-related configuration from `filename`.
 
     Input file should be readable by
     IPython.config.loader.PyFileConfigLoader
     """
-
-    core = get_core_plugin()
-    core._load_ecli_config(args.filename)
+    self._load_ecli_config(args.filename)
 
 
 @ecli_magic_args(ECLICore)
@@ -596,34 +623,6 @@ def caput(mself, self, args):
         print('caput failed: (%s) %s' % (ex.__class__.__name__, ex))
 
 
-@ECLIExport
-def fields(pv, string):
-    '''
-    Search the field information database for 'text'. If the first
-    argument is a PV it will detect its record type, otherwise use a
-    record type (.RTYP) to start with.
-    '''
-    try:
-        rf = util.get_record_fields(pv)
-    except IOError:
-        # not a record type, or not one we have information on
-        # try it as a PV instead:
-        rtype = util.get_record_type(pv)
-        rf = util.get_record_fields(rtype)
-    else:
-        rtype = pv
-
-    text = ' '.join(string)
-
-    headers = ['Field'] + [col.capitalize() for col in rf.columns]
-    table = SimpleTable(headers)
-    rows = list([name] + info for name, info in rf.find(text))
-    for row in rows:
-        table.add_row(row)
-
-    return rtype, table
-
-
 @ecli_magic_args(ECLICore)
 @argument('pv', type=AliasedPV, help='PV or record type')
 @argument('string', nargs='+', type=str)
@@ -643,11 +642,10 @@ def _fields(magic_args, self, args):
     the columns to display.
     """
 
-    rtype, table = fields(args.pv, args.string)
+    rtype, table = self.fields(args.pv, args.string)
     print('* Record type: %s' % rtype)
     print()
 
-    core = get_core_plugin()
     if rtype != args.pv and args.values:
         # this means a PV was passed in and the RTYP was determined
         table.add_column('Value', index=1, fill='')
@@ -657,7 +655,7 @@ def _fields(magic_args, self, args):
             else:
                 field = row[0]
                 value = epics.caget('%s.%s' % (args.pv, field),
-                                    connection_timeout=core.fields_timeout,
+                                    connection_timeout=self.fields_timeout,
                                     verbose=False)
                 if value is None:
                     value = ''
@@ -669,7 +667,7 @@ def _fields(magic_args, self, args):
             return (col in show_fields or
                     col == u'Field' or col == u'Value')
 
-        show_fields = core.fields_columns
+        show_fields = self.fields_columns
 
         remove_columns = [i for i, col in enumerate(table.headers)
                           if not check_col(col)]

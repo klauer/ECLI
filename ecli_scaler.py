@@ -99,74 +99,70 @@ class ECLIScaler(ECLIPlugin):
             self._scaler_devices[record] = dev
             return dev
 
+    @ECLIExport
+    def scaler_counts_list(self, scaler, seconds, use_calc=False, partial_ok=True):
+        """
+        Run the scaler `scaler` for `seconds`, and report
+        the results in a list
 
-@ECLIExport
-def scaler_counts_list(scaler, seconds, use_calc=False, partial_ok=True):
-    """
-    Run the scaler `scaler` for `seconds`, and report
-    the results in a list
+        :param scaler: Scaler device or record name
+        :param seconds: Time in seconds
+        :param use_calc: Use calculated values instead of raw values
+        :param partial_ok: Return partial counts if interrupted
+        """
+        scaler.OneShotMode()
 
-    :param scaler: Scaler device or record name
-    :param seconds: Time in seconds
-    :param use_calc: Use calculated values instead of raw values
-    :param partial_ok: Return partial counts if interrupted
-    """
-    scaler.OneShotMode()
+        try:
+            scaler.Count(ctime=seconds, wait=True)
+        except KeyboardInterrupt:
+            if not partial_ok:
+                return
+        finally:
+            time.sleep(0.05)  # TODO
+            # epics.poll(1e-5)
 
-    try:
-        scaler.Count(ctime=seconds, wait=True)
-    except KeyboardInterrupt:
-        if not partial_ok:
-            return
-    finally:
-        time.sleep(0.05)  # TODO
-        # epics.poll(1e-5)
+        return scaler.Read(use_calc=use_calc)
 
-    return scaler.Read(use_calc=use_calc)
+    @ECLIExport
+    def scaler_channel_names(self, scaler, default='ch%d'):
+        return [name if name else default % i
+                for i, name in enumerate(scaler.getNames())]
 
+    @ECLIExport
+    def scaler_counts_dict(self, scaler, seconds, **kwargs):
+        """
+        Run the scaler `scaler` for `seconds`, and report
+        the results in a dictionary
 
-@ECLIExport
-def scaler_channel_names(scaler, default='ch%d'):
-    return [name if name else default % i
-            for i, name in enumerate(scaler.getNames())]
+        :param scaler: Scaler device or record name
+        :param seconds: Time in seconds
 
+        Additional kwarg parameters are passed onto scaler_counts_list.
+        """
+        names = self.scaler_channel_names(scaler)
+        return dict(zip(names, self.scaler_counts_list(scaler, seconds, **kwargs)))
 
-@ECLIExport
-def scaler_counts_dict(scaler, seconds, **kwargs):
-    """
-    Run the scaler `scaler` for `seconds`, and report
-    the results in a dictionary
+    @ECLIExport
+    def scaler_counts_table(self, scaler, seconds, format_='%d', **kwargs):
+        """
+        Run the scaler `scaler` for `seconds`, and report the results in a
+        table
 
-    :param scaler: Scaler device or record name
-    :param seconds: Time in seconds
+        :param scaler: Scaler device or record name
+        :param seconds: Time in seconds
 
-    Additional kwarg parameters are passed onto scaler_counts_list.
-    """
-    names = scaler_channel_names(scaler)
-    return dict(zip(names, scaler_counts_list(scaler, seconds, **kwargs)))
+        Additional kwarg parameters are passed onto scaler_counts_list.
+        """
+        names = self.scaler_channel_names(scaler)
+        values = self.scaler_counts_list(scaler, seconds, **kwargs)
+        values_str = [format_ % v for v in values]
 
+        header = ['Name', 'Counts']
+        table = SimpleTable(header)
+        for name, value in zip(names, values_str):
+            table.add_row([name, value])
 
-@ECLIExport
-def scaler_counts_table(scaler, seconds, format_='%d', **kwargs):
-    """
-    Run the scaler `scaler` for `seconds`, and report the results in a
-    table
-
-    :param scaler: Scaler device or record name
-    :param seconds: Time in seconds
-
-    Additional kwarg parameters are passed onto scaler_counts_list.
-    """
-    names = scaler_channel_names(scaler)
-    values = scaler_counts_list(scaler, seconds, **kwargs)
-    values_str = [format_ % v for v in values]
-
-    header = ['Name', 'Counts']
-    table = SimpleTable(header)
-    for name, value in zip(names, values_str):
-        table.add_row([name, value])
-
-    return table
+        return table
 
 
 show_elapsed = ShowElapsed(lambda: get_plugin('ECLIScaler').show_elapsed)
@@ -202,5 +198,5 @@ def ct(margs, self, args):
             print()
 
         dev = self._get_device(scaler)
-        table = scaler_counts_table(dev, seconds)
+        table = self.scaler_counts_table(dev, seconds)
         table.print_()

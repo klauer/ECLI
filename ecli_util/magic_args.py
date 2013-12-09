@@ -30,8 +30,6 @@ EXPORT_TAG = 'ipy_'
 logging.basicConfig()
 
 
-
-
 def argument_count_range(nmin=None, nmax=None):
     """
     For magic arguments, sets a minimum number/maximum number of arguments.

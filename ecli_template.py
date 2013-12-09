@@ -65,10 +65,15 @@ class ECLITemplate(ECLIPlugin):
     def logger(self):
         return logger
 
+    @ECLIExport
+    def export_function(self):
+        """
+        This function will be easily accessible by the user if this
+        plugin is loaded.
 
-@ECLIExport
-def export_function():
-    pass
+        @ECLIExport functions can also be defined outside of this class.
+        """
+        pass
 
 
 @ecli_magic_args(ECLITemplate)
@@ -80,4 +85,9 @@ def command(margs, self, args):
 
     Desc
     """
+    # margs is the magic arguments instance
+    # self is the instance of your plugin class
+    # args is the pre-parsed argparse Namespace:
+    #   for %command pv_name
+    #   args.pv would be equal to "pv_name"
     pass

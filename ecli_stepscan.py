@@ -22,7 +22,6 @@ import IPython.utils.traitlets as traitlets
 from ecli_core import AliasedPV
 from ecli_plugin import ECLIPlugin
 import ecli_util as util
-from ecli_util import (get_plugin, get_core_plugin)
 from ecli_util import ECLIExport
 from ecli_util.magic_args import (ecli_magic_args, argument)
 
@@ -283,207 +282,323 @@ class ECLIScans(ECLIPlugin):
         self._detectors = [stepscan.get_detector(util.expand_alias(d), label=d)
                            for d in self.detectors]
 
+    @ECLIExport
+    def scan_save(self, path):
+        """
+        Notifies all scan file writers where to write the data
 
-# Commands #
+        .. note:: file extensions will be added by the plugin
+        """
+        self.run_callback(self.CB_SAVE_PATH, path=path)
 
-@ECLIExport
-def scan_save(path):
-    """
-    Notifies all scan file writers where to write the data
+    @ECLIExport
+    def scan_run(self, positioners, dwell_time, move_back=True, command='', dimensions=None,
+                 breakpoints=[], counters=[], detectors=[], triggers=[], run=True,
+                 **kwargs):
+        """
+        Perform a generic scan
 
-    .. note:: file extensions will be added by the plugin
-    """
-    plugin = ECLIScans.get_plugin()
-    plugin.run_callback(plugin.CB_SAVE_PATH, path=path)
+        :param positioners: Motors to scan, with absolute position arrays
+                            previously set
+        :param dwell_time: Seconds at each point
+        :param move_back: Move all positioners back to their starting position
+                          post scan
+        :param command: the command-line command used to start the scan
+        :param dimensions: the scan dimensions
+        :param counters: additional counters not normally included (can be a PV name)
+        :param detectors: additional detectors not normally included
+        :param triggers: additional triggers not normally included (can be a PV name)
+        :param run: run the scan (or just return one ready to run)
+        :param kwargs: passed onto the scan's ECLI info
+        :returns: the scan instance
+        """
+        array_shapes = set([pos.array.shape for pos in positioners])
+        if len(array_shapes) != 1:
+            raise ValueError('Positioners must have the same position array dimensions')
 
+        data_points = np.size(positioners[0].array)
 
-@ECLIExport
-def scan(positioners, dwell_time, move_back=True, command='', dimensions=None,
-         breakpoints=[], counters=[], detectors=[], triggers=[], run=True,
-         **kwargs):
-    """
-    Perform a generic scan
+        self.scan = sc = stepscan.StepScan()
+        if dimensions is None or not isinstance(dimensions, (list, tuple)):
+            dimensions = (data_points, )
 
-    :param positioners: Motors to scan, with absolute position arrays
-                        previously set
-    :param dwell_time: Seconds at each point
-    :param move_back: Move all positioners back to their starting position
-                      post scan
-    :param command: the command-line command used to start the scan
-    :param dimensions: the scan dimensions
-    :param counters: additional counters not normally included (can be a PV name)
-    :param detectors: additional detectors not normally included
-    :param triggers: additional triggers not normally included (can be a PV name)
-    :param run: run the scan (or just return one ready to run)
-    :param kwargs: passed onto the scan's ECLI info
-    :returns: the scan instance
-    """
-    array_shapes = set([pos.array.shape for pos in positioners])
-    if len(array_shapes) != 1:
-        raise ValueError('Positioners must have the same position array dimensions')
+        for positioner in positioners:
+            sc.add_positioner(positioner)
 
-    data_points = np.size(positioners[0].array)
+        for counter in counters:
+            sc.add_counter(counter)
 
-    plugin = ECLIScans.get_plugin()
-    plugin.scan = sc = stepscan.StepScan()
-    if dimensions is None or not isinstance(dimensions, (list, tuple)):
-        dimensions = (data_points, )
+        for trigger in triggers:
+            sc.add_trigger(trigger)
 
-    for positioner in positioners:
-        sc.add_positioner(positioner)
+        for det_pv in self.detectors + list(detectors):
+            det = stepscan.get_detector(util.expand_alias(det_pv), label=det_pv)
+            if det is None:
+                logger.error('Scan %s invalid detector: %s' % (sc, det_pv))
+                return None
+            logger.debug('Scan %s added detector: %s' % (sc, det))
+            sc.add_detector(det)
 
-    for counter in counters:
-        sc.add_counter(counter)
+            # TODO bug report - hardware triggered detectors
+            if det.trigger is not None:
+                sc.triggers.remove(det.trigger)
+                if det_pv in self.trigger_detectors:
+                    trigger_value = self.trigger_detectors[det_pv]
+                    print('adding trigger', det_pv, trigger_value)
+                    logger.debug('Added detector trigger: %s = %s' %
+                                 (det.trigger, trigger_value))
+                    sc.add_trigger(det.trigger, value=trigger_value)
 
-    for trigger in triggers:
-        sc.add_trigger(trigger)
+        # TODO StepScan bug report:
+        #   add_trigger needs to check for None (as in SimpleDetector)
+        sc.triggers = [trigger for trigger in sc.triggers
+                       if trigger is not None]
 
-    for det_pv in plugin.detectors + list(detectors):
-        det = stepscan.get_detector(util.expand_alias(det_pv), label=det_pv)
-        if det is None:
-            logger.error('Scan %s invalid detector: %s' % (sc, det_pv))
-            return None
-        logger.debug('Scan %s added detector: %s' % (sc, det))
-        sc.add_detector(det)
+        sc.set_dwelltime(dwell_time)
 
-        # TODO bug report - hardware triggered detectors
-        if det.trigger is not None:
-            sc.triggers.remove(det.trigger)
-            if det_pv in plugin.trigger_detectors:
-                trigger_value = plugin.trigger_detectors[det_pv]
-                print('adding trigger', det_pv, trigger_value)
-                logger.debug('Added detector trigger: %s = %s' %
-                             (det.trigger, trigger_value))
-                sc.add_trigger(det.trigger, value=trigger_value)
+        start_pos = [pos.current() for pos in positioners]
 
-    # TODO StepScan bug report:
-    #   add_trigger needs to check for None (as in SimpleDetector)
-    sc.triggers = [trigger for trigger in sc.triggers
-                   if trigger is not None]
+        self._scan_number += 1
+        sc.ecli_info = {'command': command,
+                        'scan_number': self._scan_number,
+                        'dimensions': dimensions,
+                        'ndim': calc_ndim(dimensions),
+                        }
+        sc.ecli_info.update(kwargs)
 
-    sc.set_dwelltime(dwell_time)
+        if not run:
+            return sc
 
-    start_pos = [pos.current() for pos in positioners]
+        # TODO: check all PVs prior to scan
+        # Run the scan
+        try:
+            sc.run(None)
+        except Exception as ex:
+            if sc.message_thread is not None:
+                sc.message_thread.cpt = None
+            logger.error('Scan failed: (%s) %s' % (ex.__class__.__name__, ex))
+        finally:
+            # Wait for the message thread to catch up
+            if sc.message_thread is not None:
+                sc.message_thread.join(1.0)
 
-    plugin._scan_number += 1
-    sc.ecli_info = {'command': command,
-                    'scan_number': plugin._scan_number,
-                    'dimensions': dimensions,
-                    'ndim': calc_ndim(dimensions),
-                    }
-    sc.ecli_info.update(kwargs)
+        if move_back:
+            # Move the positioners back to their starting positions
+            for pos, start in zip(positioners, start_pos):
+                logger.info('Moving %s back to the starting position %g' %
+                            (pos, start))
+                pos.move_to(start, wait=True)
 
-    if not run:
+        # Make a simple dictionary holding the scan data
+        data = {}
+        for counter in sc.counters:
+            data[counter.label] = counter.buff
+
+        # And export that data back to the user namespace as `scan_data`
+        self.core.set_variable('scan_data', data)
         return sc
 
-    # TODO: check all PVs prior to scan
-    # Run the scan
-    try:
-        sc.run(None)
-    except Exception as ex:
-        if sc.message_thread is not None:
-            sc.message_thread.cpt = None
-        logger.error('Scan failed: (%s) %s' % (ex.__class__.__name__, ex))
-    finally:
-        # Wait for the message thread to catch up
-        if sc.message_thread is not None:
-            sc.message_thread.join(1.0)
+    @ECLIExport
+    def scan_1d(self, motor='', start=0.0, end=0.0, data_points=0, dwell_time=0.0, relative=True,
+                counters=[]):
+        """Perform a 1D scan of motor in [start, end] of data_points
 
-    if move_back:
-        # Move the positioners back to their starting positions
-        for pos, start in zip(positioners, start_pos):
-            logger.info('Moving %s back to the starting position %g' %
-                        (pos, start))
-            pos.move_to(start, wait=True)
+        :param motor: Motor to scan
+        :param start: Relative scan starting position for motor1
+        :param end: Relative scan ending position for motor1
+        :param data_points: Number of data points to acquire
+        :param dwell_time: Seconds at each point
+        """
+        try:
+            motor = AliasedPV(motor)
+            start = util.check_float(start)
+            end = util.check_float(end)
+            data_points = util.check_int(data_points)
+            dwell_time = util.check_float(dwell_time)
+            relative = util.check_bool(relative)
+        except Exception as ex:
+            print('Scan argument check failed: %s' % (ex, ))
+            return False
 
-    # Make a simple dictionary holding the scan data
-    data = {}
-    for counter in sc.counters:
-        data[counter.label] = counter.buff
+        if relative:
+            scan_type = 'dscan'
+        else:
+            scan_type = 'ascan'
 
-    # And export that data back to the user namespace as `scan_data`
-    core = get_core_plugin()
-    core.set_variable('scan_data', data)
-    return sc
+        command = '%(scan_type)s  %(motor)s  %(start)g %(end)g  %(data_points)d %(dwell_time)g' % \
+                  locals()
 
+        pos0 = ECLIPositioner(motor)
+        start_pos = pos0.current()
+        pos0.array = np.linspace(start, end, data_points)
+        if relative:
+            pos0.array += start_pos
 
-# -- 1D scans
-@ECLIExport
-def scan_1d(motor='', start=0.0, end=0.0, data_points=0, dwell_time=0.0, relative=True,
-            counters=[]):
-    """Perform a 1D scan of motor in [start, end] of data_points
+        print('Scan: %s from %g to %g (%d data points)' %
+             (motor, start, end, data_points))
 
-    :param motor: Motor to scan
-    :param start: Relative scan starting position for motor1
-    :param end: Relative scan ending position for motor1
-    :param data_points: Number of data points to acquire
-    :param dwell_time: Seconds at each point
-    """
-    try:
-        motor = AliasedPV(motor)
-        start = util.check_float(start)
-        end = util.check_float(end)
-        data_points = util.check_int(data_points)
-        dwell_time = util.check_float(dwell_time)
-        relative = util.check_bool(relative)
-    except Exception as ex:
-        print('Scan argument check failed: %s' % (ex, ))
-        return False
+        positioners = [pos0]
 
-    if relative:
-        scan_type = 'dscan'
-    else:
-        scan_type = 'ascan'
+        counters = list(counters)
+        counters.insert(0, stepscan.MotorCounter(motor))
+        return self.scan_run(positioners, dwell_time, command=command,
+                             counters=counters, detectors=[], dimensions=(data_points, ),
+                             )
 
-    command = '%(scan_type)s  %(motor)s  %(start)g %(end)g  %(data_points)d %(dwell_time)g' % \
-              locals()
+    @ECLIExport
+    def ascan(self, motor='', start='', end='', data_points=0, dwell_time=0.0, **kwargs):
+        """Perform a 1D scan of motor in [start, end] of data_points
 
-    pos0 = ECLIPositioner(motor)
-    start_pos = pos0.current()
-    pos0.array = np.linspace(start, end, data_points)
-    if relative:
-        pos0.array += start_pos
+        :param motor: Motor to scan
+        :param start: Absolute scan starting position for `motor`
+        :param end: Absolute scan ending position for `motor`
+        :param data_points: Number of data points to acquire
+        :param dwell_time: Seconds at each point
+        """
+        return self.scan_1d(motor=motor, start=start, end=end, data_points=data_points,
+                            dwell_time=dwell_time, relative=False,
+                            **kwargs)
 
-    print('Scan: %s from %g to %g (%d data points)' %
-         (motor, start, end, data_points))
+    @ECLIExport
+    def dscan(self, motor='', start='', end='', data_points=0, dwell_time=0.0, **kwargs):
+        """Perform a 1D scan of motor in [start, end] of data_points
 
-    positioners = [pos0]
+        :param motor: Motor to scan
+        :param start: Relative scan starting position for `motor`
+        :param end: Relative scan ending position for `motor`
+        :param data_points: Number of data points to acquire
+        :param dwell_time: Seconds at each point
+        """
+        return self.scan_1d(motor=motor, start=start, end=end, data_points=data_points,
+                            dwell_time=dwell_time, relative=True,
+                            **kwargs)
 
-    counters = list(counters)
-    counters.insert(0, stepscan.MotorCounter(motor))
-    return scan(positioners, dwell_time, command=command,
-                counters=counters, detectors=[], dimensions=(data_points, ),
-                )
+    @ECLIExport
+    def scan_nd(self, motors, dwell_time, relative=True):
+        # TODO
+        raise NotImplementedError
 
+    @ECLIExport
+    def scan_2d(self, motor1='', start1=0.0, end1=0.0, points1=0,
+                motor2='', start2=0.0, end2=0.0, points2=0,
+                dwell_time=0.0, relative=True):
+        """Perform a 2D scan of dimension (points1, points2):
+            motor1 in [start1, end1], with points1 data points (inner loop, fast)
+            motor2 in [start2, end2], with points2 data points (outer loop, slow)
 
-@ECLIExport
-def ascan(motor='', start='', end='', data_points=0, dwell_time=0.0, **kwargs):
-    """Perform a 1D scan of motor in [start, end] of data_points
+        Scan relative to the starting position (dmesh) or utilizing absolute
+        positions (amesh)::
+            for motor2 = start2 to end2, step (end2-start2) / points2:
+                for motor1 = start1 to end1, step (end1-start1) / points1:
+                    wait for [time] secs
+                    take data point
 
-    :param motor: Motor to scan
-    :param start: Absolute scan starting position for `motor`
-    :param end: Absolute scan ending position for `motor`
-    :param data_points: Number of data points to acquire
-    :param dwell_time: Seconds at each point
-    """
-    return scan_1d(motor=motor, start=start, end=end, data_points=data_points,
-                   dwell_time=dwell_time, relative=False,
-                   **kwargs)
+        :param motor1: Motor to scan
+        :param start1: Relative scan starting position for motor1
+        :param end1: Relative scan ending position for motor1
+        :param points1: Number of data points for motor1
 
+        :param motor2: Motor 2 to scan
+        :param start2: Relative scan starting position for motor2
+        :param points2: Number of data points for motor2
 
-@ECLIExport
-def dscan(motor='', start='', end='', data_points=0, dwell_time=0.0, **kwargs):
-    """Perform a 1D scan of motor in [start, end] of data_points
+        :param end2: Relative scan ending position for motor2
+        :param data_points: Number of data points to acquire
+        :param dwell_time: Seconds at each point
+        :returns: the scan instance
+        """
+        # TODO merge this into scan_nd
+        try:
+            motor1 = AliasedPV(motor1)
+            start1 = util.check_float(start1)
+            end1 = util.check_float(end1)
+            points1 = util.check_int(points1)
 
-    :param motor: Motor to scan
-    :param start: Relative scan starting position for `motor`
-    :param end: Relative scan ending position for `motor`
-    :param data_points: Number of data points to acquire
-    :param dwell_time: Seconds at each point
-    """
-    return scan_1d(motor=motor, start=start, end=end, data_points=data_points,
-                   dwell_time=dwell_time, relative=True,
-                   **kwargs)
+            motor2 = AliasedPV(motor2)
+            start2 = util.check_float(start2)
+            end2 = util.check_float(end2)
+            points2 = util.check_int(points2)
+
+            dwell_time = util.check_float(dwell_time)
+            relative = util.check_bool(relative)
+        except Exception as ex:
+            print('Scan argument check failed: %s' % (ex, ))
+            return False
+
+        if relative:
+            scan_type = 'dmesh'
+        else:
+            scan_type = 'amesh'
+
+        command = '%(scan_type)s  %(motor1)s  %(start1)g %(end1)g  %(points1)d  %(motor2)s  %(start2)g %(end2)g  %(points2)d  %(dwell_time)g' % \
+                  locals()
+
+        # Positioner 1 - 'fast' inner loop
+        pos1 = ECLIPositioner(motor1)
+        pos1.array = np.array(points2 * [np.linspace(start1, end1, points1)]).flatten()
+        if relative:
+            pos1.array += pos1.current()
+
+        # Positioner 2 - 'slow' outer loop
+        pos2 = ECLIPositioner(motor2)
+        pos2.array = np.array([[i] * points2
+                              for i in np.linspace(start2, end2, points2)]).flatten()
+        if relative:
+            pos2.array += pos2.current()
+
+        dimensions = (points1, points2)
+        print('Inner: %s from %g to %g (%d data points)' %
+              (motor1, start1, end1, points1))
+        print('Outer: %s from %g to %g (%d data points)' %
+              (motor2, start2, end2, points2))
+        print('Dimensions: %s (total points=%d)' % (dimensions, points1 * points2))
+
+        positioners = (pos1, pos2)
+
+        counters = [stepscan.MotorCounter(motor1),
+                    stepscan.MotorCounter(motor2),
+                    ]
+
+        return self.scan_run(positioners, dwell_time, command=command,
+                             counters=counters, detectors=[], dimensions=dimensions,
+                             )
+
+    @ECLIExport
+    def amesh(self,
+              motor1='', start1=0.0, end1=0.0, points1=0,
+              motor2='', start2=0.0, end2=0.0, points2=0,
+              dwell_time=0.0):
+        # Convenience function -- absolute 2D scan
+        return self.scan_2d(relative=False,
+                            motor1=motor1, start1=start1, end1=end1, points1=points1,
+                            motor2=motor2, start2=start2, end2=end2, points2=points2,
+                            dwell_time=dwell_time)
+
+    @ECLIExport
+    def dmesh(self,
+              motor1='', start1=0.0, end1=0.0, points1=0,
+              motor2='', start2=0.0, end2=0.0, points2=0,
+              dwell_time=0.0):
+        """Perform a 2D scan of dimension (points1, points2):
+            motor1 in [start1, end1], with points1 data points (inner loop, fast)
+            motor2 in [start2, end2], with points2 data points (outer loop, slow)
+
+        Scan relative to the starting position (dmesh) or utilizing absolute
+        positions (amesh)::
+            for motor2 = start2 to end2, step (end2-start2) / points2:
+                for motor1 = start1 to end1, step (end1-start1) / points1:
+                    wait for [time] secs
+                    take data point
+
+        """
+        # Convenience function -- relative 2D scan
+        return self.scan_2d(relative=True,
+                            motor1=motor1, start1=start1, end1=end1, points1=points1,
+                            motor2=motor2, start2=start2, end2=end2, points2=points2,
+                            dwell_time=dwell_time)
+
+    mesh = amesh
+    amesh.__doc__ = dmesh.__doc__
 
 
 @ecli_magic_args(ECLIScans)
@@ -509,9 +624,9 @@ def _dscan(margs, self, args):
     positions (ascan). The positions are automatically calculated by EPICS
     from the amount of data points that are requested.
     """
-    dscan(motor=args.motor, start=args.start, end=args.end,
-          data_points=args.data_points, dwell_time=args.time,
-          counters=args.counters)
+    self.dscan(motor=args.motor, start=args.start, end=args.end,
+               data_points=args.data_points, dwell_time=args.time,
+               counters=args.counters)
 
 
 @ecli_magic_args(ECLIScans)
@@ -529,104 +644,9 @@ def _dscan(margs, self, args):
 @argument('counters', type=AliasedPV, nargs='*',
           help='Additional counters to monitor')
 def _ascan(margs, self, args):
-    ascan(motor=args.motor, start=args.start, end=args.end,
-          data_points=args.data_points, dwell_time=args.time,
-          counters=args.counters)
-
-ascan.__doc__ = dscan.__doc__
-
-
-@ECLIExport
-def scan_nd(motors, dwell_time, relative=True):
-    # TODO
-    raise NotImplementedError
-
-
-# -- 2D scans
-@ECLIExport
-def scan_2d(motor1='', start1=0.0, end1=0.0, points1=0,
-            motor2='', start2=0.0, end2=0.0, points2=0,
-            dwell_time=0.0, relative=True):
-    """Perform a 2D scan of dimension (points1, points2):
-        motor1 in [start1, end1], with points1 data points (inner loop, fast)
-        motor2 in [start2, end2], with points2 data points (outer loop, slow)
-
-    Scan relative to the starting position (dmesh) or utilizing absolute
-    positions (amesh)::
-        for motor2 = start2 to end2, step (end2-start2) / points2:
-            for motor1 = start1 to end1, step (end1-start1) / points1:
-                wait for [time] secs
-                take data point
-
-    :param motor1: Motor to scan
-    :param start1: Relative scan starting position for motor1
-    :param end1: Relative scan ending position for motor1
-    :param points1: Number of data points for motor1
-
-    :param motor2: Motor 2 to scan
-    :param start2: Relative scan starting position for motor2
-    :param points2: Number of data points for motor2
-
-    :param end2: Relative scan ending position for motor2
-    :param data_points: Number of data points to acquire
-    :param dwell_time: Seconds at each point
-    :returns: the scan instance
-    """
-    # TODO merge this into scan_nd
-    try:
-        motor1 = AliasedPV(motor1)
-        start1 = util.check_float(start1)
-        end1 = util.check_float(end1)
-        points1 = util.check_int(points1)
-
-        motor2 = AliasedPV(motor2)
-        start2 = util.check_float(start2)
-        end2 = util.check_float(end2)
-        points2 = util.check_int(points2)
-
-        dwell_time = util.check_float(dwell_time)
-        relative = util.check_bool(relative)
-    except Exception as ex:
-        print('Scan argument check failed: %s' % (ex, ))
-        return False
-
-    if relative:
-        scan_type = 'dmesh'
-    else:
-        scan_type = 'amesh'
-
-    command = '%(scan_type)s  %(motor1)s  %(start1)g %(end1)g  %(points1)d  %(motor2)s  %(start2)g %(end2)g  %(points2)d  %(dwell_time)g' % \
-              locals()
-
-    # Positioner 1 - 'fast' inner loop
-    pos1 = ECLIPositioner(motor1)
-    pos1.array = np.array(points2 * [np.linspace(start1, end1, points1)]).flatten()
-    if relative:
-        pos1.array += pos1.current()
-
-    # Positioner 2 - 'slow' outer loop
-    pos2 = ECLIPositioner(motor2)
-    pos2.array = np.array([[i] * points2
-                          for i in np.linspace(start2, end2, points2)]).flatten()
-    if relative:
-        pos2.array += pos2.current()
-
-    dimensions = (points1, points2)
-    print('Inner: %s from %g to %g (%d data points)' %
-          (motor1, start1, end1, points1))
-    print('Outer: %s from %g to %g (%d data points)' %
-          (motor2, start2, end2, points2))
-    print('Dimensions: %s (total points=%d)' % (dimensions, points1 * points2))
-
-    positioners = (pos1, pos2)
-
-    counters = [stepscan.MotorCounter(motor1),
-                stepscan.MotorCounter(motor2),
-                ]
-
-    return scan(positioners, dwell_time, command=command,
-                counters=counters, detectors=[], dimensions=dimensions,
-                )
+    self.ascan(motor=args.motor, start=args.start, end=args.end,
+               data_points=args.data_points, dwell_time=args.time,
+               counters=args.counters)
 
 
 @ecli_magic_args(ECLIScans)
@@ -662,9 +682,9 @@ def _mesh(margs, self, args):
                 take data point
 
     """
-    return amesh(motor1=args.motor1, start1=args.start1, end1=args.end1, points1=args.points1,
-                 motor2=args.motor2, start2=args.start2, end2=args.end2, points2=args.points2,
-                 dwell_time=args.time)
+    return self.amesh(motor1=args.motor1, start1=args.start1, end1=args.end1, points1=args.points1,
+                      motor2=args.motor2, start2=args.start2, end2=args.end2, points2=args.points2,
+                      dwell_time=args.time)
 
 _amesh = _mesh
 
@@ -702,33 +722,6 @@ def _dmesh(margs, self, args):
                 take data point
 
     """
-    return dmesh(motor1=args.motor1, start1=args.start1, end1=args.end1, points1=args.points1,
-                 motor2=args.motor2, start2=args.start2, end2=args.end2, points2=args.points2,
-                 dwell_time=args.time)
-
-
-@ECLIExport
-def amesh(motor1='', start1=0.0, end1=0.0, points1=0,
-          motor2='', start2=0.0, end2=0.0, points2=0,
-          dwell_time=0.0):
-    # Convenience function -- absolute 2D scan
-    return scan_2d(relative=False,
-                   motor1=motor1, start1=start1, end1=end1, points1=points1,
-                   motor2=motor2, start2=start2, end2=end2, points2=points2,
-                   dwell_time=dwell_time)
-
-
-@ECLIExport
-def dmesh(motor1='', start1=0.0, end1=0.0, points1=0,
-          motor2='', start2=0.0, end2=0.0, points2=0,
-          dwell_time=0.0):
-    # Convenience function -- relative 2D scan
-    return scan_2d(relative=True,
-                   motor1=motor1, start1=start1, end1=end1, points1=points1,
-                   motor2=motor2, start2=start2, end2=end2, points2=points2,
-                   dwell_time=dwell_time)
-
-
-mesh = amesh
-amesh.__doc__ = _amesh.__doc__
-dmesh.__doc__ = _dmesh.__doc__
+    return self.dmesh(motor1=args.motor1, start1=args.start1, end1=args.end1, points1=args.points1,
+                      motor2=args.motor2, start2=args.start2, end2=args.end2, points2=args.points2,
+                      dwell_time=args.time)

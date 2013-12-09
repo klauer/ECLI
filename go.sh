@@ -15,13 +15,13 @@ then
     # If a configuration file exists in the profile directory, load it
     echo "Loading ECLI configuration from profile directory"
     echo "IPython arguments: $@"
-    ipython --profile=$PROFILE -c "%load_config $PROFILE_PATH/ecli_config.py" -i $@
+    ipython --profile=$PROFILE -c "%load_ecli_config $PROFILE_PATH/ecli_config.py" -i $@
 elif [ -f ecli_config.py ]
 then
     # If a configuration file exists in the current directory, load it
     echo "Loading ECLI configuration from the current directory"
     echo "IPython arguments: $@"
-    ipython --profile=$PROFILE -c "%load_config ecli_config.py" -i $@
+    ipython --profile=$PROFILE -c "%load_ecli_config ecli_config.py" -i $@
 else
     ipython --profile=$PROFILE $@
 fi
