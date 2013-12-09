@@ -13,6 +13,8 @@ from __future__ import print_function
 import copy
 import logging
 
+import epics
+
 # ECLI
 from ecli_plugin import ECLIPlugin
 import ecli_util as util
@@ -116,7 +118,7 @@ class ECLIPseudomotor(ECLIPlugin):
         all_aliases = copy.deepcopy(core.aliases)
         all_aliases.update(aliases)
 
-        group = pseudo.MotorGroup()
+        group = pseudo.MotorGroup(aliases=all_aliases)
 
         pseudo_names = list(create)
 
@@ -152,12 +154,17 @@ class ECLIPseudomotor(ECLIPlugin):
         group.start()
         logger.debug('Equations checked')
 
-        for motor in kwargs.keys():
-            if motor in pseudo_names:
+        for param in kwargs.keys():
+            if param in pseudo_names:
                 continue
 
-            logger.debug('Adding record %s' % motor)
-            group.set_record(motor, mplugin.get_motor(motor))
+            logger.debug('Adding record %s' % param)
+
+            full_param = all_aliases.get(param, param)
+            rtype = util.get_record_type(full_param)
+            if rtype == 'motor':
+                record = mplugin.get_motor(param)
+                group.set_record(param, record)
 
         pseudos = []
         # Create the pseudomotor instance itself

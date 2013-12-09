@@ -107,7 +107,7 @@ class ECLIcas(ECLIPlugin):
             logger.warning('Prefix will not be changed until next restart')
 
     @ECLIExport
-    def create_pv(self, pvname, write_callback=None, **kwargs):
+    def create_pv(self, pvname, write_callback=None, rtype='ao', **kwargs):
         '''
         Create a PV using PCASpy
 
@@ -141,6 +141,9 @@ class ECLIcas(ECLIPlugin):
         (see pcaspy documentation for more information)
         '''
 
+        if rtype:
+            self.manager.add_pv('%s.RTYP' % pvname, type='str', value=rtype)
+
         return self.manager.add_pv(pvname, **kwargs)
 
     @ECLIExport
@@ -151,7 +154,15 @@ class ECLIcas(ECLIPlugin):
         :param pvname: the name of the PV to remove
         '''
 
-        return self.manager.remove_pv(pvname, **kwargs)
+        ret = self.manager.remove_pv(pvname, **kwargs)
+
+        if '.' not in pvname:
+            try:
+                self.manager.remove_pv('%s.RTYP' % pvname, **kwargs)
+            except:
+                pass
+
+        return ret
 
 
 @ecli_magic_args(ECLIcas)

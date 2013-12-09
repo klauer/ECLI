@@ -8,11 +8,10 @@
    :synopsis: ECLI pseudomotor support
 .. moduleauthor:: Ken Lauer <klauer@bnl.gov>
 """
-# TODO: option for using normal PVs in expressions (how did I overlook this?)
-
 from __future__ import print_function
 import logging
 import math
+import copy
 
 import epics
 import ast
@@ -30,10 +29,11 @@ class MotorGroup(object):
     Holds a set of inter-related equations and their
     corresponding motor/pseudomotor records
     """
-    def __init__(self, globals=None):
+    def __init__(self, globals=None, aliases={}):
         self.variables = {}
         self._globals = globals
         self._validated = False
+        self._aliases = copy.deepcopy(aliases)
 
         if globals is None:
             self._globals = self._build_globals()
@@ -53,6 +53,28 @@ class MotorGroup(object):
         return dict((module, globals()[module]) for module in allowed_modules
                     if module in globals())
 
+    def add_pv(self, variable, pv_name, pv_instance=None, equation=None):
+        if pv_instance is not None and not isinstance(pv_instance, epics.PV):
+            raise TypeError('Expected epics.PV, got %s' % (pv_instance.__class__.__name__))
+
+        if variable in self.variables:
+            raise KeyError('Variable already exists: %s' % variable)
+
+        if equation is None:
+            equation = variable
+
+        if pv_instance is None:
+            pv_instance = epics.PV(pv_name)
+
+        self.variables[variable] = {'full_pv': pv_name,
+                                    'equation': equation,
+                                    'record': pv_instance,
+                                    'related': set(),
+                                    'last_value': 0.0,
+                                    }
+
+        self._validated = False
+
     def add_motor(self, variable, record, equation=None):
         if variable in self.variables:
             raise KeyError('Variable already exists: %s' % variable)
@@ -69,6 +91,10 @@ class MotorGroup(object):
 
         self._validated = False
 
+    def _link_variables(self, v1, v2):
+        self.variables[v1]['related'].add(v2)
+        self.variables[v2]['related'].add(v1)
+
     def _validate_equation(self, variable, eq):
         root = ast.parse(eq)
         identifiers = set([node.id for node in ast.walk(root)
@@ -76,12 +102,17 @@ class MotorGroup(object):
 
         for ident in identifiers:
             if ident in self.variables:
-                self.variables[variable]['related'].add(ident)
-                self.variables[ident]['related'].add(variable)
+                self._link_variables(variable, ident)
             elif ident in self._globals:
                 pass
             else:
-                raise ValueError('Unknown identifier %s' % ident)
+                if ident in self._aliases:
+                    pv_name = self._aliases[ident]
+                    self.add_pv(ident, pv_name)
+
+                    self._link_variables(variable, ident)
+                else:
+                    raise ValueError('Unknown identifier %s' % ident)
 
         return eq
 
@@ -125,11 +156,19 @@ class MotorGroup(object):
             elif isinstance(record, epics.Motor):
                 ret[variable] = record.get_position(readback=True)
             else:
-                ret[variable] = record.get()
+                value = record.get()
+                if value is None:
+                    value = 0.0
+
+                ret[variable] = value
+
 
         return ret
 
     def evaluate(self, variable, locals_=None):
+        if not self._validated:
+            self.check_equations()
+
         if locals_ is None:
             locals_ = self.variable_dict()
 
@@ -185,6 +224,7 @@ class PseudoMotor(SoftMotor):
         SoftMotor.__init__(self, manager, record_name)
 
         self._related_motors = None
+        self._related_pvs = None
         self._readback_calc = self.group.get_equation(alias)
         self._waiting = set()
         self._rotary = rotary
@@ -204,9 +244,9 @@ class PseudoMotor(SoftMotor):
                 rec.set_callback(mi.MOTOR_DONE_MOVE,
                                  lambda motor=name, **kwargs:
                                  self.related_finished(motor, **kwargs))
-            else:
-                # TODO test
-                rec.add_callback(callback=lambda **kwargs: self.update_readback())
+
+        for pvi in self.related_pvs:
+            pvi.add_callback(callback=lambda **kwargs: self.update_readback())
 
         self.calculate_range()
 
@@ -244,11 +284,12 @@ class PseudoMotor(SoftMotor):
             logger.debug('Motor %s low: %s high: %s' %
                          (name, low_limit, high_limit))
 
-        real_positions = {}
+        real_positions = self.group.variable_dict()
         iterations = 2 ** len(self.related_motors)
 
         alias = self._alias
         i = 0
+
         while i < iterations:
             j = 1
             for name, info in self.related_motors.items():
@@ -291,7 +332,19 @@ class PseudoMotor(SoftMotor):
                            if isinstance(record, epics.Motor)])
 
             self._related_motors = motors
+
         return self._related_motors
+
+    @property
+    def related_pvs(self):
+        if self._related_pvs is None:
+            records = self.group.get_related_records(self._alias)
+            pvs = [record for name, record in records
+                   if isinstance(record, epics.PV)]
+
+            self._related_pvs = pvs
+
+        return self._related_pvs
 
     def go_updated(self, value=None, **kwargs):
         # If stop/pause/go is pressed, notify all related motors
@@ -345,10 +398,14 @@ class PseudoMotor(SoftMotor):
             record = self.group.get_record(motor)
 
             logger.debug('Setting %s %g' % (record, new_pos))
-            user_pv = '%s' % (record._prefix, )
+            if isinstance(record, epics.PV):
+                pvi = record
+            else:
+                user_pv = '%s' % (record._prefix, )
 
-            # TODO shouldn't be re-creating PV instances
-            pvi = epics.PV(user_pv)
+                # TODO shouldn't be re-creating PV instances
+                pvi = epics.PV(user_pv)
+
             self._waiting.add(pvi)
 
             pvi.put(new_pos, timeout=None,
