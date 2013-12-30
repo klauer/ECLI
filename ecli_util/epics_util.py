@@ -37,29 +37,38 @@ _type_cache = {}
 _pv_cache = {}
 
 
-# TODO i modified this a long time ago -- is it necessary any longer?
-def caget(pvname, verbose=True, connection_timeout=0.1, **kwargs):
+def caget(pvname, connection_timeout=5.0, verbose=True, **kwargs):
+    # For future pyepics reference:
+    # * The reason behind wrapping epics.caget is that there's no nice way to
+    #   differentiate between connection_timeout and caget timeout with epics.caget.
+    # * The default of 5 seconds in epics.__create_pv can be excruciatingly slow.
+    # * A verbosity setting
     if pvname not in _pv_cache:
         _pv_cache[pvname] = epics.PV(pvname,
                                      connection_timeout=connection_timeout)
 
     pv = _pv_cache[pvname]
     if pv.wait_for_connection(timeout=connection_timeout):
+        if kwargs.get('as_string', False):
+            pv.get_ctrlvars()
+
+        epics.poll()
         try:
-            return pv.get(**kwargs)
+            value = pv.get(**kwargs)
+            return value
         except Exception as ex:
             if verbose:
                 print('caget.get failed for %s: (%s) %s' %
                       (pvname, ex.__class__.__name__, ex))
             return None
-        # finally:
-        #    pv.disconnect()
     else:
         if verbose:
-            print('%s: caget.wait_for_connection failed' % pvname)
+            print('%s: failed to connect to PV' % pvname)
         return None
 
-epics.caget = caget
+if not hasattr(epics, '__caget__'):
+    epics.__caget__ = epics.caget
+    epics.caget = caget
 
 
 def get_record_type(pv):
@@ -68,14 +77,12 @@ def get_record_type(pv):
     """
     global _type_cache
 
+    pv = strip_field(pv)
+
     if not pv:
         return ''
-
-    if pv in _type_cache:
+    elif pv in _type_cache:
         return _type_cache[pv]
-
-    if '.' in pv:
-        pv = pv.rsplit('.', 1)[0]
 
     _type_cache[pv] = caget(RECORD_TYPE_PV % pv,
                             connection_timeout=get_core_plugin().type_timeout)

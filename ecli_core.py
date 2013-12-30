@@ -105,7 +105,7 @@ class ECLICore(ECLIPlugin):
     fields_columns = traitlets.List(traitlets.Unicode,
                                     default_value=[u'Field', u'Prompt', u'Pp'],
                                     config=True)
-    fields_timeout = traitlets.Float(0.01, config=True)
+    fields_timeout = traitlets.Float(0.1, config=True)
 
     date_format = traitlets.Unicode(u'%y-%m-%d %I:%M:%S %p', config=True)
 
@@ -210,13 +210,14 @@ class ECLICore(ECLIPlugin):
                 req_str = '%s version >= %s' % (req, version)
             except:
                 req_str = req
+                version = None
 
             if req not in self._extensions:
                 logger.error('Required extension not loaded (%s)' %
                              (req_str, ))
                 ret = False
             else:
-                if self._extensions[req].VERSION < version:
+                if version is not None and self._extensions[req].VERSION < version:
                     err = 'Old version of required extension (requires %s)' % \
                           (req_str, )
                     logger.error(err)
@@ -496,13 +497,13 @@ class ECLICore(ECLIPlugin):
 
                         logger.debug('Configuration file load failed %s.%s=%s' %
                                      (ext_name, name, value),
-                                     ext_info=True)
+                                     exc_info=True)
 
         self.run_callback(self.CB_CONFIG_LOADED, self.__class__.__name__)
         return True
 
     @ECLIExport
-    def fields(self, pv, string):
+    def fields(self, pv, string, max_interest=4, values=True):
         '''
         Search the field information database for 'text'. If the first
         argument is a PV it will detect its record type, otherwise use a
@@ -528,6 +529,42 @@ class ECLICore(ECLIPlugin):
         rows = list([name] + info for name, info in rf.find(text))
         for row in rows:
             table.add_row(row)
+
+        remove_rows = []
+        if rtype != pv and values:
+            # this means a PV was passed in and the RTYP was determined
+            table.add_column('Value', index=1, fill='')
+            for i, row in enumerate(table.rows):
+                if i == 0:
+                    continue
+
+                field = row[0]
+                try:
+                    interest = int(table['Interest', i])
+                except:
+                    interest = 0
+                else:
+                    if interest > max_interest:
+                        remove_rows.append(i)
+                        continue
+
+                if interest > 3:
+                    timeout = self.fields_timeout / 2
+                else:
+                    timeout = self.fields_timeout
+
+                value = epics.caget('%s.%s' % (pv, field),
+                                    connection_timeout=timeout,
+                                    verbose=True)
+                if value is None:
+                    value = ''
+
+                table[1, i] = '%s' % value
+
+        removed = 0
+        for row in remove_rows:
+            table.remove_row(row - removed)
+            removed += 1
 
         return rtype, table
 
@@ -630,6 +667,8 @@ def caput(mself, self, args):
           help='Display current value of the field')
 @argument('-a', '--all', action='store_const', const=True,
           help='Show all columns')
+@argument('-i', '--interest', type=int, default=4,
+          help='Maximum interest value')
 def _fields(magic_args, self, args):
     """
     $ fields [record_type/pv] [string] [--values]
@@ -642,25 +681,12 @@ def _fields(magic_args, self, args):
     the columns to display.
     """
 
-    rtype, table = self.fields(args.pv, args.string)
+    rtype, table = self.fields(args.pv, args.string,
+                               max_interest=args.interest,
+                               values=args.values)
+
     print('* Record type: %s' % rtype)
     print()
-
-    if rtype != args.pv and args.values:
-        # this means a PV was passed in and the RTYP was determined
-        table.add_column('Value', index=1, fill='')
-        for i, row in enumerate(table.rows):
-            if i == 0:
-                pass
-            else:
-                field = row[0]
-                value = epics.caget('%s.%s' % (args.pv, field),
-                                    connection_timeout=self.fields_timeout,
-                                    verbose=False)
-                if value is None:
-                    value = ''
-
-                table[1, i] = '%s' % value
 
     if not args.all:
         def check_col(col):

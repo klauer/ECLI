@@ -111,15 +111,15 @@ class ECLIMotor(ECLIPlugin):
                 expanded = util.expand_alias(motor)
                 motor_inst = epics.Motor(expanded)
             except Exception as ex:
-                logger.error('Bad motor "%s" (%s) %s'
+                logger.error('Bad motor: %s (%s) %s'
                              % (motor, ex.__class__.__name__, ex))
             except KeyboardInterrupt:
-                logger.warning('Skipping motor list entry "%s"' % motor)
+                logger.warning('Skipping motor list entry: %s' % motor)
             else:
                 self.motors[motor] = motor_inst
 
-            if util.is_valid_python_identifier(motor):
-                shell.user_ns[motor] = motor_inst
+                if util.is_valid_python_identifier(motor):
+                    shell.user_ns[motor] = motor_inst
 
     def get_motor(self, motor):
         try:

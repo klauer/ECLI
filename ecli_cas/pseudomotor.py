@@ -33,6 +33,7 @@ class MotorGroup(object):
         self.variables = {}
         self._globals = globals
         self._validated = False
+        self._records_set = False
         self._aliases = copy.deepcopy(aliases)
 
         if globals is None:
@@ -56,8 +57,7 @@ class MotorGroup(object):
     def add_pv(self, variable, pv_name, pv_instance=None, equation=None):
         if pv_instance is not None and not isinstance(pv_instance, epics.PV):
             raise TypeError('Expected epics.PV, got %s' % (pv_instance.__class__.__name__))
-
-        if variable in self.variables:
+        elif variable in self.variables:
             raise KeyError('Variable already exists: %s' % variable)
 
         if equation is None:
@@ -90,6 +90,7 @@ class MotorGroup(object):
                                     }
 
         self._validated = False
+        self._records_set = False
 
     def _link_variables(self, v1, v2):
         self.variables[v1]['related'].add(v2)
@@ -130,6 +131,15 @@ class MotorGroup(object):
         self._validated = True
         return self._validated
 
+    def check_records(self):
+        if self._records_set:
+            return True
+
+        records = [rec for var, rec in self.records]
+
+        self._records_set = (None not in records)
+        return self._records_set
+
     def get_record(self, variable):
         return self.variables[variable]['record']
 
@@ -146,6 +156,9 @@ class MotorGroup(object):
             yield variable, info['record']
 
     def variable_dict(self):
+        if not self.check_records():
+            raise Exception('Not all record instances set')
+
         ret = {}
         for variable, record in self.records:
             if isinstance(record, PseudoMotor):
@@ -162,12 +175,14 @@ class MotorGroup(object):
 
                 ret[variable] = value
 
-
         return ret
 
     def evaluate(self, variable, locals_=None):
         if not self._validated:
             self.check_equations()
+
+        if not self.check_records():
+            raise Exception('Not all record instances set')
 
         if locals_ is None:
             locals_ = self.variable_dict()

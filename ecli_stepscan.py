@@ -150,12 +150,14 @@ class ECLIScans(ECLIPlugin):
                                        config=True)
 
     def __init__(self, shell, config):
-        super(ECLIScans, self).__init__(shell=shell, config=config)
-        logger.debug('Initializing ECLI Scan plugin')
+        self._detectors = []
         self._scan = None
         self._last_point = 0
         self._scan_number = 0
         self._update_lock = threading.Lock()
+
+        super(ECLIScans, self).__init__(shell=shell, config=config)
+        logger.debug('Initializing ECLI Scan plugin')
 
     @property
     def logger(self):
@@ -278,9 +280,20 @@ class ECLIScans(ECLIPlugin):
                           grid_point=get_grid_point(dim, point))
 
     def _detectors_changed(self, *args):
-        print('Detector list updated: %s' % self.detectors)
-        self._detectors = [stepscan.get_detector(util.expand_alias(d), label=d)
-                           for d in self.detectors]
+        logger.info('Detector list updated: %s' % self.detectors)
+
+        del self._detectors[:]
+        for alias in self.detectors:
+            pv = util.expand_alias(alias)
+            try:
+                det = stepscan.get_detector(pv, label=alias)
+            except Exception as ex:
+                logger.error('Bad detector: %s (%s) %s'
+                             % (pv, ex.__class__.__name__, ex))
+            except KeyboardInterrupt:
+                logger.warning('Skipping detector list entry: %s' % pv)
+            else:
+                self._detectors.append(det)
 
     @ECLIExport
     def scan_save(self, path):
@@ -344,7 +357,7 @@ class ECLIScans(ECLIPlugin):
                 sc.triggers.remove(det.trigger)
                 if det_pv in self.trigger_detectors:
                     trigger_value = self.trigger_detectors[det_pv]
-                    print('adding trigger', det_pv, trigger_value)
+                    #print('adding trigger', det_pv, trigger_value)
                     logger.debug('Added detector trigger: %s = %s' %
                                  (det.trigger, trigger_value))
                     sc.add_trigger(det.trigger, value=trigger_value)
@@ -615,7 +628,7 @@ class ECLIScans(ECLIPlugin):
           help='Seconds at each point')
 @argument('counters', type=AliasedPV, nargs='*',
           help='Additional counters to monitor')
-def _dscan(margs, self, args):
+def dscan(margs, self, args):
     """
     $ dscan motor relative_start relative_end data_points time
     $ ascan motor start end data_points time
@@ -643,7 +656,7 @@ def _dscan(margs, self, args):
           help='Seconds at each point')
 @argument('counters', type=AliasedPV, nargs='*',
           help='Additional counters to monitor')
-def _ascan(margs, self, args):
+def ascan(margs, self, args):
     self.ascan(motor=args.motor, start=args.start, end=args.end,
                data_points=args.data_points, dwell_time=args.time,
                counters=args.counters)
@@ -669,7 +682,7 @@ def _ascan(margs, self, args):
 @argument('time', type=util.arg_value_range(min_=0, inclusive=False,
                                             type_=float),
           help='Seconds at each point')
-def _mesh(margs, self, args):
+def mesh(margs, self, args):
     """Perform a 2D scan of dimension (points1, points2):
         motor1 in [start1, end1], with points1 data points (inner loop, fast)
         motor2 in [start2, end2], with points2 data points (outer loop, slow)
@@ -686,7 +699,7 @@ def _mesh(margs, self, args):
                       motor2=args.motor2, start2=args.start2, end2=args.end2, points2=args.points2,
                       dwell_time=args.time)
 
-_amesh = _mesh
+amesh = mesh
 
 
 @ecli_magic_args(ECLIScans)
@@ -709,7 +722,7 @@ _amesh = _mesh
 @argument('time', type=util.arg_value_range(min_=0, inclusive=False,
                                             type_=float),
           help='Seconds at each point')
-def _dmesh(margs, self, args):
+def dmesh(margs, self, args):
     """Perform a 2D scan of dimension (points1, points2):
         motor1 in [start1, end1], with points1 data points (inner loop, fast)
         motor2 in [start2, end2], with points2 data points (outer loop, slow)
