@@ -610,6 +610,42 @@ class ECLIScans(ECLIPlugin):
                             motor2=motor2, start2=start2, end2=end2, points2=points2,
                             dwell_time=dwell_time)
 
+    @ECLIExport
+    def scan_generic_2d(self, motor_x, motor_y, points_x, points_y, dwell_time=1.0, command=None,
+                        relative=True, counters=[]):
+        try:
+            motor_x = AliasedPV(motor_x)
+            motor_y = AliasedPV(motor_y)
+
+            dwell_time = util.check_float(dwell_time)
+        except Exception as ex:
+            print('Scan argument check failed: %s' % (ex, ))
+            return False
+
+        motorx = ECLIPositioner(motor_x)
+        motory = ECLIPositioner(motor_y)
+
+        motorx.array = np.array(points_x)
+        motory.array = np.array(points_y)
+
+        if relative:
+            motorx.array += motorx.current()
+            motory.array += motory.current()
+
+        if command is None:
+            command = 'generic_2d  %s %s  %g' % (motor_x, motor_y, dwell_time)
+
+        data_points = len(motorx.array)
+
+        positioners = [motorx, motory]
+
+        counters = list(counters)
+        counters.insert(0, stepscan.MotorCounter(motor_x))
+        counters.insert(1, stepscan.MotorCounter(motor_y))
+        return self.scan_run(positioners, dwell_time, command=command,
+                             counters=counters, detectors=[], dimensions=(data_points, ),
+                             )
+
     mesh = amesh
     amesh.__doc__ = dmesh.__doc__
 
@@ -738,3 +774,124 @@ def dmesh(margs, self, args):
     return self.dmesh(motor1=args.motor1, start1=args.start1, end1=args.end1, points1=args.points1,
                       motor2=args.motor2, start2=args.start2, end2=args.end2, points2=args.points2,
                       dwell_time=args.time)
+
+
+def spiral_simple(x_range_egu, y_range_egu, dr_egu, nth):
+    """
+    Spiral scan pattern 1
+    by Xiaojing Huang
+    """
+    r_max_egu = np.sqrt((x_range_egu / 2.) ** 2 + (y_range_egu / 2.) ** 2)
+    num_ring = 1 + int(r_max_egu / dr_egu)
+
+    half_x = x_range_egu / 2
+    half_y = y_range_egu / 2
+
+    x_points = []
+    y_points = []
+    for i_ring in range(1, num_ring + 2):
+        radius_egu = i_ring * dr_egu
+        angle_step = 2. * np.pi / (i_ring * nth)
+
+        for i_angle in range(int(i_ring * nth)):
+            angle = i_angle * angle_step
+            x_egu = radius_egu * np.cos(angle)
+            y_egu = radius_egu * np.sin(angle)
+            if abs(x_egu) <= half_x and abs(y_egu) <= half_y:
+                x_points.append(x_egu)
+                y_points.append(y_egu)
+
+    return x_points, y_points
+
+
+def spiral_fermat(x_range_egu, y_range_egu, dr_egu, factor):
+    """
+    Fermat spiral scan pattern
+    by Xiaojing Huang
+    """
+    phi = 137.508 * np.pi / 180.
+
+    half_x = x_range_egu / 2
+    half_y = y_range_egu / 2
+
+    x_points, y_points = [], []
+
+    diag = np.sqrt(x_range_egu ** 2 + y_range_egu ** 2)
+    num_rings = int((1.5 * diag / dr_egu) ** 2)
+    for i_ring in range(1, num_rings):
+        radius_egu = np.sqrt(i_ring) * dr_egu / factor
+        angle = phi * i_ring
+        x_egu = radius_egu * np.cos(angle)
+        y_egu = radius_egu * np.sin(angle)
+
+        if abs(x_egu) <= half_x and abs(y_egu) <= half_y:
+            x_points.append(x_egu)
+            y_points.append(y_egu)
+
+    return x_points, y_points
+
+
+@ecli_magic_args(ECLIScans)
+@argument('motorx', type=AliasedPV,
+          help='X motor to scan (inner)')
+@argument('motory', type=AliasedPV,
+          help='Y motor to scan (outer)')
+@argument('width', type=float,
+          help='X width in motor EGUs')
+@argument('height', type=float,
+          help='Y height in motor EGUs')
+@argument('ring_incr', type=float,
+          help='Increment between rings')
+@argument('first_points', type=int,
+          help='Number of points in the first ring')
+@argument('time', type=util.arg_value_range(min_=0, inclusive=False,
+                                            type_=float),
+          help='Seconds at each point')
+def spiral(margs, self, args):
+    """
+    Simple spiral scan
+    """
+    px, py = spiral_simple(args.width, args.height, args.ring_incr, args.first_points)
+    command = 'spiral  %s %s  %g %g  %g %d  %g' % (args.motorx, args.motory, args.width, args.height,
+                                                   args.ring_incr, args.first_points, args.time)
+
+    print("""Motors: %s %s (%g x %g)
+Spiral scan 1 (r_incr %g inner points %d) (%d data points)""" %
+          (args.motorx, args.motory, args.width, args.height,
+           args.ring_incr, args.first_points, len(px)))
+
+    return self.scan_generic_2d(args.motorx, args.motory, px, py, command=command)
+
+
+@ecli_magic_args(ECLIScans)
+@argument('motorx', type=AliasedPV,
+          help='X motor to scan (inner)')
+@argument('motory', type=AliasedPV,
+          help='Y motor to scan (outer)')
+@argument('width', type=float,
+          help='X width in motor EGUs')
+@argument('height', type=float,
+          help='Y height in motor EGUs')
+@argument('ring_incr', type=float,
+          help='Increment between rings')
+@argument('factor', type=float, default=1.529,
+          help='Ring increment is divided by this')
+@argument('time', type=util.arg_value_range(min_=0, inclusive=False,
+                                            type_=float),
+          help='Seconds at each point')
+def fermat(margs, self, args):
+    """
+    Fermat spiral scan
+    """
+
+    px, py = spiral_fermat(args.width, args.height, args.ring_incr, args.factor)
+
+    command = 'fermat  %s %s  %g %g  %g %g  %g' % (args.motorx, args.motory, args.width, args.height,
+                                                   args.ring_incr, args.factor, args.time)
+
+    print("""Motors: %s %s (%g x %g)
+Fermat spiral scan (r_incr %g factor %g) (%d data points)""" %
+          (args.motorx, args.motory, args.width, args.height,
+           args.ring_incr, args.factor, len(px)))
+
+    return self.scan_generic_2d(args.motorx, args.motory, px, py, command=command)

@@ -16,6 +16,7 @@ from .misc import load_csv_header
 
 PATH = os.path.dirname(os.path.abspath(__file__))
 RECORD_PATH = os.path.join(PATH, 'records')
+_field_cache = {}
 
 
 class RecordFields(object):
@@ -95,8 +96,6 @@ class RecordFields(object):
             { 'field' : ['value1', 'value2'] }
         '''
         return dict(self._get_columns(columns, fill_value=fill_value))
-
-_field_cache = {}
 
 
 def get_record_fields(rtyp):

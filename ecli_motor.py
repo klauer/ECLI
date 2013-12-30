@@ -19,7 +19,8 @@ import IPython.utils.traitlets as traitlets
 from ecli_core import AliasedPV
 from ecli_plugin import ECLIPlugin
 import ecli_util as util
-from ecli_util.epics_device import (get_records_from_devices, )
+from ecli_util.epics_device import (get_record_from_device,
+                                    get_records_from_devices, )
 from ecli_util.decorators import ECLIExport
 from ecli_util.magic_args import (ecli_magic_args, argument)
 
@@ -219,13 +220,52 @@ class ECLIMotor(ECLIPlugin):
         '''
         For moving motors from the command line -- catch exceptions so as to not
         flood the command line when hitting limits, for example
+
+        Accepts either motor instances or (optionally aliased) record names
         '''
         try:
+            motor = get_record_from_device(motor)
             self.move_motor(motor, offset_or_position, verbose=verbose, **kwargs)
         except epics.motor.MotorLimitException as ex:
             print('%s' % ex)
         except Exception as ex:
             print('Failed: (%s) %s' % (ex.__class__.__name__, ex))
+
+    @ECLIExport
+    def umvr(self, motor, offset, verbose=True, **kwargs):
+        """
+        Verbosely move motor by offset, in user coordinates
+        """
+        return self.user_move_motor(motor, offset,
+                                    relative=True, verbose=verbose,
+                                    **kwargs)
+
+    @ECLIExport
+    def mvr(self, motor, offset, verbose=False, **kwargs):
+        """
+        Move motor by offset, in user coordinates
+        """
+        return self.user_move_motor(motor, offset,
+                                    relative=True, verbose=verbose,
+                                    **kwargs)
+
+    @ECLIExport
+    def umv(self, motor, pos, verbose=True, **kwargs):
+        """
+        Verbosely move motor to absolute position, in user coordinates
+        """
+        return self.user_move_motor(motor, pos,
+                                    relative=False, verbose=verbose,
+                                    **kwargs)
+
+    @ECLIExport
+    def mv(self, motor, pos, verbose=False, **kwargs):
+        """
+        Move motor to absolute position, in user coordinates
+        """
+        return self.user_move_motor(motor, pos,
+                                    relative=False, verbose=verbose,
+                                    **kwargs)
 
     def print_motor_info(self, motors):
         '''
@@ -256,7 +296,6 @@ def wm(mself, self, args):
     Show motor status
     """
     self.print_motor_info(args.motors)
-
 
 
 @ecli_magic_args(ECLIMotor)

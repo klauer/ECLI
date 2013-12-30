@@ -653,6 +653,8 @@ def caput(mself, self, args):
         epics.caput(args.pv, args.value, wait=True)
 
         print('New: ', args.pv, end='\t')
+        epics.poll()
+
         print(epics.caget(args.pv))
     except KeyboardInterrupt:
         pass
