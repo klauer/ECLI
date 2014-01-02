@@ -14,6 +14,7 @@ from __future__ import print_function
 import os
 import logging
 import numpy as np
+import datetime
 
 # IPython
 import IPython.utils.traitlets as traitlets
@@ -88,7 +89,7 @@ class ECLIScanWriterHDF5(ECLIPlugin):
         Setup the HDF5 scan group for the new scan number
         """
         group_name = 'Scan_%.4d' % (scan_number, )
-        logger.debug('New group name', group_name)
+        logger.debug('New group name %s' % group_name)
         try:
             group = self._scans_group.create_group(group_name)
         except ValueError:
@@ -99,7 +100,7 @@ class ECLIScanWriterHDF5(ECLIPlugin):
             else:
                 return None
 
-        logger.debug('Created group', group)
+        logger.debug('Created group: %s' % group)
         return group
 
     @property
@@ -108,7 +109,7 @@ class ECLIScanWriterHDF5(ECLIPlugin):
         If a file is loaded, return the last (integral) scan ID
         """
         if self._scan_group is None:
-            return None
+            return 0
 
         keys = [parse_scan_key(key) for key in self._scans_group]
         return max(keys)
@@ -191,8 +192,15 @@ class ECLIScanWriterHDF5(ECLIPlugin):
 
         scan_group = self._scan_group
         scan_group.attrs['end_timestamp'] = util.get_timestamp()
-        scan_group.attrs['elapsed'] = (scan_group.attrs['end_timestamp'] -
-                                       scan_group.attrs['start_timestamp'])
+
+        end = scan_group.attrs['end_timestamp']
+        start = scan_group.attrs['start_timestamp']
+        if isinstance(start, float):
+            scan_group.attrs['elapsed'] = end - start
+        else:
+            end = datetime.datetime.strptime(end, self.core.date_format)
+            start = datetime.datetime.strptime(start, self.core.date_format)
+            scan_group.attrs['elapsed'] = (end - start).total_seconds()
 
     def single_step(self, scan=None, grid_point=(), point=0, array_idx=0,
                     **kwargs):
