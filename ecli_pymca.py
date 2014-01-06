@@ -5,8 +5,11 @@
 ===============================
 
 .. module:: ecli_pymca
-   :synopsis: Monkey-patch and load pymca
+   :synopsis: Monkey-patch and load `pymca`_, an open-source
+        x-ray fluorescence toolkit
 .. moduleauthor:: Ken Lauer <klauer@bnl.gov>
+
+.. _pymca: http://pymca.sourceforge.net
 """
 from __future__ import print_function
 import sys
@@ -50,11 +53,12 @@ def unload_ipython_extension(ipython):
 
 class ECLIpymca(ECLIPlugin):
     """
-    DESCRIPTION
+    Basic plotting support of scans via PyMca
     """
     VERSION = 1
-    REQUIRES = [('ECLICore', 1), ('ECLIxmlrpc', 1)]
-    EXPORTS = {}  # see __init__
+    REQUIRES = [('ECLICore', 1),
+                ('ECLIxmlrpc', 1)
+                ]
 
     _callbacks = []
 
@@ -84,24 +88,25 @@ class ECLIpymca(ECLIPlugin):
 
         return files
 
+    @property
+    def xmlrpc_url(self):
+        return get_plugin('ECLIxmlrpc').server_url
+
     @ECLIExport
     def pymca(self, *other_args):
         """
         Start PyMca
         """
 
-        xmlrpc_plugin = get_plugin('ECLIxmlrpc')
-        url = xmlrpc_plugin.server_url
-
-        args = [url] + self.get_save_files()
+        args = [self.xmlrpc_url] + self.get_save_files()
 
         try:
             if self.use_subprocess:
                 args = [sys.executable, __file__] + args
                 self.pymca_process = subprocess.Popen(args)
             else:
-                context = epics.ca.current_context()
-                epics.ca.detach_context()
+                #context = epics.ca.current_context()
+                #epics.ca.detach_context()
                 self.pymca_process = mp.Process(target=start_pymca,
                                                 args=args,
                                                 )
@@ -111,9 +116,9 @@ class ECLIpymca(ECLIPlugin):
             print("Failed to spawn pymca process (%s) %s" %
                   (ex.__class__.__name__, ex))
             self.pymca_process = None
-        finally:
-            if not self.use_subprocess:
-                epics.ca.attach_context(context)
+        #finally:
+        #    if not self.use_subprocess:
+        #        epics.ca.attach_context(context)
 
     def exit(self):
         if self.pymca_process is not None:
@@ -250,7 +255,7 @@ class EpicsBridge(object):
 
     @property
     def scan_dim(self):
-        return self.scan_info.get('nopts', 0), self.scan_info.get('_counters', 0)
+        return self.scan_info.get('nopts', 0), self.scan_info.get('counters', 0)
 
     def _update_scan_info(self):
         if self.server is None or not self.update_available:
@@ -263,8 +268,8 @@ class EpicsBridge(object):
 
         self._scan_key = info['key']
 
-        ndim = info.get('_ndim', 1)
-        labels = info.get('_labels', [])
+        ndim = info.get('ndim', 1)
+        labels = info.get('labels', [])
         label_str = ','.join(labels)
         # todo
         label_str = label_str.replace('(', '')
@@ -308,7 +313,7 @@ class EpicsBridge(object):
             return [3, 1, sps.FLOAT, sps.TAG_ARRAY]
         elif name in self.scan_arrays:
             name = name[3:]
-            dim = self.scan_info.get('_dimensions')
+            dim = self.scan_info.get('dimensions')
             print('array info', name, dim)
             return [dim[0], dim[1], sps.FLOAT, sps.TAG_ARRAY | sps.TAG_IMAGE]
 
@@ -380,7 +385,7 @@ class EpicsBridge(object):
 
             # Strip off the 2D_ prefix
             name = name[3:]
-            labels = self.scan_info['_labels']
+            labels = self.scan_info['labels']
             label_idx = labels.index(name)
 
             data = self.scan_data
@@ -390,7 +395,7 @@ class EpicsBridge(object):
                 data = data + np.random.random(data.shape[0])
             import traceback
             traceback.print_stack()
-            return np.array(data).reshape(self.scan_info['_dimensions'])
+            return np.array(data).reshape(self.scan_info['dimensions'])
         else:
             return np.zeros(1)
 
@@ -489,7 +494,7 @@ def pymca_print(s, end=''):
         with open('pymca_log.txt', 'at') as f:
             print(s, end=end, file=f)
     else:
-       print(s, end=end, file=sys.__stdout__)
+        print(s, end=end, file=sys.__stdout__)
 
 
 def start_pymca(xmlrpc_url, *files):
@@ -497,22 +502,15 @@ def start_pymca(xmlrpc_url, *files):
     .. note:: this runs in a separate process from ECLI
     """
 
-    if epics.__version__ <= '3.2.3':
+    if 0:  # epics.__version__ <= '3.2.3':
+        # This still doesn't work with multiprocessing --
+        # bug filed with pyepics: https://github.com/pyepics/pyepics/issues/15
         epics._CACHE_.clear()
         epics._MONITORS_.clear()
         epics.ca._cache.clear()
         epics.ca._put_done.clear()
         epics.ca.libca = None
         epics.ca.initial_context = None
-        reload(epics)
-        reload(epics.ca)
-
-        epics.ca.libca.ca_detach_context()
-        #print('pid %d context %s' % (os.getpid(), epics.ca.current_context()))
-        context = epics.ca.current_context()
-
-        #print('post launch', epics.caget('MLL:DXP:mca1.ERTM'))
-        #print('post launch m1', epics.caget('IOC:m1'))
 
     from ecli_util.misc import OutputStreamHandler
     sys.stdout = OutputStreamHandler(pymca_print)

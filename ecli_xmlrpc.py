@@ -18,6 +18,7 @@ from __future__ import print_function
 import logging
 import threading
 import numpy as np
+import copy
 
 # IPython
 import IPython.utils.traitlets as traitlets
@@ -276,22 +277,28 @@ class ECLIxmlrpc(ECLIPlugin):
 
     def post_scan(self, scan=None, abort=False, **kwargs):
         """Scan callback -- scan finished"""
-        pass
+        self._scan_info['done'] = True
+        self._scan_info['aborted'] = abort
+        self._next_key()
+
+    def _next_key(self):
+        self._scan_key = (self._scan_key + 1) % 10000
+        self._scan_info['key'] = self._scan_key
 
     def single_step(self, scan=None, point=0, array_idx=0, **kwargs):
         """Scan callback per point -- prepares data for pymca"""
-        scan_info = self._scan_info
-
-        self._scan_key = (self._scan_key + 1) % 10000
-        scan_info['key'] = self._scan_key
-
+        scan_info = {}
         scaler_counters = [c for c in scan.counters
                            if not isinstance(c.buff[array_idx], np.ndarray)]
         array_counters = [c for c in scan.counters
                           if c not in scaler_counters]
+
         if self._new_scan is not None:
             logger.debug('--> new scan')
             num_points = 1
+
+            scan_info = copy.deepcopy(self._new_scan)
+
             for d in self._new_scan['dimensions']:
                 num_points *= d  # operator.mul...
 
@@ -301,13 +308,16 @@ class ECLIxmlrpc(ECLIPlugin):
             labels = [util.fix_label(c.label) for c in scaler_counters]
             logger.debug('labels: %s' % labels)
             scan_info['nopts'] = num_points
-            scan_info['_labels'] = labels
-            scan_info['_dimensions'] = self._new_scan['dimensions']
-            scan_info['_ndim'] = self._new_scan['ndim']
-            scan_info['_counters'] = len(labels)
+            scan_info['labels'] = labels
+            scan_info['counters'] = len(labels)
+
+            scan_info['done'] = False
+            scan_info['aborted'] = False
 
             self._scan_data = np.zeros((num_points, len(labels)))
             self._new_scan = None
+
+        scan_info['point'] = array_idx
 
         logger.debug('scan info: %s' % scan_info)
         #data = [(c, c.buff[array_idx]) for c in scan.counters]
@@ -315,6 +325,9 @@ class ECLIxmlrpc(ECLIPlugin):
         array_data = [c.buff[array_idx] for c in array_counters]
         for i, s_data in enumerate(scaler_data):
             self._scan_data[array_idx, i] = s_data
+
+        self._scan_info.update(scan_info)
+        self._next_key()
 
     def exit(self):
         ECLIPlugin.exit(self)

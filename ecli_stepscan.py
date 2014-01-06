@@ -58,12 +58,18 @@ class ECLIPositioner(stepscan.Positioner):
             self.done = True
             self.move_time += elapsed
 
-        if self.array is None or not self.pv.connected:
+        if self.array is None:
             return
+        elif not self.pv.connected:
+            if not self.pv.wait_for_connection():
+                return
 
         start_move = time.time()
         self.done = False
-        if self.pv.get() == self.array[i]:
+        # TODO this was here for piezo_motion bug, still necessary?
+        #      stepscan does wait=False then wait=True move prior to
+        #      scanning which complicates things
+        if i > 0 and self.pv.get() == self.array[i]:
             self.done = True
             return not self.done
 
@@ -195,6 +201,8 @@ class ECLIScans(ECLIPlugin):
         and there can be more than one extension saving data, this is used
         to avoid conflicting scan numbers.
         """
+        num -= 1  # will be incremented the next scan
+
         if num > self._scan_number:
             self._scan_number = num
 
@@ -230,7 +238,7 @@ class ECLIScans(ECLIPlugin):
         if scan is not self._scan:
             return
 
-        print('detached from scan', scan)
+        logger.debug('detached from scan: %s' % scan)
 
     def pre_scan(self, scan=None):
         """
@@ -376,6 +384,7 @@ class ECLIScans(ECLIPlugin):
                         'scan_number': self._scan_number,
                         'dimensions': dimensions,
                         'ndim': calc_ndim(dimensions),
+                        'scanning': [pos.label for pos in positioners],
                         }
         sc.ecli_info.update(kwargs)
 
@@ -438,22 +447,25 @@ class ECLIScans(ECLIPlugin):
         else:
             scan_type = 'ascan'
 
-        command = '%(scan_type)s  %(motor)s  %(start)g %(end)g  %(data_points)d %(dwell_time)g' % \
+        m_name = self.core.get_aliased_name(motor)
+        command = '%(scan_type)s  %(m_name)s  %(start)g %(end)g  %(data_points)d %(dwell_time)g' % \
                   locals()
 
-        pos0 = ECLIPositioner(motor)
+        pos0 = ECLIPositioner(motor, label=m_name)
         start_pos = pos0.current()
         pos0.array = np.linspace(start, end, data_points)
         if relative:
             pos0.array += start_pos
 
         print('Scan: %s from %g to %g (%d data points)' %
-             (motor, start, end, data_points))
+              (motor, start, end, data_points))
 
         positioners = [pos0]
 
+        mct = stepscan.MotorCounter(motor, label=m_name)
+
         counters = list(counters)
-        counters.insert(0, stepscan.MotorCounter(motor))
+        counters.insert(0, mct)
         return self.scan_run(positioners, dwell_time, command=command,
                              counters=counters, detectors=[], dimensions=(data_points, ),
                              )
@@ -543,18 +555,21 @@ class ECLIScans(ECLIPlugin):
         else:
             scan_type = 'amesh'
 
-        command = '%(scan_type)s  %(motor1)s  %(start1)g %(end1)g  %(points1)d  %(motor2)s  %(start2)g %(end2)g  %(points2)d  %(dwell_time)g' % \
+        m1_name = self.core.get_aliased_name(motor1)
+        m2_name = self.core.get_aliased_name(motor2)
+
+        command = '%(scan_type)s  %(m1_name)s  %(start1)g %(end1)g  %(points1)d  %(m2_name)s  %(start2)g %(end2)g  %(points2)d  %(dwell_time)g' % \
                   locals()
 
         # Positioner 1 - 'fast' inner loop
-        pos1 = ECLIPositioner(motor1)
+        pos1 = ECLIPositioner(motor1, label=m1_name)
         pos1.array = np.array(points2 * [np.linspace(start1, end1, points1)]).flatten()
         if relative:
             pos1.array += pos1.current()
 
         # Positioner 2 - 'slow' outer loop
-        pos2 = ECLIPositioner(motor2)
-        pos2.array = np.array([[i] * points2
+        pos2 = ECLIPositioner(motor2, label=m2_name)
+        pos2.array = np.array([[i] * points1
                               for i in np.linspace(start2, end2, points2)]).flatten()
         if relative:
             pos2.array += pos2.current()
@@ -568,8 +583,8 @@ class ECLIScans(ECLIPlugin):
 
         positioners = (pos1, pos2)
 
-        counters = [stepscan.MotorCounter(motor1),
-                    stepscan.MotorCounter(motor2),
+        counters = [stepscan.MotorCounter(motor1, label=m1_name),
+                    stepscan.MotorCounter(motor2, label=m2_name),
                     ]
 
         return self.scan_run(positioners, dwell_time, command=command,
@@ -622,8 +637,11 @@ class ECLIScans(ECLIPlugin):
             print('Scan argument check failed: %s' % (ex, ))
             return False
 
-        motorx = ECLIPositioner(motor_x)
-        motory = ECLIPositioner(motor_y)
+        mx_name = self.core.get_aliased_name(motor_x)
+        my_name = self.core.get_aliased_name(motor_y)
+
+        motorx = ECLIPositioner(motor_x, label=mx_name)
+        motory = ECLIPositioner(motor_y, label=my_name)
 
         motorx.array = np.array(points_x)
         motory.array = np.array(points_y)
@@ -633,15 +651,15 @@ class ECLIScans(ECLIPlugin):
             motory.array += motory.current()
 
         if command is None:
-            command = 'generic_2d  %s %s  %g' % (motor_x, motor_y, dwell_time)
+            command = 'generic_2d  %s %s  %g' % (mx_name, my_name, dwell_time)
 
         data_points = len(motorx.array)
 
         positioners = [motorx, motory]
 
         counters = list(counters)
-        counters.insert(0, stepscan.MotorCounter(motor_x))
-        counters.insert(1, stepscan.MotorCounter(motor_y))
+        counters.insert(0, stepscan.MotorCounter(motor_x, label=mx_name))
+        counters.insert(1, stepscan.MotorCounter(motor_y, label=my_name))
         return self.scan_run(positioners, dwell_time, command=command,
                              counters=counters, detectors=[], dimensions=(data_points, ),
                              )
@@ -895,3 +913,15 @@ Fermat spiral scan (r_incr %g factor %g) (%d data points)""" %
            args.ring_incr, args.factor, len(px)))
 
     return self.scan_generic_2d(args.motorx, args.motory, px, py, command=command)
+
+
+@ecli_magic_args(ECLIScans)
+@argument('filename', type=str,
+          help='Base of filename')
+def scan_save(margs, self, args):
+    """
+    Notifies all scan file writers where to write the data
+
+    .. note:: file extensions will be added by the plugin
+    """
+    self.scan_save(args.filename)
