@@ -102,11 +102,6 @@ def log_exception(command=None, limit=100, filename='exceptions.log'):
         f.close()
 
 
-def get_timestamp():
-    # TODO
-    return time.time()
-
-
 def edit_file(fn, editor=None):
     """
     Edit a file with the system's default editor.

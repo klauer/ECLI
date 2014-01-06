@@ -134,6 +134,7 @@ class ECLIScanWriterSPEC(ECLIPlugin):
             return False
         else:
             self.scan_plugin.set_min_scan_number(self._file.scan_number)
+            logger.debug('Last scan number %d' % self._file.scan_number)
             return True
 
     def save_path_set(self, path=None):

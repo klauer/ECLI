@@ -108,11 +108,15 @@ class ECLIScanWriterHDF5(ECLIPlugin):
         """
         If a file is loaded, return the last (integral) scan ID
         """
-        if self._scan_group is None:
+        if self._scans_group is None:
             return 0
 
         keys = [parse_scan_key(key) for key in self._scans_group]
-        return max(keys)
+
+        if keys:
+            return max(keys)
+        else:
+            return 0
 
     def _open_file(self, filename):
         self._file = None
@@ -144,6 +148,7 @@ class ECLIScanWriterHDF5(ECLIPlugin):
             self.filename = filename
             self._scans_group = self._file.require_group('Scans')
             self.scan_plugin.set_min_scan_number(self.last_scan_number + 1)
+            logger.debug('Last scan number: %d' % self.last_scan_number)
             return True
 
     def pre_scan(self, scan=None, scan_number=0, command='', dimensions=(), **kwargs):
@@ -151,7 +156,7 @@ class ECLIScanWriterHDF5(ECLIPlugin):
         Callback: called before a scan starts
         """
         if self._file is None:
-            logger.error('HDF5 file not set; scan will not be saved. (See: `scan_save` or %%config %s)' %
+            logger.error('HDF5 file not set; scan will not be saved. (See: `%%scan_save` or %%config %s)' %
                          (self.__class__.__name__, ))
             return
 
@@ -237,7 +242,10 @@ class ECLIScanWriterHDF5(ECLIPlugin):
 
             # And update the HDF5 dataset with the new data
             try:
-                dataset[array_idx] = data
+                if len(grid_point) == len(dataset.shape):
+                    dataset[grid_point] = data
+                else:
+                    dataset[array_idx] = data
             except:
                 logger.error(u'Error updating dataset', exc_info=True)
 
