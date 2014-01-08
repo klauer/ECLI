@@ -277,8 +277,11 @@ class ECLIxmlrpc(ECLIPlugin):
 
     def post_scan(self, scan=None, abort=False, **kwargs):
         """Scan callback -- scan finished"""
-        self._scan_info['done'] = True
-        self._scan_info['aborted'] = abort
+        scan_info = self._scan_info
+        scan_info.update(kwargs)
+
+        scan_info['done'] = True
+        scan_info['aborted'] = abort
         self._next_key()
 
     def _next_key(self):
@@ -316,6 +319,8 @@ class ECLIxmlrpc(ECLIPlugin):
 
             self._scan_data = np.zeros((num_points, len(labels)))
             self._new_scan = None
+        else:
+            scan_info.update(kwargs)
 
         scan_info['point'] = array_idx
 

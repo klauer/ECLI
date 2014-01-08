@@ -194,7 +194,7 @@ def ct(margs, self, args):
 
     for scaler in scalers:
         if self.show_timestamp:
-            print(' %s' % util.get_timestamp())
+            print(' %s' % util.timestamp_string())
             print()
 
         dev = self._get_device(scaler)

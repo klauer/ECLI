@@ -495,9 +495,16 @@ def load_csv_header(fname, main_col='field', delimiter='\t'):
 def is_valid_python_identifier(name):
     return name not in keyword.kwlist
 
-def get_timestamp(dt=None):
+def timestamp_string(dt=None):
+    """
+    Get a human-readable timestamp from a datetime.datetime
+    instance or a posix timestamp. Defaults to now() if none
+    are passed in.
+    """
     if dt is None:
         dt = datetime.datetime.now()
+    elif isinstance(dt, float):
+        dt = datetime.datetime.fromtimestamp(dt)
 
     plugin = get_core_plugin()
     return dt.strftime(plugin.date_format)

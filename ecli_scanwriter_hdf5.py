@@ -15,6 +15,7 @@ import os
 import logging
 import numpy as np
 import datetime
+import time
 
 # IPython
 import IPython.utils.traitlets as traitlets
@@ -169,7 +170,7 @@ class ECLIScanWriterHDF5(ECLIPlugin):
         sgroup.attrs['number'] = scan_number
         sgroup.attrs['command'] = command
         sgroup.attrs['dwell_time'] = scan.dwelltime
-        sgroup.attrs['start_timestamp'] = util.get_timestamp()
+        sgroup.attrs['start_timestamp'] = time.time()
         sgroup.attrs['dimensions'] = tuple(dimensions)
 
         # Record all of the pre-scan values (e.g., motor positions not being
@@ -196,19 +197,19 @@ class ECLIScanWriterHDF5(ECLIPlugin):
             return
 
         scan_group = self._scan_group
-        scan_group.attrs['end_timestamp'] = util.get_timestamp()
+        scan_group.attrs['end_timestamp'] = time.time()
 
         end = scan_group.attrs['end_timestamp']
         start = scan_group.attrs['start_timestamp']
-        if isinstance(start, float):
-            scan_group.attrs['elapsed'] = end - start
-        else:
+        if isinstance(start, datetime.datetime):
             end = datetime.datetime.strptime(end, self.core.date_format)
             start = datetime.datetime.strptime(start, self.core.date_format)
             scan_group.attrs['elapsed'] = (end - start).total_seconds()
+        else:
+            scan_group.attrs['elapsed'] = end - start
 
     def single_step(self, scan=None, grid_point=(), point=0, array_idx=0,
-                    **kwargs):
+                    timestamps=None, **kwargs):
         """
         Callback: called after every single point in a stepscan
         """
@@ -221,12 +222,16 @@ class ECLIScanWriterHDF5(ECLIPlugin):
         # Create the data group if necessary
         data_group = scan_group.require_group('Data')
 
-        for counter in scan.counters:
-            data = counter.buff[array_idx]
+        data_sets = [(counter.label, counter.buff[array_idx])
+                     for counter in scan.counters]
+
+        if timestamps is not None:
+            data_sets.append(('Timestamps', timestamps[array_idx]))
+
+        for label, data in data_sets:
+            label = util.fix_label(label)
             if data is None:
                 continue
-
-            label = util.fix_label(counter.label)
 
             # Create the array in the data group if it doesn't already exist
             if label not in data_group:
@@ -242,7 +247,7 @@ class ECLIScanWriterHDF5(ECLIPlugin):
 
             # And update the HDF5 dataset with the new data
             try:
-                if len(grid_point) == len(dataset.shape):
+                if len(grid_point) == len(dataset.shape) and len(grid_point) > 1:
                     dataset[grid_point] = data
                 else:
                     dataset[array_idx] = data

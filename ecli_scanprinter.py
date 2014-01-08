@@ -24,7 +24,7 @@ import IPython.utils.traitlets as traitlets
 
 # ECLI
 import ecli_util as util
-from ecli_util import (get_plugin, get_core_plugin)
+from ecli_util import get_plugin
 from ecli_plugin import ECLIPlugin
 
 SCAN_PLUGIN = 'ECLIScans'
@@ -34,6 +34,7 @@ logger = logging.getLogger('ECLI.ScanPrinter')
 # Loading of this extension
 def load_ipython_extension(ipython):
     return util.generic_load_ext(ipython, ECLIScanPrinter, logger=logger, globals_=globals())
+
 
 def unload_ipython_extension(ipython):
     # TODO stop any monitors, etc.
@@ -182,7 +183,15 @@ class ECLIScanPrinter(ECLIPlugin):
         else:
             point_str = u'%d' % point
 
-        data_str = [point_str, util.get_timestamp()]
+        data_str = [point_str]
+
+        # Get the posix timestamp
+        ts = scan.get_timestamp(array_idx)
+
+        # Convert it into a readable format
+        ts = util.timestamp_string(ts)
+
+        data_str.append(ts)
         data_str.extend(scaler_data)
 
         header_widths = self._header_widths  # modified in-place

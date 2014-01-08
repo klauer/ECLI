@@ -89,9 +89,9 @@ from .spvinfo import (get_structured_pv_info, structured_pv_info_to_list,
                       format_structured_pv_info, print_structured_pv_info)
 
 from .misc import (
-    get_column_widths, get_column_formatting_string, log_exception, get_timestamp, edit_file,
+    get_column_widths, get_column_formatting_string, log_exception, timestamp_string, edit_file,
     list_management, print_traceback, fix_label, clear_line, _tests, print_table,
-    print_sameline, is_valid_python_identifier, get_timestamp)
+    print_sameline, is_valid_python_identifier, )
 
 from .conditional_monitor import ConditionalMonitor
 from .check import (check_bool, check_int, check_float)

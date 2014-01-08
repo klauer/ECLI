@@ -272,8 +272,10 @@ class ECLIScans(ECLIPlugin):
             if (scan.npts - self._last_point) > 0:
                 self._update(scan=scan, cpt=scan.npts)
 
-        # print('post scan', scan)
-        self.run_callback(self.CB_POST_SCAN, scan=scan, abort=scan.abort)
+        info = scan.ecli_info
+
+        self.run_callback(self.CB_POST_SCAN, scan=scan, abort=scan.abort,
+                          **info)
 
     def single_step(self, scan, point):
         """
@@ -285,7 +287,7 @@ class ECLIScans(ECLIPlugin):
         self.run_callback(self.CB_SCAN_STEP,
                           show_traceback=sys.stdout,
                           scan=scan, point=point, array_idx=array_idx,
-                          grid_point=get_grid_point(dim, point))
+                          grid_point=get_grid_point(dim, array_idx), **info)
 
     def _detectors_changed(self, *args):
         logger.info('Detector list updated: %s' % self.detectors)
@@ -386,6 +388,14 @@ class ECLIScans(ECLIPlugin):
                         'ndim': calc_ndim(dimensions),
                         'scanning': [pos.label for pos in positioners],
                         }
+
+        if hasattr(sc, 'timestamps'):
+            # Added timestamps in ECLI stepscan fork
+            sc.ecli_info['timestamps'] = sc.timestamps
+            sc.get_timestamp = lambda i: sc.timestamps[i]
+        else:
+            sc.get_timestamp = lambda i: None
+
         sc.ecli_info.update(kwargs)
 
         if not run:
@@ -850,9 +860,9 @@ def spiral_fermat(x_range_egu, y_range_egu, dr_egu, factor):
 
 
 @ecli_magic_args(ECLIScans)
-@argument('motorx', type=AliasedPV,
+@argument('motorx', type=str,
           help='X motor to scan (inner)')
-@argument('motory', type=AliasedPV,
+@argument('motory', type=str,
           help='Y motor to scan (outer)')
 @argument('width', type=float,
           help='X width in motor EGUs')
@@ -870,6 +880,7 @@ def spiral(margs, self, args):
     Simple spiral scan
     """
     px, py = spiral_simple(args.width, args.height, args.ring_incr, args.first_points)
+
     command = 'spiral  %s %s  %g %g  %g %d  %g' % (args.motorx, args.motory, args.width, args.height,
                                                    args.ring_incr, args.first_points, args.time)
 
@@ -882,9 +893,9 @@ Spiral scan 1 (r_incr %g inner points %d) (%d data points)""" %
 
 
 @ecli_magic_args(ECLIScans)
-@argument('motorx', type=AliasedPV,
+@argument('motorx', type=str,
           help='X motor to scan (inner)')
-@argument('motory', type=AliasedPV,
+@argument('motory', type=str,
           help='Y motor to scan (outer)')
 @argument('width', type=float,
           help='X width in motor EGUs')

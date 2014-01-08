@@ -23,11 +23,15 @@ def split_sequence(iterable, size):
         item = list(itertools.islice(it, size))
 
 
-class SPECFileError(Exception): pass
-class SPECFileMotorListError(SPECFileError): pass
+class SPECFileError(Exception):
+    pass
+
+
+class SPECFileMotorListError(SPECFileError):
+    pass
+
 
 class SPECFileWriter(object):
-
     """
     Writes SPEC-format files for a scan.
     Simple example:
@@ -45,6 +49,7 @@ class SPECFileWriter(object):
     Remember that SPEC scan counts are 0-based -- this means that 0 data points
     is actually 1 data point in EPICS.
     """
+
     COLUMNS = 8
 
     def __init__(self, filename, starting_number=None, comment='', motors=[]):
@@ -65,10 +70,13 @@ class SPECFileWriter(object):
             if check_motor_list(filename, motors) is False:
                 raise SPECFileMotorListError('Motor list does not match')
 
-            if starting_number is None:
-                self.scan_number = get_last_scan_number(filename)
-            else:
-                self.scan_number = starting_number
+            with SPECFileReader(filename) as reader:
+                self.start_time = reader.epoch()
+
+                if starting_number is None:
+                    self.scan_number = get_last_scan_number(reader)
+                else:
+                    self.scan_number = starting_number
 
             print('SPECFileWriter: Appending to "%s"' % filename)
             self._f = open(filename, 'at')
@@ -263,11 +271,11 @@ class SPECFileWriter(object):
 
 
 class SPECFileReader(object):
-
     """
     NOTE: Really untested except for reading the header.
     (just needed a safe, quick way to check the motor list.)
     """
+
     def __init__(self, filename):
         if not os.path.exists(filename):
             raise ValueError('Invalid SPEC filename')
@@ -286,6 +294,11 @@ class SPECFileReader(object):
         self.comment = ''
 
         self._read_header()
+
+    def close(self):
+        if self._f:
+            self._f.close()
+            self._f = None
 
     def scanno(self):
         return 0  # TODO
@@ -470,6 +483,12 @@ class SPECFileReader(object):
 
         return self._scan
 
+    def __enter__(self):
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.close()
+
 
 def check_motor_list(filename, motors):
     try:
@@ -483,7 +502,12 @@ def check_motor_list(filename, motors):
 def get_last_scan_number(filename):
     numbers = [0]
     try:
-        for scan in SPECFileReader(filename).scans:
+        if isinstance(filename, SPECFileReader):
+            reader = filename
+        else:
+            reader = SPECFileReader(filename)
+
+        for scan in reader.scans:
             try:
                 numbers.append(int(scan['number']))
             except:
@@ -494,6 +518,7 @@ def get_last_scan_number(filename):
     except Exception as ex:
         print('Failed to get last scan number: (%s) %s' % (filename, ex))
         return 0
+
 
 if __name__ == '__main__':
     motors = ['m0', 'm1']

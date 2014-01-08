@@ -20,7 +20,7 @@ import IPython.utils.traitlets as traitlets
 # ECLI
 import ecli_util as util
 from ecli_plugin import ECLIPlugin
-from ecli_util import (get_plugin, get_core_plugin)
+from ecli_util import get_plugin
 
 from pyspecfile import SPECFileWriter
 
@@ -104,7 +104,7 @@ class ECLIScanWriterSPEC(ECLIPlugin):
         self._file.finish_scan()
 
     def single_step(self, scan=None, grid_point=(), point=0, array_idx=0,
-                    **kwargs):
+                    timestamps=None, **kwargs):
         """
         Callback: called after every single point in a stepscan
         """
@@ -112,14 +112,23 @@ class ECLIScanWriterSPEC(ECLIPlugin):
             return
 
         data = [(c, c.buff[array_idx]) for c in scan.counters]
-        scaler_data = [d for counter, d in data
+        scaler_info = [(counter.label, d) for counter, d in data
                        if not isinstance(d, np.ndarray)]
+
+        if timestamps is not None:
+            # Make timestamps relative to the starting time of the file
+            t0 = self._file.start_time
+            t1 = timestamps[array_idx]
+            scaler_info.insert(0, ('Epoch', t1 - t0))
+
+        scaler_data = [d for counter, d in scaler_info]
         array_data = [d for counter, d in data
                       if isinstance(d, np.ndarray)]
 
         if self._new_scan:
-            self._file.write_scan_data_start([util.fix_label(c.label) for c, d in data
-                                              if not isinstance(d, np.ndarray)])
+            labels = [util.fix_label(label) for label, d in scaler_info]
+
+            self._file.write_scan_data_start(labels)
             self._new_scan = False
 
         self._file.write_scan_data(scaler_data)
