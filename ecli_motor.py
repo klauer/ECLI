@@ -137,13 +137,13 @@ class ECLIMotor(ECLIPlugin):
         return self.motors[name]
 
     @ECLIExport
-    def wa(self):
+    def wa(self, *others):
         """
         Show status of all motors in ECLIMotor.motor_list
         """
         motors = self.motor_list
         if motors:
-            self.print_motor_info(motors)
+            self.print_motor_info(motors + list(others))
         else:
             logger.error('ECLIMotor.motor_list unset')
 
@@ -267,6 +267,7 @@ class ECLIMotor(ECLIPlugin):
                                     relative=False, verbose=verbose,
                                     **kwargs)
 
+    @ECLIExport
     def print_motor_info(self, motors):
         '''
         motors:
@@ -286,6 +287,18 @@ class ECLIMotor(ECLIPlugin):
             motor_info, column_headers=[''] + list(motors), format_=format_))
 
         util.print_table(rows, first_column_format=u'{:<%d}')
+
+    wm = print_motor_info
+
+
+@ecli_magic_args(ECLIMotor)
+@argument('motors', type=AliasedPV, nargs='*',
+          help='Motor(s) to query')
+def wa(mself, self, args):
+    """
+    Show all motor status
+    """
+    self.wa(*args.motors)
 
 
 @ecli_magic_args(ECLIMotor)
