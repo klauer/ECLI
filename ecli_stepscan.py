@@ -69,9 +69,9 @@ class ECLIPositioner(stepscan.Positioner):
         # TODO this was here for piezo_motion bug, still necessary?
         #      stepscan does wait=False then wait=True move prior to
         #      scanning which complicates things
-        if i > 0 and self.pv.get() == self.array[i]:
-            self.done = True
-            return not self.done
+        #if i > 0 and self.pv.get() == self.array[i]:
+        #    self.done = True
+        #    return not self.done
 
         self.pv.put(self.array[i], callback=move_completed)
         time.sleep(1.e-4)
@@ -151,9 +151,8 @@ class ECLIScans(ECLIPlugin):
     # scan_time_pv = traitlets.Unicode(u'E1:Scans:scan1.DDLY', config=True) #
     # TODO
     detectors = traitlets.List(traitlets.Unicode,
-                               default_value=[u'IOC:m1'], config=True)
-    trigger_detectors = traitlets.Dict({'MLL:Scaler:scaler1': 1},
-                                       config=True)
+                               default_value=[], config=True)
+    trigger_detectors = traitlets.Dict(config=True)
 
     def __init__(self, shell, config):
         self._detectors = []
@@ -419,7 +418,11 @@ class ECLIScans(ECLIPlugin):
             for pos, start in zip(positioners, start_pos):
                 logger.info('Moving %s back to the starting position %g' %
                             (pos, start))
-                pos.move_to(start, wait=True)
+                try:
+                    pos.move_to(start, wait=True)
+                except KeyboardInterrupt:
+                    print('%s move to %g cancelled (current position=%s)' %
+                          (pos.label, pos.current()))
 
         # Make a simple dictionary holding the scan data
         data = {}

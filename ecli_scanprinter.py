@@ -105,6 +105,8 @@ class ECLIScanPrinter(ECLIPlugin):
         else:
             self._headers += [c.label for c in counters]
 
+        self._headers = self.core.get_aliased_name(self._headers)
+
         self._header_widths = [max(self.min_col_width, len(header))
                                for header in self._headers]
 
@@ -138,7 +140,7 @@ class ECLIScanPrinter(ECLIPlugin):
             move_time = scan.positioners[0].move_time
             print('\t--- Statistics:', file=self.outfile)
             print('\tEstimated: %.3f' % (estimated, ), file=self.outfile)
-            print('\tPer point %.3f overhead %.3f per point overhead %.3f' %
+            print('\tPer point %.3f (overhead %.3f, per point %.3f)' %
                   (elapsed / npts, (elapsed - estimated),
                   (elapsed - estimated) / npts),
                   file=self.outfile)
@@ -146,7 +148,7 @@ class ECLIScanPrinter(ECLIPlugin):
             print('\tExcluding move time (%.3f):' %
                   move_time, file=self.outfile)
             elapsed -= move_time
-            print('\tPer point %.3f overhead %.3f per point overhead %.3f' %
+            print('\tPer point %.3f (overhead %.3f, per point %.3f)' %
                   (elapsed / npts, (elapsed - estimated),
                   (elapsed - estimated) / npts),
                   file=self.outfile)

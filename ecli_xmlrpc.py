@@ -324,7 +324,7 @@ class ECLIxmlrpc(ECLIPlugin):
 
         scan_info['point'] = array_idx
 
-        logger.debug('scan info: %s' % scan_info)
+        #logger.debug('scan info: %s' % scan_info)
         #data = [(c, c.buff[array_idx]) for c in scan.counters]
         scaler_data = [c.buff[array_idx] for c in scaler_counters]
         array_data = [c.buff[array_idx] for c in array_counters]
