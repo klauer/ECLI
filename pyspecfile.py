@@ -57,7 +57,7 @@ class SPECFileWriter(object):
             raise SPECFileError('Must specify filename')
 
         self.filename = os.path.abspath(filename)
-        self._motors = list(motors)
+        self._motors = list(sorted(motors))
         self._comment = comment
 
         self._data_lines = 0  # how many lines in the current scan there are
@@ -67,7 +67,7 @@ class SPECFileWriter(object):
         self._buffer = []
 
         if os.path.exists(filename) and os.path.getsize(filename) > 1:
-            if check_motor_list(filename, motors) is False:
+            if not check_motor_list(filename, motors):
                 raise SPECFileMotorListError('Motor list does not match')
 
             with SPECFileReader(filename) as reader:
@@ -495,7 +495,6 @@ def check_motor_list(filename, motors):
         sf = SPECFileReader(filename)
     except:
         return False
-
     return (motors == sf.motors)
 
 

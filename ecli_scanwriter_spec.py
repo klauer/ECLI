@@ -53,6 +53,7 @@ class ECLIScanWriterSPEC(ECLIPlugin):
         self._new_scan = True
         scan_plugin = get_plugin(self.SCAN_PLUGIN)
         self.scan_plugin = scan_plugin
+        self._motors = []
 
         super(ECLIScanWriterSPEC, self).__init__(shell=shell, config=config)
 
@@ -78,17 +79,23 @@ class ECLIScanWriterSPEC(ECLIPlugin):
         """
         Callback: called before a scan starts
         """
+        extra_pv_info = scan.read_extra_pvs()
+        self._motors = [pvname for desc, pvname, value in extra_pv_info]
+
         if self._file is None:
-            logger.error('SPEC file not set; scan will not be saved. (See: `scan_save` or %%config %s)' %
-                         self.__class__.__name__)
-            return
+            if not self.filename:
+                logger.error('SPEC file not set; scan will not be saved. (See: `%%scan_save` or %%config %s)' %
+                             self.__class__.__name__)
+                return
+
+            elif not self._open_output():
+                return
 
         self._new_scan = True
         self._scan_number = scan_number
         self._file._comment = scan.comments
-        extra_pv_info = scan.read_extra_pvs()
 
-        self._file._motors = [pvname for desc, pvname, value in extra_pv_info]
+        self._file._motors = self._motors
         self._file.write_scan_start(number=scan_number, command=command,
                                     seconds=scan.dwelltime)
         self._file.write_motor_positions((value for desc, pvname, value
@@ -134,17 +141,22 @@ class ECLIScanWriterSPEC(ECLIPlugin):
         self._file.write_scan_data(scaler_data)
         self._file.write_mca_data(array_data)
 
-    def _filename_changed(self, name=None, old=None, new=None):
+    def _open_output(self):
         try:
-            self._file = SPECFileWriter(self.filename)
+            self._file = SPECFileWriter(self.filename, motors=self._motors)
         except Exception as ex:
             logger.error('Unable to use SPEC file "%s": (%s) %s' %
                          (self.filename, ex.__class__.__name__, ex))
+            self._file = None
             return False
         else:
             self.scan_plugin.set_min_scan_number(self._file.scan_number)
             logger.debug('Last scan number %d' % self._file.scan_number)
             return True
+
+    def _filename_changed(self, name=None, old=None, new=None):
+        self._open_output()
+        return True
 
     def save_path_set(self, path=None):
         """

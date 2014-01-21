@@ -23,6 +23,7 @@ from ecli_core import AliasedPV
 from ecli_plugin import ECLIPlugin
 import ecli_util as util
 from ecli_util import ECLIExport
+from ecli_util import get_plugin
 from ecli_util.magic_args import (ecli_magic_args, argument)
 
 import stepscan
@@ -352,6 +353,11 @@ class ECLIScans(ECLIPlugin):
 
         for trigger in triggers:
             sc.add_trigger(trigger)
+
+        motor_plugin = get_plugin('ECLIMotor')
+        for motor in motor_plugin.motor_list:
+            motor_rec = motor_plugin.get_motor(motor)
+            sc.add_extra_pvs([(motor, motor_rec.PV('RBV'))])
 
         for det_pv in self.detectors + list(detectors):
             det = stepscan.get_detector(util.expand_alias(det_pv), label=det_pv)
