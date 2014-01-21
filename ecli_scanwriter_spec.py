@@ -119,26 +119,26 @@ class ECLIScanWriterSPEC(ECLIPlugin):
             return
 
         data = [(c, c.buff[array_idx]) for c in scan.counters]
-        scaler_info = [(counter.label, d) for counter, d in data
+        scalar_info = [(counter.label, d) for counter, d in data
                        if not isinstance(d, np.ndarray)]
 
         if timestamps is not None:
             # Make timestamps relative to the starting time of the file
             t0 = self._file.start_time
             t1 = timestamps[array_idx]
-            scaler_info.insert(0, ('Epoch', t1 - t0))
+            scalar_info.insert(0, ('Epoch', t1 - t0))
 
-        scaler_data = [d for counter, d in scaler_info]
+        scalar_data = [d for counter, d in scalar_info]
         array_data = [d for counter, d in data
                       if isinstance(d, np.ndarray)]
 
         if self._new_scan:
-            labels = [util.fix_label(label) for label, d in scaler_info]
+            labels = [util.fix_label(label) for label, d in scalar_info]
 
             self._file.write_scan_data_start(labels)
             self._new_scan = False
 
-        self._file.write_scan_data(scaler_data)
+        self._file.write_scan_data(scalar_data)
         self._file.write_mca_data(array_data)
 
     def _open_output(self):

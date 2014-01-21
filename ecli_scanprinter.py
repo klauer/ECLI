@@ -161,13 +161,13 @@ class ECLIScanPrinter(ECLIPlugin):
         self._last_point = point
         data = [c.buff[array_idx] for c in scan.counters]
 
-        def format_scaler_data(d):
+        def format_scalar_data(d):
             try:
                 return self.format_string % d
             except:
                 return str(d)
 
-        scaler_data = [format_scaler_data(d) for d in data
+        scalar_data = [format_scalar_data(d) for d in data
                        if not isinstance(d, np.ndarray)]
 
         def grid_string(point, dimensions, delim=','):
@@ -194,7 +194,7 @@ class ECLIScanPrinter(ECLIPlugin):
         ts = util.timestamp_string(ts)
 
         data_str.append(ts)
-        data_str.extend(scaler_data)
+        data_str.extend(scalar_data)
 
         header_widths = self._header_widths  # modified in-place
 

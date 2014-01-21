@@ -154,6 +154,9 @@ class ECLIScans(ECLIPlugin):
     detectors = traitlets.List(traitlets.Unicode,
                                default_value=[], config=True)
     trigger_detectors = traitlets.Dict(config=True)
+    pos_settle_time = traitlets.Float(default_value=0.05, config=True)
+    det_settle_time = traitlets.Float(default_value=0.10, config=True)
+    extra_pvs = traitlets.List(traitlets.Unicode, config=True)
 
     def __init__(self, shell, config):
         self._detectors = []
@@ -359,6 +362,10 @@ class ECLIScans(ECLIPlugin):
             motor_rec = motor_plugin.get_motor(motor)
             sc.add_extra_pvs([(motor, motor_rec.PV('RBV'))])
 
+        for pv in self.extra_pvs:
+            name = self.core.get_aliased_name(pv)
+            sc.add_extra_pvs([(name, pv)])
+
         for det_pv in self.detectors + list(detectors):
             det = stepscan.get_detector(util.expand_alias(det_pv), label=det_pv)
             if det is None:
@@ -403,6 +410,9 @@ class ECLIScans(ECLIPlugin):
 
         sc.ecli_info.update(kwargs)
 
+        sc.pos_settle_time = self.pos_settle_time
+        sc.det_settle_time = self.det_settle_time
+
         if not run:
             return sc
 
@@ -428,7 +438,7 @@ class ECLIScans(ECLIPlugin):
                     pos.move_to(start, wait=True)
                 except KeyboardInterrupt:
                     print('%s move to %g cancelled (current position=%s)' %
-                          (pos.label, pos.current()))
+                          (pos.label, start, pos.current()))
 
         # Make a simple dictionary holding the scan data
         data = {}

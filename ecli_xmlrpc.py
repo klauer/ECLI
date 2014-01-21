@@ -291,10 +291,10 @@ class ECLIxmlrpc(ECLIPlugin):
     def single_step(self, scan=None, point=0, array_idx=0, **kwargs):
         """Scan callback per point -- prepares data for pymca"""
         scan_info = {}
-        scaler_counters = [c for c in scan.counters
+        scalar_counters = [c for c in scan.counters
                            if not isinstance(c.buff[array_idx], np.ndarray)]
         array_counters = [c for c in scan.counters
-                          if c not in scaler_counters]
+                          if c not in scalar_counters]
 
         if self._new_scan is not None:
             logger.debug('--> new scan')
@@ -308,7 +308,7 @@ class ECLIxmlrpc(ECLIPlugin):
             scan_info['title'] = '#%d %s' % (self._new_scan['scan_number'],
                                              self._new_scan['command'])
 
-            labels = [util.fix_label(c.label) for c in scaler_counters]
+            labels = [util.fix_label(c.label) for c in scalar_counters]
             logger.debug('labels: %s' % labels)
             scan_info['nopts'] = num_points
             scan_info['labels'] = labels
@@ -326,9 +326,9 @@ class ECLIxmlrpc(ECLIPlugin):
 
         #logger.debug('scan info: %s' % scan_info)
         #data = [(c, c.buff[array_idx]) for c in scan.counters]
-        scaler_data = [c.buff[array_idx] for c in scaler_counters]
+        scalar_data = [c.buff[array_idx] for c in scalar_counters]
         array_data = [c.buff[array_idx] for c in array_counters]
-        for i, s_data in enumerate(scaler_data):
+        for i, s_data in enumerate(scalar_data):
             self._scan_data[array_idx, i] = s_data
 
         self._scan_info.update(scan_info)
