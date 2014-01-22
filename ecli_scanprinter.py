@@ -89,23 +89,17 @@ class ECLIScanPrinter(ECLIPlugin):
     def logger(self):
         return logger
 
-    def pre_scan(self, scan=None, scan_number=0, mca_detectors=[], **kwargs):
+    def pre_scan(self, scan=None, scan_number=0, **kwargs):
         """
         Callback: called before a scan starts
         """
         self.t_start = time.time()
 
         print('--- Scan %d ---' % (scan_number, ), file=self.outfile)
-        counters = [c for c in scan.counters
-                    if c not in mca_detectors]
         self._headers = ['Point', 'Timestamp']
 
-        if self.pv_header:
-            self._headers += [c.pv.pvname for c in counters]
-        else:
-            self._headers += [c.label for c in counters]
-
-        self._headers = self.core.get_aliased_name(self._headers)
+        self._headers += self.core.get_aliased_name([c.pv.pvname if self.pv_header else c.label
+                                                     for c in scan.counters])
 
         self._header_widths = [max(self.min_col_width, len(header))
                                for header in self._headers]
@@ -161,16 +155,17 @@ class ECLIScanPrinter(ECLIPlugin):
         self._last_point = point
         data = [c.buff[array_idx] for c in scan.counters]
 
-        def format_scalar_data(d):
+        def format_data(d):
             try:
-                return self.format_string % d
+                if isinstance(d, np.ndarray):
+                    return '-'
+                else:
+                    if int(d) == float(d):
+                        return '%d' % int(d)
+                    else:
+                        return self.format_string % d
             except:
                 return str(d)
-
-        scalar_data = [format_scalar_data(d) for d in data
-                       if not isinstance(d, np.ndarray)]
-        array_data = [d for d in data
-                      if isinstance(d, np.ndarray)]
 
         def grid_string(point, dimensions, delim=','):
             ret = []
@@ -196,7 +191,7 @@ class ECLIScanPrinter(ECLIPlugin):
         ts = util.timestamp_string(ts)
 
         data_str.append(ts)
-        data_str.extend(scalar_data)
+        data_str.extend([format_data(d) for d in data])
 
         header_widths = self._header_widths  # modified in-place
 

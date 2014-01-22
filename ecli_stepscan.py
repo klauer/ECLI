@@ -250,9 +250,6 @@ class ECLIScans(ECLIPlugin):
         """
         self.scan = scan
 
-        mca_detectors = [c for c in scan.counters
-                         if isinstance(c, stepscan.detectors.McaDetector)]
-
         self._last_point = 0
         info = scan.ecli_info
 
@@ -261,7 +258,6 @@ class ECLIScans(ECLIPlugin):
             pos.move_time = 0
 
         self.run_callback(self.CB_PRE_SCAN, scan=self.scan,
-                          mca_detectors=mca_detectors,
                           handle_exceptions=False,
                           **info)
 
