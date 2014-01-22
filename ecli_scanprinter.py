@@ -169,6 +169,8 @@ class ECLIScanPrinter(ECLIPlugin):
 
         scalar_data = [format_scalar_data(d) for d in data
                        if not isinstance(d, np.ndarray)]
+        array_data = [d for d in data
+                      if isinstance(d, np.ndarray)]
 
         def grid_string(point, dimensions, delim=','):
             ret = []

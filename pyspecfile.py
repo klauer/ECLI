@@ -196,17 +196,38 @@ class SPECFileWriter(object):
         self._data_lines += 1
         self.write_line(' '.join([str(d) for d in data]))
 
-    def write_mca_data(self, data):
+    def write_mca_calib(self, a, b, c):
+        """
+        Ref: http://www.esrf.eu/blissdb/macros/macdoc.py?macname=saveload.mac
+
+        CALIBRATION = a + b*CHANNEL + c*CHANNEL^2
+        """
+        self.write_line('#@CALIB  %.7g %.7g %.7g' % (a, b, c))
+
+    def write_mca_data(self, data, calibration=None, first=False):
+        """
+        """
         if data is None or np.size(data) == 0:
             return
 
         self._buffer_write = False
         self._data_lines += 1
-        if isinstance(data, (list, tuple)):
-            if isinstance(data[0], np.ndarray):
-                for array_ in data:
-                    self.write_mca_data(array_)
-                return
+        # does it really support multiple sets of MCA data per scan?
+        #if isinstance(data, (list, tuple)):
+        #    if isinstance(data[0], np.ndarray):
+        #        for array_ in data:
+        #            self.write_mca_data(array_, calibration=calibration, first=first)
+        #        return
+
+        if first:
+            # MCA format (full line)
+            self.write_line('#@MCA %%%dC' % len(data))
+
+            # number of channels, first idx, last idx, reduction coefficient
+            self.write_line('#@CHANN  %d 0 %d 1' % (len(data), len(data) - 1))
+
+            if calibration:
+                self.write_mca_calib(*calibration)
 
         self.write_line('@A %s' % ' '.join([str(d) for d in data]))
 
@@ -288,6 +309,7 @@ class SPECFileReader(object):
         self._scan = None
         self._eof = False
         self._epoch = time.time()
+        self._mca_line = False
 
         self.spec_filename = filename
         self.motors = []
@@ -453,9 +475,19 @@ class SPECFileReader(object):
 
     def _parse_scan_line(self, line):
         if line.startswith('@A'):
-            # TODO MCA
             line = line.split(' ', 1)[1]
-            self._scan['mca_data'].append([float(f) for f in line.split(' ')])
+
+            # Line is now everything after @A
+            data = [float(f) for f in line.split(' ')]
+
+            # If the MCA data is spread on multiple lines, extend the previous
+            # data, otherwise it's a new set
+            if self._mca_line:
+                self._scan['mca_data'][-1].extend(data)
+            else:
+                self._scan['mca_data'].append(data)
+
+            self._mca_line = line.endswith('\\')
         else:
             self._scan['lines'].append([float(f) for f in line.split(' ')])
 

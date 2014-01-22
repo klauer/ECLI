@@ -239,7 +239,10 @@ class ECLIScanWriterHDF5(ECLIPlugin):
                 try:
                     dtype = np.dtype(data)
                 except TypeError:
-                    dtype = data.__class__
+                    if hasattr(data, 'dtype'):
+                        dtype = data.dtype
+                    else:
+                        dtype = data.__class__
                 dataset = data_group.require_dataset(label,
                                                      shape=shape, dtype=dtype)
             else:
@@ -247,7 +250,7 @@ class ECLIScanWriterHDF5(ECLIPlugin):
 
             # And update the HDF5 dataset with the new data
             try:
-                if len(grid_point) == len(dataset.shape) and len(grid_point) > 1:
+                if (len(grid_point) <= len(dataset.shape)) and len(grid_point) > 1:
                     dataset[grid_point] = data
                 else:
                     dataset[array_idx] = data

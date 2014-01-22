@@ -111,7 +111,7 @@ class ECLIScanWriterSPEC(ECLIPlugin):
         self._file.finish_scan()
 
     def single_step(self, scan=None, grid_point=(), point=0, array_idx=0,
-                    timestamps=None, **kwargs):
+                    timestamps=None, mca_calib={}, **kwargs):
         """
         Callback: called after every single point in a stepscan
         """
@@ -129,17 +129,33 @@ class ECLIScanWriterSPEC(ECLIPlugin):
             scalar_info.insert(0, ('Epoch', t1 - t0))
 
         scalar_data = [d for counter, d in scalar_info]
-        array_data = [d for counter, d in data
-                      if isinstance(d, np.ndarray)]
+        mca_data = [(counter, d) for counter, d in data
+                    if isinstance(d, np.ndarray)]
 
         if self._new_scan:
             labels = [util.fix_label(label) for label, d in scalar_info]
 
             self._file.write_scan_data_start(labels)
-            self._new_scan = False
+
+        for counter, data in mca_data:
+            calib = None
+            if self._new_scan:
+                try:
+                    prefix = counter.pv.pvname.replace('.VAL', '')
+                except:
+                    pass
+                else:
+                    try:
+                        calib = mca_calib[prefix]
+                    except KeyError:
+                        pass
+
+            self._file.write_mca_data(data, calibration=calib, first=self._new_scan)
+            break  # only write the first set of MCA data for now (?)
 
         self._file.write_scan_data(scalar_data)
-        self._file.write_mca_data(array_data)
+
+        self._new_scan = False
 
     def _open_output(self):
         try:

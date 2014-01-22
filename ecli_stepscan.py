@@ -14,6 +14,7 @@ import sys
 import time
 import logging
 import threading
+import epics
 
 # IPython
 import IPython.utils.traitlets as traitlets
@@ -254,6 +255,11 @@ class ECLIScans(ECLIPlugin):
 
         self._last_point = 0
         info = scan.ecli_info
+
+        # Clear the pre-scan move time, otherwise statistics will be wrong
+        for pos in scan.positioners:
+            pos.move_time = 0
+
         self.run_callback(self.CB_PRE_SCAN, scan=self.scan,
                           mca_detectors=mca_detectors,
                           handle_exceptions=False,
@@ -363,8 +369,14 @@ class ECLIScans(ECLIPlugin):
             sc.add_extra_pvs([(motor, motor_rec.PV('RBV'))])
 
         for pv in self.extra_pvs:
-            name = self.core.get_aliased_name(pv)
+            if pv in self.core.aliases:
+                name, pv = pv, self.core.aliases[pv]
+            else:
+                name = self.core.get_aliased_name(pv)
+
             sc.add_extra_pvs([(name, pv)])
+
+        mca_calib = {}
 
         for det_pv in self.detectors + list(detectors):
             det = stepscan.get_detector(util.expand_alias(det_pv), label=det_pv)
@@ -384,6 +396,13 @@ class ECLIScans(ECLIPlugin):
                                  (det.trigger, trigger_value))
                     sc.add_trigger(det.trigger, value=trigger_value)
 
+                if isinstance(det, stepscan.McaDetector):
+                    det_pv = util.expand_alias(det_pv)
+                    calib_pvs = ['%s.CALO', '%s.CALS', '%s.CALQ']
+                    prefix = det.prefix
+                    calib = [epics.caget(pv % prefix) for pv in calib_pvs]
+                    mca_calib[det_pv] = calib
+
         # TODO StepScan bug report:
         #   add_trigger needs to check for None (as in SimpleDetector)
         sc.triggers = [trigger for trigger in sc.triggers
@@ -399,6 +418,7 @@ class ECLIScans(ECLIPlugin):
                         'dimensions': dimensions,
                         'ndim': calc_ndim(dimensions),
                         'scanning': [pos.label for pos in positioners],
+                        'mca_calib': mca_calib,
                         }
 
         if hasattr(sc, 'timestamps'):

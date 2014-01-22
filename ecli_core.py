@@ -322,6 +322,9 @@ class ECLICore(ECLIPlugin):
             type_ = type(name)
             return type_(self.get_aliased_name(s) for s in name)
 
+        if name in self.aliases:
+            return name
+
         rev = self.reversed_aliases
         if name in rev:
             return rev[name]
