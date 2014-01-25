@@ -10,6 +10,7 @@
 
 """
 from __future__ import print_function
+import sys
 import logging
 
 # IPython
@@ -268,7 +269,7 @@ class ECLIMotor(ECLIPlugin):
                                     **kwargs)
 
     @ECLIExport
-    def print_motor_info(self, motors):
+    def print_motor_info(self, motors, f=sys.stdout):
         '''
         motors:
         '''
@@ -286,7 +287,7 @@ class ECLIMotor(ECLIPlugin):
         rows = list(util.format_structured_pv_info(
             motor_info, column_headers=[''] + list(motors), format_=format_))
 
-        util.print_table(rows, first_column_format=u'{:<%d}')
+        util.print_table(rows, first_column_format=u'{:<%d}', f=f)
 
     wm = print_motor_info
 
