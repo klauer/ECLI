@@ -13,8 +13,6 @@ from __future__ import print_function
 import copy
 import logging
 
-import epics
-
 # ECLI
 from ecli_plugin import ECLIPlugin
 import ecli_util as util
@@ -163,8 +161,10 @@ class ECLIPseudomotor(ECLIPlugin):
             full_param = all_aliases.get(param, param)
             rtype = util.get_record_type(full_param)
             if rtype == 'motor':
-                record = mplugin.get_motor(param)
+                record = mplugin.get_motor(full_param)
                 group.set_record(param, record)
+
+        logger.debug('Rotary motors: %s' % ', '.join(rotary))
 
         pseudos = []
         # Create the pseudomotor instance itself
