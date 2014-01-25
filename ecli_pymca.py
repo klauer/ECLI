@@ -12,6 +12,7 @@
 .. _pymca: http://pymca.sourceforge.net
 """
 from __future__ import print_function
+import os
 import sys
 import time
 import logging
@@ -40,7 +41,7 @@ import epics
 import numpy as np
 
 logger = logging.getLogger('ECLI.pymca')
-
+MODULE_PATH = os.path.join(util.ECLI_PATH, __file__)
 
 # Loading of this extension
 def load_ipython_extension(ipython):
@@ -102,7 +103,7 @@ class ECLIpymca(ECLIPlugin):
 
         try:
             if self.use_subprocess:
-                args = [sys.executable, __file__] + args
+                args = [sys.executable, MODULE_PATH] + args
                 self.pymca_process = subprocess.Popen(args)
             else:
                 #context = epics.ca.current_context()
