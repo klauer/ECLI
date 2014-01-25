@@ -48,10 +48,23 @@ class ECLIPositioner(stepscan.Positioner):
     time statistics
     '''
 
-    def __init__(self, *args, **kwargs):
-        super(ECLIPositioner, self).__init__(*args, **kwargs)
+    def __init__(self, pv, **kwargs):
+        pv = str(pv)  # aliasedpv bugfix TODO
+        # non-motor scan TODO
+
+        if pv.endswith('.VAL'):
+            pv = pv[:-4]
+
+        super(ECLIPositioner, self).__init__(pv, **kwargs)
 
         self.move_time = 0
+
+        motor_plugin = get_plugin('ECLIMotor')
+        self.motor_rec = motor_plugin.get_motor(pv)
+        self.motor_rec.SYNC = 1
+
+    def current(self):
+        return self.motor_rec.get_position(readback=True)
 
     def move_to_pos(self, i, wait=False, timeout=600):
         """move to i-th position in positioner array"""
@@ -294,6 +307,15 @@ class ECLIScans(ECLIPlugin):
                           scan=scan, point=point, array_idx=array_idx,
                           grid_point=get_grid_point(dim, array_idx), **info)
 
+    def get_grid_point(self, array_idx):
+        scan = self._scan
+        if scan is None:
+            return
+
+        info = scan.ecli_info
+        dim = info['dimensions']
+        return get_grid_point(dim, array_idx)
+
     def _detectors_changed(self, *args):
         logger.info('Detector list updated: %s' % self.detectors)
 
@@ -408,12 +430,15 @@ class ECLIScans(ECLIPlugin):
 
         start_pos = [pos.current() for pos in positioners]
 
+        for counter in sc.counters:
+            counter.label = str(counter.label)
+
         self._scan_number += 1
         sc.ecli_info = {'command': command,
                         'scan_number': self._scan_number,
                         'dimensions': dimensions,
                         'ndim': calc_ndim(dimensions),
-                        'scanning': [pos.label for pos in positioners],
+                        'scanning': [str(pos.label) for pos in positioners],
                         'mca_calib': mca_calib,
                         }
 
