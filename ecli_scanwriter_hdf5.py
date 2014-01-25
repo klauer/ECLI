@@ -32,8 +32,6 @@ logger = logging.getLogger('ECLI.ScanWriterHDF5')
 if h5py.version.version < '2.2.0':
     logger.warning('h5py version may be incompatible (recommended version is 2.2.0+)')
 
-SCAN_PLUGIN = 'Scans'
-
 
 # Loading of this extension
 def load_ipython_extension(ipython):
@@ -59,6 +57,7 @@ class ECLIScanWriterHDF5(ECLIPlugin):
     REQUIRES = [('ECLICore', 1), (SCAN_PLUGIN, 1)]
 
     filename = traitlets.Unicode(u'', config=True)
+    extension = traitlets.Unicode(u'.hdf5', config=True)
     _callbacks = []
 
     def __init__(self, shell, config):
@@ -166,6 +165,7 @@ class ECLIScanWriterHDF5(ECLIPlugin):
         extra_pv_info = scan.read_extra_pvs()
 
         self._scan_group = sgroup = self._new_scan(scan_number)
+
         # Attributes under the scan group:
         sgroup.attrs['number'] = scan_number
         sgroup.attrs['command'] = command
@@ -186,7 +186,7 @@ class ECLIScanWriterHDF5(ECLIPlugin):
 
         # Additionally, record the counter labels:
         for c in scan.counters:
-            label = util.fix_label(c.label)
+            label = self.fix_label(c.label)
             pv_info.attrs[label] = c.pv.pvname
 
     def post_scan(self, scan=None, abort=False, **kwargs):
@@ -208,6 +208,42 @@ class ECLIScanWriterHDF5(ECLIPlugin):
         else:
             scan_group.attrs['elapsed'] = end - start
 
+    def _set_data_point(self, dataset, array_idx, data, grid_point=None):
+        if grid_point is None:
+            grid_point = self.scan_plugin.get_grid_point(array_idx)
+
+        if (len(grid_point) <= len(dataset.shape)) and len(grid_point) > 1:
+            dataset[grid_point] = data
+        else:
+            dataset[array_idx] = data
+
+    def _get_dtype(self, data):
+        try:
+            return np.dtype(data)
+        except TypeError:
+            if hasattr(data, 'dtype'):
+                return data.dtype
+            else:
+                return data.__class__
+
+    def fix_label(self, label):
+        label = self.core.get_aliased_name(label)
+        return util.fix_label(label)
+
+    def _get_dataset(self, label, dtype=float, data=None):
+        label = self.fix_label(label)
+        data_group = self._scan_group.require_group('Data')
+
+        # Create the array in the data group if it doesn't already exist
+        if label not in data_group:
+            dimensions = self._scan_group.attrs['dimensions']
+            shape = list(dimensions)
+            if data is not None:
+                shape += list(np.shape(data))
+            return data_group.require_dataset(label, shape=shape, dtype=dtype)
+        else:
+            return data_group[label]
+
     def single_step(self, scan=None, grid_point=(), point=0, array_idx=0,
                     timestamps=None, **kwargs):
         """
@@ -216,12 +252,7 @@ class ECLIScanWriterHDF5(ECLIPlugin):
         if self._file is None or self._scan_group is None:
             return
 
-        scan_group = self._scan_group
-        dimensions = scan_group.attrs['dimensions']
-
         # Create the data group if necessary
-        data_group = scan_group.require_group('Data')
-
         data_sets = [(counter.label, counter.buff[array_idx])
                      for counter in scan.counters]
 
@@ -229,35 +260,29 @@ class ECLIScanWriterHDF5(ECLIPlugin):
             data_sets.append(('Timestamps', timestamps[array_idx]))
 
         for label, data in data_sets:
-            label = util.fix_label(label)
             if data is None:
                 continue
 
-            # Create the array in the data group if it doesn't already exist
-            if label not in data_group:
-                shape = list(dimensions) + list(np.shape(data))
-                try:
-                    dtype = np.dtype(data)
-                except TypeError:
-                    if hasattr(data, 'dtype'):
-                        dtype = data.dtype
-                    else:
-                        dtype = data.__class__
-                dataset = data_group.require_dataset(label,
-                                                     shape=shape, dtype=dtype)
-            else:
-                dataset = data_group[label]
+            dtype = self._get_dtype(data)
+            dataset = self._get_dataset(label, dtype=dtype, data=data)
 
             # And update the HDF5 dataset with the new data
             try:
-                if (len(grid_point) <= len(dataset.shape)) and len(grid_point) > 1:
-                    dataset[grid_point] = data
-                else:
-                    dataset[array_idx] = data
+                self._set_data_point(dataset, array_idx, data)
             except:
                 logger.error(u'Error updating dataset', exc_info=True)
 
         # TODO link to external files for additional detectors
+
+    def link_file(self, label, array_idx, filename):
+        dtype = h5py.new_vlen(type(filename))
+        dataset = self._get_dataset(label, dtype=dtype)
+
+        # And update the HDF5 dataset with the new data
+        try:
+            self._set_data_point(dataset, array_idx, filename)
+        except:
+            logger.error(u'Error updating dataset', exc_info=True)
 
     def _filename_changed(self, name, old, new):
         self._open_file(new)
@@ -266,4 +291,4 @@ class ECLIScanWriterHDF5(ECLIPlugin):
         """
         Callback: global save file path has changed
         """
-        self.filename = u'%s.hdf5' % path
+        self.filename = u'%s%s' % (path, self.extension)
