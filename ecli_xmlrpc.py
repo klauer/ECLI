@@ -279,6 +279,7 @@ class ECLIxmlrpc(ECLIPlugin):
         """Scan callback -- scan finished"""
         scan_info = self._scan_info
         scan_info.update(kwargs)
+        logger.debug('post scan: %s' % self._new_scan)
 
         scan_info['done'] = True
         scan_info['aborted'] = abort
@@ -296,6 +297,10 @@ class ECLIxmlrpc(ECLIPlugin):
         array_counters = [c for c in scan.counters
                           if c not in scalar_counters]
 
+        def fix_label(label):
+            label = self.core.get_aliased_name(label)
+            return util.fix_label(label)
+
         if self._new_scan is not None:
             logger.debug('--> new scan')
             num_points = 1
@@ -308,7 +313,7 @@ class ECLIxmlrpc(ECLIPlugin):
             scan_info['title'] = '#%d %s' % (self._new_scan['scan_number'],
                                              self._new_scan['command'])
 
-            labels = [util.fix_label(c.label) for c in scalar_counters]
+            labels = [fix_label(c.label) for c in scalar_counters]
             logger.debug('labels: %s' % labels)
             scan_info['nopts'] = num_points
             scan_info['labels'] = labels
@@ -324,7 +329,7 @@ class ECLIxmlrpc(ECLIPlugin):
 
         scan_info['point'] = array_idx
 
-        #logger.debug('scan info: %s' % scan_info)
+        logger.debug('scan info: %s' % scan_info)
         #data = [(c, c.buff[array_idx]) for c in scan.counters]
         scalar_data = [c.buff[array_idx] for c in scalar_counters]
         array_data = [c.buff[array_idx] for c in array_counters]
