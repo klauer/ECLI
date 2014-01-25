@@ -9,6 +9,7 @@
 
 """
 
+import os
 import logging
 
 def get_plugin(name='ECLICore'):
@@ -71,6 +72,8 @@ def generic_unload_ext(ipython, ext_class):
     if core is not None:
         return core.unregister_extension(ext_class.__name__)
     return False
+
+ECLI_PATH = os.environ.get('ECLI', os.path.expanduser('~/ecli/'))
 
 from .errors import *
 from .magic_args import (
