@@ -132,8 +132,12 @@ class ECLIScanWriterSPEC(ECLIPlugin):
         mca_data = [(counter, d) for counter, d in data
                     if isinstance(d, np.ndarray)]
 
+        def fix_label(label):
+            label = self.core.get_aliased_name(label)
+            return util.fix_label(label)
+
         if self._new_scan:
-            labels = [util.fix_label(label) for label, d in scalar_info]
+            labels = [fix_label(label) for label, d in scalar_info]
 
             self._file.write_scan_data_start(labels)
 
