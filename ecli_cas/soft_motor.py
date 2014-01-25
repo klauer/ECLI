@@ -22,8 +22,12 @@ from . import (CAPVBadValue, CAPV)
 logger = logging.getLogger('ECLI.soft_motor')
 
 
-class SoftMotorError(Exception): pass
-class SoftMotorLimitError(CAPVBadValue): pass
+class SoftMotorError(Exception):
+    pass
+
+
+class SoftMotorLimitError(CAPVBadValue):
+    pass
 
 
 STATUS_BITS = {'direction': 0,         # last raw direction; (0:Negative, 1:Positive)
@@ -158,6 +162,12 @@ class SoftMotor(CASRecord):
         self.dial_high_limit_updated(value=self._high_limit)
         self.dial_low_limit_updated(value=self._low_limit)
 
+    def sync_positions_updated(self, value=None, **kwargs):
+        pos = self._readback
+        user, dial, raw = self._update_request_pos(dial=pos)
+        with self._no_callbacks():
+            self.put('SYNC', 0)
+
     def motor_res_updated(self, value=None, **kwargs):
         self._motor_res = value
 
@@ -180,7 +190,7 @@ class SoftMotor(CASRecord):
         else:
             return self._request_position
 
-    def tweak_size_updated(self, value=None, **kwargs):
+    def tweak_value_updated(self, value=None, **kwargs):
         self._tweak_value = value
 
     def tweak_reverse_updated(self, value=None, asyn=None, **kwargs):
