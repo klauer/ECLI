@@ -110,6 +110,7 @@ class ECLIScaler(ECLIPlugin):
         :param use_calc: Use calculated values instead of raw values
         :param partial_ok: Return partial counts if interrupted
         """
+        cont_mode = scaler.get('CONT')
         scaler.OneShotMode()
 
         try:
@@ -121,7 +122,10 @@ class ECLIScaler(ECLIPlugin):
             time.sleep(0.05)  # TODO
             # epics.poll(1e-5)
 
-        return scaler.Read(use_calc=use_calc)
+        try:
+            return scaler.Read(use_calc=use_calc)
+        finally:
+            scaler.put('CONT', cont_mode)
 
     @ECLIExport
     def scaler_channel_names(self, scaler, default='ch%d'):
