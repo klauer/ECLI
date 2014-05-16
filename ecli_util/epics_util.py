@@ -66,6 +66,7 @@ def caget(pvname, connection_timeout=5.0, verbose=True, **kwargs):
             print('%s: failed to connect to PV' % pvname)
         return None
 
+
 if not hasattr(epics, '__caget__'):
     epics.__caget__ = epics.caget
     epics.caget = caget
@@ -84,9 +85,14 @@ def get_record_type(pv):
     elif pv in _type_cache:
         return _type_cache[pv]
 
-    _type_cache[pv] = caget(RECORD_TYPE_PV % pv,
-                            connection_timeout=get_core_plugin().type_timeout)
-    return _type_cache[pv]
+    _type = caget(RECORD_TYPE_PV % pv,
+                  connection_timeout=get_core_plugin().type_timeout)
+
+    if _type is None:
+        return ''
+    else:
+        _type_cache[pv] = _type
+        return _type_cache[pv]
 
 
 def strip_field(pv):

@@ -37,7 +37,7 @@ class ConditionalMonitor(object):
                  stop_condition_pv=None, stop_pv_value=None,
                  wait=False, stop_index=0, timeout=None, use_type=None,
                  stop_event=None, connection_timeout=2.0,
-                 pv_timeout=1.0, poll_rate=0.01, update_cb=None,
+                 pv_timeout=2.0, poll_rate=0.01, update_cb=None,
                  print_updates=False, print_file=sys.stdout):
 
         self._pv_timeout = pv_timeout
@@ -74,8 +74,7 @@ class ConditionalMonitor(object):
         self._running = True
 
         if stop_condition_pv is not None:
-            self._stop_pv = epics.PV(
-                stop_condition_pv, connection_timeout=self._pv_timeout)
+            self._stop_pv = epics.PV(stop_condition_pv, connection_timeout=self._pv_timeout)
             if self._stop_pv.status == 1:
                 self._stop_pv.add_callback(callback=self.stop_updated)
             else:
