@@ -297,7 +297,7 @@ class SPECFileReader(object):
     (just needed a safe, quick way to check the motor list.)
     """
 
-    def __init__(self, filename):
+    def __init__(self, filename, parse_data=True):
         if not os.path.exists(filename):
             raise ValueError('Invalid SPEC filename')
 
@@ -310,6 +310,7 @@ class SPECFileReader(object):
         self._eof = False
         self._epoch = time.time()
         self._mca_line = False
+        self._parse_data = parse_data
 
         self.spec_filename = filename
         self.motors = []
@@ -389,7 +390,10 @@ class SPECFileReader(object):
                         tag_done = True
 
             elif self._in_scan:
-                self._parse_scan_line(line)
+                if self._parse_data:
+                    self._parse_scan_line(line)
+                else:
+                    self._scan['unparsed'].append(line)
 
             if tag_done:
                 yield current_tag.upper(), group
@@ -456,6 +460,9 @@ class SPECFileReader(object):
             'positions': [],
         }
 
+        if not self._parse_data:
+            self._scan['unparsed'] = []
+
         self._scan['number'] = number
         self._scan['command'] = command.strip()
 
@@ -489,10 +496,31 @@ class SPECFileReader(object):
 
             self._mca_line = line.endswith('\\')
         else:
-            self._scan['lines'].append([float(f) for f in line.split(' ')])
+            try:
+                line = line.replace('None', '0.0')  # TODO during saving
+                self._scan['lines'].append([float(f) for f in line.split(' ')])
+            except Exception as ex:
+                print('Bad scan line: %s' % line)
+
+    def parse_data(self, scan):
+        '''
+        Parse the scan data after the file is loaded, if parse_data was set
+        '''
+        if self._parse_data:
+            return
+
+        if 'unparsed' not in scan:
+            return
+
+        self._scan = scan
+        for line in scan['unparsed']:
+            self._parse_scan_line(line)
+
+        del scan['unparsed']
 
     def _parse_scan_list_P(self, positions):
-        positions = [float(p) for p in positions]
+        positions = [float(p) if p != 'None' else 0.0
+                     for p in positions]  # TODO fix
         self._scan['positions'] = dict(zip(self.motors, positions))
 
     @property
