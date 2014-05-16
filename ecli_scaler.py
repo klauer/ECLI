@@ -95,6 +95,8 @@ class ECLIScaler(ECLIPlugin):
                          % (record, ex.__class__.__name__, ex))
         except KeyboardInterrupt:
             logger.warning('Skipping scaler list entry "%s"' % (record, ))
+            if self.core.script_running:
+                raise
         else:
             self._scaler_devices[record] = dev
             return dev
@@ -116,6 +118,8 @@ class ECLIScaler(ECLIPlugin):
         try:
             scaler.Count(ctime=seconds, wait=True)
         except KeyboardInterrupt:
+            if self.core.script_running:
+                raise
             if not partial_ok:
                 return
         finally:
@@ -168,6 +172,26 @@ class ECLIScaler(ECLIPlugin):
 
         return table
 
+    @ECLIExport
+    def ct(self, seconds=None, scalers=[]):
+        if not scalers:
+            scalers = self.scalers
+
+        if scalers is None or len(scalers) == 0:
+            logging.error('Scaler list undefined (see %%config ECLIScaler.scalers)')
+            return
+
+        if seconds is None:
+            seconds = self.default_count_time
+
+        for scaler in scalers:
+            if self.show_timestamp:
+                print(' %s' % util.timestamp_string())
+                print()
+
+            dev = self._get_device(scaler)
+            table = self.scaler_counts_table(dev, seconds)
+            table.print_()
 
 show_elapsed = ShowElapsed(lambda: get_plugin('ECLIScaler').show_elapsed)
 
@@ -176,7 +200,7 @@ show_elapsed = ShowElapsed(lambda: get_plugin('ECLIScaler').show_elapsed)
 @ecli_magic_args(ECLIScaler)
 @argument('seconds', type=float, nargs='?',
           help='PV')
-@argument('-r', '--record', type=AliasedPV,
+@argument('-r', '--record', type=AliasedPV, nargs='?',
           help='Record to use')
 def ct(margs, self, args):
     """
@@ -185,22 +209,6 @@ def ct(margs, self, args):
     if args.record is not None:
         scalers = [args.record]
     else:
-        scalers = self.scalers
+        scalers = []
 
-    if scalers is None or len(scalers) == 0:
-        logging.error('Scaler list undefined (see config ECLIScaler.scalers)')
-        return
-
-    if args.seconds is not None:
-        seconds = args.seconds
-    else:
-        seconds = self.default_count_time
-
-    for scaler in scalers:
-        if self.show_timestamp:
-            print(' %s' % util.timestamp_string())
-            print()
-
-        dev = self._get_device(scaler)
-        table = self.scaler_counts_table(dev, seconds)
-        table.print_()
+    self.ct(args.seconds, scalers=scalers)
