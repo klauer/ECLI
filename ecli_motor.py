@@ -217,7 +217,8 @@ class ECLIMotor(ECLIPlugin):
         device.check_limits()
 
     @ECLIExport
-    def user_move_motor(self, motor, offset_or_position, verbose=True, **kwargs):
+    def user_move_motor(self, motor, offset_or_position, verbose=True,
+                        **kwargs):
         '''
         For moving motors from the command line -- catch exceptions so as to not
         flood the command line when hitting limits, for example
@@ -229,8 +230,12 @@ class ECLIMotor(ECLIPlugin):
             self.move_motor(motor, offset_or_position, verbose=verbose, **kwargs)
         except epics.motor.MotorLimitException as ex:
             print('%s' % ex)
+            if self.core.script_running:
+                raise
         except Exception as ex:
             print('Failed: (%s) %s' % (ex.__class__.__name__, ex))
+            if self.core.script_running:
+                raise
 
     @ECLIExport
     def umvr(self, motor, offset, verbose=True, **kwargs):
@@ -290,6 +295,28 @@ class ECLIMotor(ECLIPlugin):
         util.print_table(rows, first_column_format=u'{:<%d}', f=f)
 
     wm = print_motor_info
+
+    @ECLIExport
+    def msyncall(self, verbose=True):
+        self.msync(self.motor_list, verbose=verbose)
+
+    @ECLIExport
+    def msync(self, motors, verbose=True):
+        if not motors:
+            return
+
+        for motor_name in motors:
+            motor = self.get_motor(motor_name)
+            try:
+                if verbose:
+                    print('Synchronizing %s' % motor)
+                motor.SYNC = 1
+            except Exception as ex:
+                logger.error('Sync failed: %s (%s) %s'
+                             % (motor, ex.__class__.__name__, ex))
+
+                if self.core.script_running:
+                    raise
 
 
 @ecli_magic_args(ECLIMotor)
@@ -373,3 +400,22 @@ def mstop(mself, self, args):
     """
     device = epics.motor.Motor(args.motor)
     device.stop()
+
+
+@ecli_magic_args(ECLIMotor)
+@argument('motors', type=AliasedPV, nargs='+',
+          help='Motor to stop')
+def msync(mself, self, args):
+    """
+    Synchronize motor request value (.VAL) with readback value (.RBV)
+    """
+    self.msync(args.motors)
+
+
+@ecli_magic_args(ECLIMotor)
+def msyncall(mself, self, args):
+    """
+    Synchronize all motor request values (.VAL) with their respective
+    readback values (.RBV)
+    """
+    self.msyncall()
