@@ -134,17 +134,13 @@ class ECLIScanPrinter(ECLIPlugin):
             move_time = scan.positioners[0].move_time
             print('\t--- Statistics:', file=self.outfile)
             print('\tEstimated: %.3f' % (estimated, ), file=self.outfile)
-            print('\tPer point %.3f (overhead %.3f, per point %.3f)' %
-                  (elapsed / npts, (elapsed - estimated),
-                  (elapsed - estimated) / npts),
+            print('\tPer point %.3f (overhead %.3f/point, move time %.3f/point)' %
+                  ((elapsed / npts), ((elapsed - estimated) / npts), (move_time / npts)),
                   file=self.outfile)
 
-            print('\tExcluding move time (%.3f):' %
-                  move_time, file=self.outfile)
             elapsed -= move_time
-            print('\tPer point %.3f (overhead %.3f, per point %.3f)' %
-                  (elapsed / npts, (elapsed - estimated),
-                  (elapsed - estimated) / npts),
+            print('\tExcluding move time %.3f/point (overhead %.3f, per point %.3f)' %
+                  (elapsed / npts, (elapsed - estimated), (elapsed - estimated) / npts),
                   file=self.outfile)
 
     def single_step(self, scan=None, grid_point=(), point=0, array_idx=0,
@@ -158,13 +154,14 @@ class ECLIScanPrinter(ECLIPlugin):
         def format_data(d):
             try:
                 if isinstance(d, np.ndarray):
+                    #return str(list(d[:10]))
                     return '-'
                 else:
                     if int(d) == float(d):
                         return '%d' % int(d)
                     else:
                         return self.format_string % d
-            except:
+            except Exception as ex:
                 return str(d)
 
         def grid_string(point, dimensions, delim=','):
