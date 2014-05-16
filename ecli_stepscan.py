@@ -60,24 +60,40 @@ class ECLIPositioner(stepscan.Positioner):
         self.move_time = 0
 
         motor_plugin = get_plugin('ECLIMotor')
-        self.motor_rec = motor_plugin.get_motor(pv)
-        self.motor_rec.SYNC = 1
+        if pv in motor_plugin.motor_list:
+            self.motor_rec = motor_plugin.get_motor(pv)
+            self.motor_rec.SYNC = 1
+        else:
+            self.motor_rec = None
 
     def current(self):
-        return self.motor_rec.get_position(readback=True)
+        if self.motor_rec is not None:
+            return self.motor_rec.get_position(readback=True)
+        else:
+            return self.pv.get(use_monitor=False)
 
-    def move_to_pos(self, i, wait=False, timeout=600):
+    def get_counter(self):
+        print('get counter', self.pv.pvname, self.label)
+        if self.motor_rec is not None:
+            return stepscan.MotorCounter(self.pv.pvname, self.label)
+        else:
+            return stepscan.Counter(self.pv.pvname, self.label)
+
+    def move_to_pos(self, i, wait=False, timeout=30):
         """move to i-th position in positioner array"""
         def move_completed(**kws):
-            elapsed = time.time() - start_move
-            self.done = True
-            self.move_time += elapsed
+            if moving:
+                elapsed = time.time() - start_move
+                self.done = True
+                self.move_time += elapsed
 
         if self.array is None:
             return
         elif not self.pv.connected:
             if not self.pv.wait_for_connection():
                 return
+
+        moving = True
 
         start_move = time.time()
         self.done = False
@@ -98,6 +114,7 @@ class ECLIPositioner(stepscan.Positioner):
             except KeyboardInterrupt:
                 pass
 
+            moving = False
             # TODO for some reason, a value of True indicates failure
             #      according to stepscan
             return not self.done
@@ -154,12 +171,14 @@ class ECLIScans(ECLIPlugin):
     CB_SCAN_STEP = 'STEP'
     CB_SCAN_ABORT = 'ABORT'
     CB_POST_SCAN = 'POST_SCAN'
+    CB_AT_BREAK = 'AT_BREAK'
     CB_SAVE_PATH = 'SAVE_PATH'
     _callbacks = [CB_PRE_SCAN,
                   CB_SCAN_PAUSE,
                   CB_SCAN_STEP,
                   CB_SCAN_ABORT,
                   CB_POST_SCAN,
+                  CB_AT_BREAK,
 
                   CB_SAVE_PATH,
                   ]
@@ -169,7 +188,7 @@ class ECLIScans(ECLIPlugin):
                                default_value=[], config=True)
     trigger_detectors = traitlets.Dict(config=True)
     pos_settle_time = traitlets.Float(default_value=0.05, config=True)
-    det_settle_time = traitlets.Float(default_value=0.10, config=True)
+    det_settle_time = traitlets.Float(default_value=0.20, config=True)
     extra_pvs = traitlets.List(traitlets.Unicode, config=True)
 
     def __init__(self, shell, config):
@@ -193,11 +212,13 @@ class ECLIScans(ECLIPlugin):
         elif old_scan is not None:
             old_scan.pre_scan_methods.remove(self.pre_scan)
             old_scan.post_scan_methods.remove(self.post_scan)
+            old_scan.at_break_methods.remove(self.at_break)
 
         if scan is not None:
             self._scan = scan
             scan.pre_scan_methods.append(self.pre_scan)
             scan.post_scan_methods.append(self.post_scan)
+            scan.at_break_methods.append(self.at_break)
             if hasattr(scan.messenger, 'detached'):
                 if hasattr(scan.messenger.detached, '__call__'):
                     scan.messenger.detached(scan=scan)
@@ -274,6 +295,17 @@ class ECLIScans(ECLIPlugin):
                           handle_exceptions=False,
                           **info)
 
+    def at_break(self, breakpoint=None):
+        """
+        Breakpoint are called after acquiring a datapoint,
+        if the point number is in the breakpoint list
+        """
+        scan = self.scan
+        self.run_callback(self.CB_AT_BREAK, scan=scan,
+                          breakpoint=breakpoint,
+                          handle_exceptions=False,
+                          **scan.ecli_info)
+
     def post_scan(self, scan=None):
         """
         Post-scan callback from stepscan
@@ -305,6 +337,7 @@ class ECLIScans(ECLIPlugin):
         self.run_callback(self.CB_SCAN_STEP,
                           show_traceback=sys.stdout,
                           scan=scan, point=point, array_idx=array_idx,
+                          handle_exceptions=True,
                           grid_point=get_grid_point(dim, array_idx), **info)
 
     def get_grid_point(self, array_idx):
@@ -422,7 +455,7 @@ class ECLIScans(ECLIPlugin):
                     mca_calib[det_pv] = calib
 
         # TODO StepScan bug report:
-        #   add_trigger needs to check for None (as in SimpleDetector)
+        #  add_trigger needs to check for None (as in SimpleDetector)
         sc.triggers = [trigger for trigger in sc.triggers
                        if trigger is not None]
 
@@ -457,6 +490,7 @@ class ECLIScans(ECLIPlugin):
         if not run:
             return sc
 
+        ex_raised = None
         # TODO: check all PVs prior to scan
         # Run the scan
         try:
@@ -465,6 +499,7 @@ class ECLIScans(ECLIPlugin):
             if sc.message_thread is not None:
                 sc.message_thread.cpt = None
             logger.error('Scan failed: (%s) %s' % (ex.__class__.__name__, ex))
+            ex_raised = ex
         finally:
             # Wait for the message thread to catch up
             if sc.message_thread is not None:
@@ -477,9 +512,13 @@ class ECLIScans(ECLIPlugin):
                             (pos, start))
                 try:
                     pos.move_to(start, wait=True)
-                except KeyboardInterrupt:
+                except KeyboardInterrupt as ex:
                     print('%s move to %g cancelled (current position=%s)' %
                           (pos.label, start, pos.current()))
+                    ex_raised = ex
+
+        if self.core.script_running:
+            raise ex
 
         # Make a simple dictionary holding the scan data
         data = {}
@@ -532,12 +571,62 @@ class ECLIScans(ECLIPlugin):
 
         positioners = [pos0]
 
-        mct = stepscan.MotorCounter(motor, label=m_name)
-
         counters = list(counters)
-        counters.insert(0, mct)
+        counters.insert(0, pos0.get_counter())
         return self.scan_run(positioners, dwell_time, command=command,
                              counters=counters, detectors=[], dimensions=(data_points, ),
+                             )
+
+    @ECLIExport
+    def rep_scan_1d(self, motor='', start=0.0, end=0.0, data_points=0, dwell_time=0.0, relative=True,
+                    counters=[], repetitions=1):
+        """Perform a repeated 1D scan of motor in [start, end] of data_points
+
+        :param motor: Motor to scan
+        :param start: Relative scan starting position for motor1
+        :param end: Relative scan ending position for motor1
+        :param data_points: Number of data points to acquire
+        :param dwell_time: Seconds at each point
+        :param dwell_time: Seconds at each point
+        """
+        try:
+            motor = AliasedPV(motor)
+            start = util.check_float(start)
+            end = util.check_float(end)
+            data_points = util.check_int(data_points)
+            dwell_time = util.check_float(dwell_time)
+            relative = util.check_bool(relative)
+            repetitions = util.check_int(repetitions)
+        except Exception as ex:
+            print('Scan argument check failed: %s' % (ex, ))
+            return False
+
+        if relative:
+            scan_type = 'repdscan'
+        else:
+            scan_type = 'repascan'
+
+        m_name = self.core.get_aliased_name(motor)
+        command = '%(scan_type)s  %(m_name)s  %(start)g %(end)g  %(data_points)d %(dwell_time)g %(repetitions)d' % \
+                  locals()
+
+        pos0 = ECLIPositioner(motor, label=m_name)
+        start_pos = pos0.current()
+        pos0.array = np.linspace(start, end, data_points)
+        if relative:
+            pos0.array += start_pos
+
+        pos0.array = np.array(list(pos0.array) * repetitions)
+
+        print('Scan: %s from %g to %g (%d data points, %d repetitions)' %
+              (motor, start, end, data_points, repetitions))
+
+        positioners = [pos0]
+        counters = list(counters)
+        counters.insert(0, pos0.get_counter())
+        return self.scan_run(positioners, dwell_time, command=command,
+                             counters=counters, detectors=[],
+                             dimensions=(data_points * repetitions, ),
                              )
 
     @ECLIExport
@@ -652,10 +741,7 @@ class ECLIScans(ECLIPlugin):
         print('Dimensions: %s (total points=%d)' % (dimensions, points1 * points2))
 
         positioners = (pos1, pos2)
-
-        counters = [stepscan.MotorCounter(motor1, label=m1_name),
-                    stepscan.MotorCounter(motor2, label=m2_name),
-                    ]
+        counters = [pos.get_counter() for pos in positioners]
 
         return self.scan_run(positioners, dwell_time, command=command,
                              counters=counters, detectors=[], dimensions=dimensions,
@@ -728,8 +814,8 @@ class ECLIScans(ECLIPlugin):
         positioners = [motorx, motory]
 
         counters = list(counters)
-        counters.insert(0, stepscan.MotorCounter(motor_x, label=mx_name))
-        counters.insert(1, stepscan.MotorCounter(motor_y, label=my_name))
+        counters.insert(0, motorx.get_counter())
+        counters.insert(1, motory.get_counter())
         return self.scan_run(positioners, dwell_time, command=command,
                              counters=counters, detectors=[], dimensions=(data_points, ),
                              )
@@ -935,19 +1021,26 @@ def spiral_fermat(x_range_egu, y_range_egu, dr_egu, factor):
 @argument('time', type=util.arg_value_range(min_=0, inclusive=False,
                                             type_=float),
           help='Seconds at each point')
+@argument('accumulate', type=int, default=1, nargs='?',
+          help='Accumulation count')
 def spiral(margs, self, args):
     """
     Simple spiral scan
     """
     px, py = spiral_simple(args.width, args.height, args.ring_incr, args.first_points)
+    data_points = len(px)
+
+    if args.accumulate > 1:
+        px = np.repeat(px, args.accumulate)
+        py = np.repeat(py, args.accumulate)
 
     command = 'spiral  %s %s  %g %g  %g %d  %g' % (args.motorx, args.motory, args.width, args.height,
-                                                   args.ring_incr, args.first_points, args.time)
+                                                   args.ring_incr, args.first_points, args.time, args.accumulate)
 
     print("""Motors: %s %s (%g x %g)
 Spiral scan 1 (r_incr %g inner points %d) (%d data points)""" %
           (args.motorx, args.motory, args.width, args.height,
-           args.ring_incr, args.first_points, len(px)))
+           args.ring_incr, args.first_points, data_points))
 
     return self.scan_generic_2d(args.motorx, args.motory, px, py, command=command)
 
@@ -968,6 +1061,8 @@ Spiral scan 1 (r_incr %g inner points %d) (%d data points)""" %
 @argument('time', type=util.arg_value_range(min_=0, inclusive=False,
                                             type_=float),
           help='Seconds at each point')
+@argument('accumulate', type=int, default=1, nargs='?',
+          help='Accumulation count')
 def fermat(margs, self, args):
     """
     Fermat spiral scan
@@ -975,13 +1070,19 @@ def fermat(margs, self, args):
 
     px, py = spiral_fermat(args.width, args.height, args.ring_incr, args.factor)
 
-    command = 'fermat  %s %s  %g %g  %g %g  %g' % (args.motorx, args.motory, args.width, args.height,
-                                                   args.ring_incr, args.factor, args.time)
+    data_points = len(px)
+
+    if args.accumulate > 1:
+        px = np.repeat(px, args.accumulate)
+        py = np.repeat(py, args.accumulate)
+
+    command = 'fermat  %s %s  %g %g  %g %g  %g %d' % (args.motorx, args.motory, args.width, args.height,
+                                                      args.ring_incr, args.factor, args.time, args.accumulate)
 
     print("""Motors: %s %s (%g x %g)
 Fermat spiral scan (r_incr %g factor %g) (%d data points)""" %
           (args.motorx, args.motory, args.width, args.height,
-           args.ring_incr, args.factor, len(px)))
+           args.ring_incr, args.factor, data_points))
 
     return self.scan_generic_2d(args.motorx, args.motory, px, py, command=command)
 
@@ -996,3 +1097,49 @@ def scan_save(margs, self, args):
     .. note:: file extensions will be added by the plugin
     """
     self.scan_save(args.filename)
+
+
+@ecli_magic_args(ECLIScans)
+@argument('motor', type=AliasedPV,
+          help='Motor to scan')
+@argument('start', type=float,
+          help='Absolute starting position for motor1')
+@argument('end', type=float,
+          help='Absolute scan ending position for motor1')
+@argument('data_points', type=util.arg_value_range(min_=1),
+          help='Number of data points to acquire')
+@argument('time', type=util.arg_value_range(min_=0, inclusive=False,
+                                            type_=float),
+          help='Seconds at each point')
+@argument('repetitions', type=int,
+          help='Number of repetitions')
+@argument('counters', type=AliasedPV, nargs='*',
+          help='Additional counters to monitor')
+def repascan(margs, self, args):
+    self.rep_scan_1d(motor=args.motor, start=args.start, end=args.end,
+                     data_points=args.data_points, dwell_time=args.time,
+                     counters=args.counters, repetitions=args.repetitions,
+                     relative=False)
+
+
+@ecli_magic_args(ECLIScans)
+@argument('motor', type=AliasedPV,
+          help='Motor to scan')
+@argument('start', type=float,
+          help='Absolute starting position for motor1')
+@argument('end', type=float,
+          help='Absolute scan ending position for motor1')
+@argument('data_points', type=util.arg_value_range(min_=1),
+          help='Number of data points to acquire')
+@argument('time', type=util.arg_value_range(min_=0, inclusive=False,
+                                            type_=float),
+          help='Seconds at each point')
+@argument('repetitions', type=int,
+          help='Number of repetitions')
+@argument('counters', type=AliasedPV, nargs='*',
+          help='Additional counters to monitor')
+def repdscan(margs, self, args):
+    self.rep_scan_1d(motor=args.motor, start=args.start, end=args.end,
+                     data_points=args.data_points, dwell_time=args.time,
+                     counters=args.counters, repetitions=args.repetitions,
+                     relative=True)
