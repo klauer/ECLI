@@ -114,7 +114,7 @@ class ECLICore(ECLIPlugin):
     wait_timeout = traitlets.Float(0.25, config=True)
 
     # Timeout for determining record type
-    type_timeout = traitlets.Float(0.5, config=True)
+    type_timeout = traitlets.Float(1.0, config=True)
 
     # Aliases
     aliases = traitlets.Dict({'m1': 'IOC:m1',
@@ -168,6 +168,7 @@ class ECLICore(ECLIPlugin):
         # atexit, shutdown_hook, etc did not work -- look into reasons?
         #  atexit - occurs after ipython shutdown
 
+        self._script_running = False
         self.shell._find_line_magic = self.shell.find_line_magic
         self.shell.find_line_magic = self._find_line_magic
 
@@ -571,6 +572,12 @@ class ECLICore(ECLIPlugin):
 
         return rtype, table
 
+    @property
+    def script_running(self):
+        '''
+        Whether or not an ECLI script is running
+        '''
+        return self._script_running
 
 @ecli_magic_args(ECLICore)
 @argument('filename', type=unicode, help='Configuration filename',
@@ -637,7 +644,8 @@ def caget(mself, self, args):
             print(pv, end='\t')
             print(epics.caget(pv))
         except KeyboardInterrupt:
-            break
+            if self.core.script_running:
+                raise
         except Exception as ex:
             print('caget failed: (%s) %s' % (ex.__class__.__name__, ex))
 
@@ -660,9 +668,20 @@ def caput(mself, self, args):
 
         print(epics.caget(args.pv))
     except KeyboardInterrupt:
-        pass
+        if self.core.script_running:
+            raise
     except Exception as ex:
         print('caput failed: (%s) %s' % (ex.__class__.__name__, ex))
+
+
+@ecli_magic_args(ECLICore)
+@argument('script', type=str, help='Script name')
+def ecli_run(margs, self, args):
+    self._script_running = True
+    try:
+        self.shell.run_line_magic('run', '-i %s' % args.script)
+    finally:
+        self._script_running = False
 
 
 @ecli_magic_args(ECLICore)
