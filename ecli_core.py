@@ -419,7 +419,6 @@ class ECLICore(ECLIPlugin):
         plugin
         """
         logger.debug('Exiting')
-
         self.run_callback(self.CB_EXIT, self.__class__.__name__)
 
         for name, inst in self._extensions.iteritems():
@@ -434,6 +433,15 @@ class ECLICore(ECLIPlugin):
                      (name, ex.__class__.__name__, ex))
 
                 util.print_traceback(ex)
+
+        # Detach the pyepics context or some background tasks might delay
+        # exiting
+        class CA_NoOperation(object):
+            def ca_name(self, id):
+                return ''
+
+        epics.ca.detach_context()
+        epics.ca.libca = CA_NoOperation()
 
         self._shell_exit()
 
