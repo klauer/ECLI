@@ -80,12 +80,14 @@ def get_record_type(pv):
 
     pv = strip_field(pv)
 
+    rtyp_pv = RECORD_TYPE_PV % pv
+
     if not pv:
         return ''
     elif pv in _type_cache:
         return _type_cache[pv]
 
-    _type = caget(RECORD_TYPE_PV % pv,
+    _type = caget(rtyp_pv,
                   connection_timeout=get_core_plugin().type_timeout)
 
     if _type is None:
