@@ -190,6 +190,9 @@ class SimpleTable(object):
             self._headers.insert(index, header)
 
         if isinstance(fill, (list, tuple)):
+            if self._rows == 0:
+                self._rows = len(fill)
+
             assert(len(fill) == self._rows)
             self._data[header] = list(fill)
         else:
