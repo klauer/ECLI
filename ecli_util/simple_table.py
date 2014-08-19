@@ -184,19 +184,21 @@ class SimpleTable(object):
         if header in self._headers:
             raise ValueError('Duplicate header')
 
-        if index is None:
-            self._headers.append(header)
-        else:
-            self._headers.insert(index, header)
-
         if isinstance(fill, (list, tuple)):
             if self._rows == 0:
                 self._rows = len(fill)
 
             assert(len(fill) == self._rows)
-            self._data[header] = list(fill)
+            fill = list(fill)
         else:
-            self._data[header] = [fill] * self._rows
+            fill = [fill] * self._rows
+
+        if index is None:
+            self._headers.append(header)
+        else:
+            self._headers.insert(index, header)
+
+        self._data[header] = fill
 
     @property
     def column_and_index(self):
