@@ -50,7 +50,6 @@ class ECLIPositioner(stepscan.Positioner):
 
     def __init__(self, pv, **kwargs):
         pv = str(pv)  # aliasedpv bugfix TODO
-        # non-motor scan TODO
 
         if pv.endswith('.VAL'):
             pv = pv[:-4]
@@ -96,12 +95,6 @@ class ECLIPositioner(stepscan.Positioner):
 
         start_move = time.time()
         self.done = False
-        # TODO this was here for piezo_motion bug, still necessary?
-        #      stepscan does wait=False then wait=True move prior to
-        #      scanning which complicates things
-        #if i > 0 and self.pv.get() == self.array[i]:
-        #    self.done = True
-        #    return not self.done
 
         self.pv.put(self.array[i], callback=move_completed)
         time.sleep(1.e-4)
