@@ -73,7 +73,6 @@ class ECLIPositioner(stepscan.Positioner):
             return self.pv.get(use_monitor=False)
 
     def get_counter(self):
-        print('get counter', self.pv.pvname, self.label)
         if self.motor_rec is not None:
             return stepscan.MotorCounter(self.pv.pvname, self.label)
         else:
@@ -187,6 +186,8 @@ class ECLIScans(ECLIPlugin):
     detectors = traitlets.List(traitlets.Unicode,
                                default_value=[], config=True)
     trigger_detectors = traitlets.Dict(config=True)
+    detector_types = traitlets.Dict(config=True)
+
     pos_settle_time = traitlets.Float(default_value=0.05, config=True)
     det_settle_time = traitlets.Float(default_value=0.20, config=True)
     extra_pvs = traitlets.List(traitlets.Unicode, config=True)
@@ -429,11 +430,16 @@ class ECLIScans(ECLIPlugin):
 
         mca_calib = {}
 
-        for det_pv in self.detectors + list(detectors):
-            det = stepscan.get_detector(util.expand_alias(det_pv), label=det_pv)
+        for det_pv in set(self.detectors +
+                          list(detectors) +
+                          list(self.trigger_detectors.keys())):
+            type_ = self.detector_types.get(det_pv, None)
+            det = stepscan.get_detector(util.expand_alias(det_pv), kind=type_,
+                                        label=det_pv)
             if det is None:
                 logger.error('Scan %s invalid detector: %s' % (sc, det_pv))
                 return None
+
             logger.debug('Scan %s added detector: %s' % (sc, det))
             sc.add_detector(det)
 
@@ -442,7 +448,6 @@ class ECLIScans(ECLIPlugin):
                 sc.triggers.remove(det.trigger)
                 if det_pv in self.trigger_detectors:
                     trigger_value = self.trigger_detectors[det_pv]
-                    #print('adding trigger', det_pv, trigger_value)
                     logger.debug('Added detector trigger: %s = %s' %
                                  (det.trigger, trigger_value))
                     sc.add_trigger(det.trigger, value=trigger_value)
@@ -453,6 +458,7 @@ class ECLIScans(ECLIPlugin):
                     prefix = det.prefix
                     calib = [epics.caget(pv % prefix) for pv in calib_pvs]
                     mca_calib[det_pv] = calib
+
 
         # TODO StepScan bug report:
         #  add_trigger needs to check for None (as in SimpleDetector)
@@ -1084,7 +1090,8 @@ Fermat spiral scan (r_incr %g factor %g) (%d data points)""" %
           (args.motorx, args.motory, args.width, args.height,
            args.ring_incr, args.factor, data_points))
 
-    return self.scan_generic_2d(args.motorx, args.motory, px, py, command=command)
+    return self.scan_generic_2d(args.motorx, args.motory, px, py, command=command,
+                                dwell_time=args.time)
 
 
 @ecli_magic_args(ECLIScans)
