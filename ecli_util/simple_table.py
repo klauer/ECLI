@@ -188,7 +188,7 @@ class SimpleTable(object):
             if self._rows == 0:
                 self._rows = len(fill)
 
-            assert(len(fill) == self._rows)
+            assert len(fill) == self._rows, 'Row count mismatch'
             fill = list(fill)
         else:
             fill = [fill] * self._rows
