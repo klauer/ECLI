@@ -186,6 +186,7 @@ def export_magic_by_decorator(ipython, obj,
                 ipython.define_magic(name, fcn)
                 logging.debug('Magic defined: %s=%s' % (name, fcn))
 
+
 def export_class_magic(ipython, instance):
     """
     Functions of a class instance that are decorated with specific
@@ -196,8 +197,8 @@ def export_class_magic(ipython, instance):
     """
     def wrap(fcn):
         @functools.wraps(fcn)
-        def wrapped(*args):
-            return fcn(*args)
+        def wrapped(*args, **kwargs):
+            return fcn(*args, **kwargs)
         return wrapped
 
     return export_magic_by_decorator(ipython, instance, wrap_fcn=wrap)
